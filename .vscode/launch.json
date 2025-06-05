@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SaseApplication<sase>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.sad_security.sase.SaseApplication",
+            "projectName": "sase",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
