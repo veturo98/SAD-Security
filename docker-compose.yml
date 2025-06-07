@@ -1,0 +1,36 @@
+version: '3'
+services:
+
+  db:
+    image: postgres
+    restart: always
+ 
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: sase-db
+    ports:
+      - 5555:5432 
+      
+    networks:
+      sase_network:
+        ipv4_address: 194.20.1.29
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@sadsecurity.it
+      PGADMIN_DEFAULT_PASSWORD:  password
+    ports:
+      - 5051:80   
+    networks:
+      sase_network:
+        ipv4_address: 194.20.1.41
+
+networks:
+  sase_network:
+    ipam:
+      config:
+        - subnet: 194.20.1.0/24
