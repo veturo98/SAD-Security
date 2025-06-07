@@ -1,14 +1,31 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
-    <meta charset="UTF-8">
-    <title layout:title-pattern="$LAYOUT_TITLE - LoginApp">LoginApp</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sad Security</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/layout.css}" />
+
 </head>
+
 <body>
-    <div class="container mt-5" layout:fragment="content">
-        <!-- Il contenuto verrà inserito qui -->
-    </div>
+    <header>
+        <div>
+            <img src="images/logosito.png" alt="Sad Security Logo">
+        </div>
+        <nav>
+            <a href="#">Docs</a>
+            <a href="#">Blog</a>
+            <a href="/login">Login</a>
+        </nav>
+    </header>
+
+    <!-- qua viene renderizzata la roba aggiuntiva -->
+    <footer>
+        <p>&copy; 2025 Sad Security. Tutti i diritti riservati.</p>
+    </footer>
 </body>
+
 </html>

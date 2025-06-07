@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Homepage Classica</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sad Security</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/layout.css}" />
+  
 </head>
 <body>
-  <header>
-    <h1>Benvenuto sul Nostro Sito</h1>
-    <p>Una homepage semplice e classica</p>
-  </header>
 
-  <nav>
-    <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Chi Siamo</a></li>
-      <li><a href="#">Servizi</a></li>
-      <li><a href="#">Contatti</a></li>
-    </ul>
-  </nav>
 
-  <main>
-    <h2>La Nostra Missione</h2>
-    <p>Offriamo soluzioni di alta qualità per i nostri clienti, con attenzione al dettaglio e alla soddisfazione.</p>
+  <section class="hero">
+    <img src="images/logosito.png" alt="Sad Key">
+    <h1>La tua sicurezza non dovrebbe essere triste 😢</h1>
+    <p>Scopri vulnerabilità in modo semplice e visivo</p>
+    <a href="#" class="btn-primary">Scansiona ora</a>
+    <a href="#" class="btn-secondary">Guarda come funziona</a>
+  </section>
 
-    <h2>I Nostri Servizi</h2>
-    <p>Scopri i nostri servizi personalizzati pensati per te.</p>
-  </main>
+  <section class="features">
+    <div class="feature">
+      <h2>🔐 Analisi automatica</h2>
+      <p>Scansiona sistemi e trova problemi in pochi click.</p>
+    </div>
+    <div class="feature">
+      <h2>🎯 Segnalazioni chiare</h2>
+      <p>Alert visuali che parlano la tua lingua.</p>
+    </div>
+    <div class="feature">
+      <h2>📈 Report dettagliati</h2>
+      <p>Grafici e dati per azioni rapide e mirate.</p>
+    </div>
+  </section>
 
-  <footer>
-    <p>&copy; 2025 Il Tuo Nome o Azienda. Tutti i diritti riservati.</p>
-  </footer>
+ 
 </body>
 </html>

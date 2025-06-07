@@ -9,14 +9,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-public class PersonController {
+public class LoginController {
     
 
-    @PostMapping("/addPerson")
-    public void addPerson(@RequestBody Persona persona) {
+    // TBD completare l'aggiunta di un nuovo utente
+    @PostMapping("/home")
+    public void login(@RequestBody Persona persona) {
         
         
-        return entity;
+        return persona;
     }
     
 }
