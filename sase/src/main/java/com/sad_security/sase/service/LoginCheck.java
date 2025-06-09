@@ -16,8 +16,9 @@ public class LoginCheck {
 
     public boolean autentica(String username, String password){
         Optional<Utente> utente = userepository.findByUsername(username);
+        System.out.println(utente);
         
-        return utente.isPresent() && utente.get().getPassword().equals(password);
+        return utente.isPresent();
     }
 
 }

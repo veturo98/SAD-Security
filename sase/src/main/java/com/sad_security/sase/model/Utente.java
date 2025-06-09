@@ -11,11 +11,8 @@ import lombok.Data;
 @Table(name ="Utente")
 public class Utente {
 
-    // Id dell'utente
-    @Id
-    private long Id;
-
     // Dati dell'account utente
+    @Id
     @Column(name = "username")
     private String username;
 

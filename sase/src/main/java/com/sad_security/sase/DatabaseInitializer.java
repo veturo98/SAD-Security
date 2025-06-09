@@ -23,21 +23,18 @@ public class DatabaseInitializer implements CommandLineRunner {
             System.out.println("Populating database with initial data...");
 
             Utente user1 = new Utente();
-            user1.setId(1);
             user1.setUsername("alice");
             user1.setMail("alice@example.com");
             user1.setPassword("alicepassword");
             userRepository.save(user1);
 
             Utente user2 = new Utente();
-            user2.setId(2);
             user2.setUsername("bob");
             user2.setMail("bob@example.com");
             user2.setPassword("bobpassword");
             userRepository.save(user2);
 
             Utente user3 = new Utente();
-            user3.setId(3);
             user3.setUsername("charlie");
             user3.setMail("charlie@example.com");
             user3.setPassword("charliepassword");

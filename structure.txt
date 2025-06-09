@@ -1,0 +1,90 @@
+.
+├── Chiave_Triste_con_Logo_Sicurezza.png
+├── docker-compose.yml
+├── README.md
+├── sase
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   ├── pom.xml
+│   ├── src
+│   │   ├── main
+│   │   │   ├── java
+│   │   │   │   └── com
+│   │   │   │       └── sad_security
+│   │   │   │           └── sase
+│   │   │   │               ├── controller
+│   │   │   │               │   ├── HomeController.java
+│   │   │   │               │   ├── RoomController.java
+│   │   │   │               │   └── StudentController.java
+│   │   │   │               ├── DatabaseInitializer.java
+│   │   │   │               ├── model
+│   │   │   │               │   └── Utente.java
+│   │   │   │               ├── repository
+│   │   │   │               │   └── UserRepository.java
+│   │   │   │               ├── SaseApplication.java
+│   │   │   │               └── service
+│   │   │   │                   └── LoginCheck.java
+│   │   │   └── resources
+│   │   │       ├── application.properties
+│   │   │       ├── static
+│   │   │       │   ├── css
+│   │   │       │   │   └── layout.css
+│   │   │       │   └── images
+│   │   │       │       ├── favicon.ico
+│   │   │       │       └── logosito.png
+│   │   │       └── templates
+│   │   │           ├── dashboard.html
+│   │   │           ├── errore.html
+│   │   │           ├── funziona.html
+│   │   │           ├── home.html
+│   │   │           ├── layout.html
+│   │   │           └── login.html
+│   │   └── test
+│   │       └── java
+│   │           └── com
+│   │               └── sad_security
+│   │                   └── sase
+│   │                       └── SaseApplicationTests.java
+│   └── target
+│       ├── classes
+│       │   ├── application.properties
+│       │   ├── com
+│       │   │   └── sad_security
+│       │   │       └── sase
+│       │   │           ├── controller
+│       │   │           │   ├── HomeController.class
+│       │   │           │   ├── RoomController.class
+│       │   │           │   └── StudentController.class
+│       │   │           ├── DatabaseInitializer.class
+│       │   │           ├── model
+│       │   │           │   └── Utente.class
+│       │   │           ├── repository
+│       │   │           │   └── UserRepository.class
+│       │   │           ├── SaseApplication.class
+│       │   │           └── service
+│       │   │               └── LoginCheck.class
+│       │   ├── static
+│       │   │   ├── css
+│       │   │   │   └── layout.css
+│       │   │   └── images
+│       │   │       ├── favicon.ico
+│       │   │       └── logosito.png
+│       │   └── templates
+│       │       ├── dashboard.html
+│       │       ├── errore.html
+│       │       ├── funziona.html
+│       │       ├── home.html
+│       │       ├── layout.html
+│       │       └── login.html
+│       ├── generated-sources
+│       │   └── annotations
+│       ├── generated-test-sources
+│       │   └── test-annotations
+│       └── test-classes
+│           └── com
+│               └── sad_security
+│                   └── sase
+│                       └── SaseApplicationTests.class
+└── structure.txt
+
+43 directories, 45 files

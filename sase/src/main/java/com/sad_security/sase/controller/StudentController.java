@@ -15,12 +15,12 @@ public class StudentController {
     @Autowired
     private LoginCheck logincheck;
 
-    @PostMapping("/controlla")
+    @PostMapping("/check")
     public String addStudent(@RequestParam String username, @RequestParam String password, Model Utente) {
 
         boolean success = logincheck.autentica(username, password);
         if (success) {
-            return "funziona"; // nome della view (es. dashboard.html o dashboard.jsp)
+            return "redirect"; // nome della view (es. dashboard.html o dashboard.jsp)
         } else {
             Utente.addAttribute("error", "Credenziali non valide");
             return "errore"; // torna alla pagina di login
