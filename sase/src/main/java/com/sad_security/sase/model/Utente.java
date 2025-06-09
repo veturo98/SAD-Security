@@ -1,5 +1,6 @@
 package com.sad_security.sase.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -15,11 +16,16 @@ public class Utente {
     private long Id;
 
     // Dati dell'account utente
-    private String Username;
-    private String Mail;
-    private String Password;
+    @Column(name = "username")
+    private String username;
 
-    // 
+    @Column(name = "mail")
+    private String mail;
+
+    @Column(name = "password")
+    private String password;
+
+
     
 
 }
