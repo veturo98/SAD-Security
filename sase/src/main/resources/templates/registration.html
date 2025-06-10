@@ -8,12 +8,17 @@
 
 <body>
     <div layout:fragment="content">
-        <h3 th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></h3>
-        <h2 class="mb-4">Login</h2>
-        <form th:action="@{/check}" method="post">
+        <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></h3>
+
+        <h2 class="mb-4">Registrati</h2>
+        <form th:action="@{/add-user}" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required />
+            </div>
+            <div class="mb-3">
+                <label for="mail" class="form-label">E-Mail</label>
+                <input type="text" class="form-control" id="mail" name="mail" required />
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
@@ -22,7 +27,7 @@
             <div th:if="${param.error}" class="alert alert-danger">
                 Credenziali non valide.
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary">Registrati</button>
         </form>
     </div>
 </body>

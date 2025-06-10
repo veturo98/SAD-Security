@@ -8,10 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<Utente, Long> {
+public interface UserRepository extends JpaRepository<Utente, String> {
     // Spring Data JPA fornirà automaticamente le implementazioni dei metodi CRUD (save, findById, findAll, count, etc.)
     // Puoi aggiungere qui metodi personalizzati se necessario, ad esempio:
     Optional<Utente> findByUsername(String username);
+    Optional<Utente> findByMail(String mail);
 
     
 }
