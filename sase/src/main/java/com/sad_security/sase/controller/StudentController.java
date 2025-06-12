@@ -20,10 +20,12 @@ public class StudentController {
 
         boolean success = utenteServices.autenticaUtente(username, password);
         if (success) {
-            return "redirect"; // nome della view (es. dashboard.html o dashboard.jsp)
+            Utente.addAttribute("username", username);
+            return "dashboard";
+
         } else {
-            Utente.addAttribute("error", "Credenziali non valide");
-            return "errore"; // torna alla pagina di login
+            Utente.addAttribute("errorMessage", "Username o password errate.");
+            return "login";
         }
 
     }

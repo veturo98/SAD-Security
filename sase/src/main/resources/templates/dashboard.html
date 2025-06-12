@@ -1,13 +1,43 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
 <head>
     <title>Sad Security</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            button = document.getElementById("start-room");
+
+            button.addEventListener("click", function () {
+                // Esempio di richiesta GET semplice
+                fetch('http://localhost:8080/start-lab', { method: 'POST' })
+                    .then(response => response.json()) // Parsa la risposta come JSON
+                    .then(data => {
+                        areaRisposta.textContent = 'Dati ricevuti: ' + JSON.stringify(data, null, 2);
+                    })
+                    .catch(error => {
+                        console.error('Errore durante la richiesta:', error);
+                        areaRisposta.textContent = 'Errore durante l\'invio della richiesta.';
+                    });
+            })
+        })
+    </script>
 </head>
+
 <body>
+    <div layout:fragment="navbar">
+        <p>Benvenuto, <span th:if="${username}" th:text="${username}"></span>!</p>
+    </div>
+
     <div layout:fragment="content">
         <h1>Dashboard</h1>
+        <button id="start-room">Premi qui, fammi godere</button>
+    </div>
+
+    <div>
+        <!-- CONTENUTO DELLA ROOM-->
     </div>
 </body>
+
 </html>

@@ -8,6 +8,7 @@
 
 <body>
     <div layout:fragment="content">
+        <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></h3>
         <h3 th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></h3>
         <h2 class="mb-4">Login</h2>
         <form th:action="@{/check}" method="post">
