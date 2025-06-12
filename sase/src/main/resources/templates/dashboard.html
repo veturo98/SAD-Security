@@ -7,14 +7,22 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            button = document.getElementById("start-room");
-
+            const button = document.getElementById("start-room");
+            const areaRisposta = document.getElementById("areaRisposta");
+            
             button.addEventListener("click", function () {
+
+                areaRisposta.textContent = 'Avvio in corso....' 
                 // Esempio di richiesta GET semplice
-                fetch('http://localhost:8080/start-lab', { method: 'POST' })
-                    .then(response => response.json()) // Parsa la risposta come JSON
+                fetch('/start-room', { method: 'POST',
+                    headers:{
+                        'Content-Type' : 'text/plain'
+                    },
+                    body: 'prova'
+                 })
+                    .then(response => response.text()) // Parsa la risposta come JSON
                     .then(data => {
-                        areaRisposta.textContent = 'Dati ricevuti: ' + JSON.stringify(data, null, 2);
+                        areaRisposta.textContent = 'Dati ricevuti: ' +data;
                     })
                     .catch(error => {
                         console.error('Errore durante la richiesta:', error);
@@ -33,6 +41,7 @@
     <div layout:fragment="content">
         <h1>Dashboard</h1>
         <button id="start-room">Premi qui, fammi godere</button>
+        <div id="areaRisposta"></div> <!-- ✅ Questo è il div mancante -->
     </div>
 
     <div>

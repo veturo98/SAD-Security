@@ -1,19 +1,25 @@
 package com.sad_security.sase.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.util.concurrent.CompletableFuture;
 
-@Controller
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import org.springframework.web.bind.annotation.RestController;
+
+import com.sad_security.sase.service.RoomService;
+
+@RestController
 public class RoomController {
 
+    private final RoomService roomService;
 
-    @PostMapping("/start-room")
-    public String getRoom(@RequestParam String user, @RequestParam String room_type) {
-        
-        // Start della room con il service
-
-        return new String();
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
     }
 
+    @PostMapping("/start-room")
+    public CompletableFuture<String> startRoom(@RequestBody String nomeLab) {
+        return roomService.startContainerAsync(nomeLab);
+    }
 }
