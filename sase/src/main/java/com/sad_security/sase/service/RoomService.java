@@ -12,8 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 @Service
 public class RoomService {
 
-     private final RestTemplate restTemplate = new RestTemplate();
-
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${docker.api.base-url}")
     private String dockerApiBaseUrl;
@@ -28,6 +27,5 @@ public class RoomService {
             return CompletableFuture.completedFuture("Errore: " + e.getMessage());
         }
     }
-    
-    
+
 }
