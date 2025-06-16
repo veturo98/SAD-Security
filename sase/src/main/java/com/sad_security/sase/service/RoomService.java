@@ -18,9 +18,9 @@ public class RoomService {
     private String dockerApiBaseUrl;
 
     @Async
-    public CompletableFuture<String> startContainerAsync(String name) {
+    public CompletableFuture<String> startContainerAsync(String classe, String name) {
         try {
-            String url = dockerApiBaseUrl + "/start-container/" + name;
+            String url = dockerApiBaseUrl + "/start-container/" + classe + "/"+ name;
             ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
             return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
         } catch (Exception e) {

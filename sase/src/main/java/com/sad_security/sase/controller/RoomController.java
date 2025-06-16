@@ -4,10 +4,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sad_security.sase.service.RoomService;
+
+import lombok.Data;
 
 @RestController
 public class RoomController {
@@ -19,7 +20,21 @@ public class RoomController {
     }
 
     @PostMapping("/start-room")
-    public CompletableFuture<String> startRoom(@RequestBody String nomeLab) {
-        return roomService.startContainerAsync(nomeLab);
+    public CompletableFuture<String> startRoom(@RequestBody startRoomBody startRoom) {
+
+        String Classe = startRoom.getNomeClass();
+        String Lab = startRoom.getNomeLab();
+        return roomService.startContainerAsync(Classe,Lab);
+    }
+
+
+
+
+    @Data
+    public static class startRoomBody{
+        
+        private String nomeClass;
+        private String nomeLab;
+        
     }
 }

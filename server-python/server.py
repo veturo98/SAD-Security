@@ -1,13 +1,36 @@
 from flask import Flask
+import time
+import subprocess
+
+
 
 app = Flask(__name__)
 
-@app.route('/start-container/<string:name>', methods=['POST'])
-def start_container(name):
-    print(f"Ricevuta richiesta per avviare il container: {name}")
+@app.route('/start-container/<string:classe>/<string:room>', methods=['POST'])
+def start_container(classe,room):
     
+    print(f"Ricevuta richiesta per avviare il container: {room}")
+    print(f"Ricevuta richiesta per avviare la classe: {classe}")
+    time.sleep(1)
+
+
+
+
+
+    try:
+        result = subprocess.run(['docker', 'run', '-d', 'ubuntu:latest'], capture_output=True, text=True, check=True)
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"Errore durante l'esecuzione del comando: {e}")
+        print(f"Errore standard: {e.stderr}")
+
     # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
-    return (f"Container '{name}' avviato con successo", 200)
+    return (f"Container '{classe}' e '{room}' avviati con successo", 200)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=1234)
+
+
+
+
+

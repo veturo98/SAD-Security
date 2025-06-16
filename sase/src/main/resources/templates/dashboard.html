@@ -16,9 +16,13 @@
                 // Esempio di richiesta GET semplice
                 fetch('/start-room', { method: 'POST',
                     headers:{
-                        'Content-Type' : 'text/plain'
+                        'Content-Type' : 'application/json'
                     },
-                    body: 'prova'
+                    body: JSON.stringify({
+                        'nomeClass': 'ProvaClass',
+                        'nomeLab': 'ProvaLab'
+                    })
+                    
                  })
                     .then(response => response.text()) // Parsa la risposta come JSON
                     .then(data => {
