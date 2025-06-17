@@ -32,7 +32,7 @@ services:
     image: veturo98/server-python:latest
     restart: always
     volumes:
-      - ./server.py:/home/ubuntu/server.py
+      - ./server-python:/home/ubuntu/
 
     command: bash -c "cd /home/ubuntu && apt update && apt upgrade -y && python3 server.py"
 

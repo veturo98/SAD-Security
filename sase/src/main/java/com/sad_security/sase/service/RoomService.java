@@ -32,7 +32,7 @@ public class RoomService {
             // Creo il corpo della POST ed effettuo la richiesta
             startRoomBody request_body = new startRoomBody(classe, room, user);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request_body, String.class);
-
+         
             // Restituisco la risposta della POST
             return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
         
