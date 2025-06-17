@@ -1,23 +1,9 @@
 #!/bin/bash
 
-# --- Inizio configurazione per lo script Bash ---
 
-# Definisci CLASSE e ROOM.
-# Opzione 1: Definisci qui i valori fissi per il test
+# Definizione CLASSE e ROOM.
 CLASSE="$1"
 ROOM="$2"
-
-# Opzione 2: Se vuoi passare CLASSE e ROOM come argomenti al tuo script Bash:
-# (ad es. ./start_compose.sh Scienze Laboratorio1)
-# CLASSE="$1"
-# ROOM="$2"
-# if [ -z "$CLASSE" ] || [ -z "$ROOM" ]; then
-#     echo "Uso: $0 <classe> <room>"
-#     exit 1
-# fi
-
-# --- Fine configurazione ---
-
 
 # Corrisponde a 'original_cwd = os.getcwd()'
 ORIGINAL_CWD=$(pwd)

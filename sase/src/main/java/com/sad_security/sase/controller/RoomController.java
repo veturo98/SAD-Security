@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sad_security.sase.service.RoomService;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @RestController
@@ -24,17 +25,20 @@ public class RoomController {
 
         String Classe = startRoom.getNomeClass();
         String Lab = startRoom.getNomeLab();
-        return roomService.startContainerAsync(Classe,Lab);
+        String Utente = startRoom.getUser();
+        return roomService.startContainerAsync(Classe,Lab, Utente);
     }
 
 
 
 
     @Data
+    @AllArgsConstructor 
     public static class startRoomBody{
         
         private String nomeClass;
         private String nomeLab;
+        private String user;
         
     }
 }

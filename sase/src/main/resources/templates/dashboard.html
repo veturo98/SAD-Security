@@ -9,6 +9,7 @@
 
             const button = document.getElementById("start-room");
             const areaRisposta = document.getElementById("areaRisposta");
+            const utente = document.getElementById("user");
             
             button.addEventListener("click", function () {
 
@@ -20,7 +21,8 @@
                     },
                     body: JSON.stringify({
                         'nomeClass': 'TestClass',
-                        'nomeLab': 'TestRoom'
+                        'nomeLab': 'TestRoom',
+                        'utente': utente
                     })
                     
                  })
@@ -39,7 +41,7 @@
 
 <body>
     <div layout:fragment="navbar">
-        <p>Benvenuto, <span th:if="${username}" th:text="${username}"></span>!</p>
+        <p>Benvenuto, <span id="user" th:if="${username}" th:text="${username}"></span>!</p>
     </div>
 
     <div layout:fragment="content">
