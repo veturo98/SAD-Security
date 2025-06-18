@@ -35,9 +35,11 @@ def start_container():
 
     classe = data.get('nomeClass')
     room = data.get('nomeLab')
+    utente = data.get('utente')
     
     print(f"Ricevuta richiesta per avviare il container: {room}")
     print(f"Ricevuta richiesta per avviare la classe: {classe}")
+    print(f"Ricevuta richiesta per avviare la classe: {utente}")
     time.sleep(1)
 
     #Esecuzione dello script di avvio dei container
@@ -51,7 +53,7 @@ def start_container():
         print(f"Errore standard: {e.stderr}")
 
     # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
-    return (f"Container '{classe}' e '{room}' avviati con successo", 200)
+    return (f"Container '{classe}' e '{room}' per l'utente' {utente}' avviati con successo", 200)
 
 
 

@@ -9,10 +9,10 @@
 
             const button = document.getElementById("start-room");
             const areaRisposta = document.getElementById("areaRisposta");
-            const utente = document.getElementById("user");
+            const utente = document.getElementById("user").textContent;
             
             button.addEventListener("click", function () {
-
+                
                 areaRisposta.textContent = 'Avvio in corso....' 
                 // Esempio di richiesta GET semplice
                 fetch('/start-room', { method: 'POST',

@@ -25,8 +25,9 @@ public class RoomController {
 
         String Classe = startRoom.getNomeClass();
         String Lab = startRoom.getNomeLab();
-        String Utente = startRoom.getUser();
-        return roomService.startContainerAsync(Classe,Lab, Utente);
+        String Utente = startRoom.getUtente();
+        System.out.println("Sono il controller ed ho ricevuto questo"+startRoom);
+        return roomService.startContainerAsync(Classe,Lab,Utente);
     }
 
 
@@ -38,7 +39,7 @@ public class RoomController {
         
         private String nomeClass;
         private String nomeLab;
-        private String user;
+        private String utente;
         
     }
 }
