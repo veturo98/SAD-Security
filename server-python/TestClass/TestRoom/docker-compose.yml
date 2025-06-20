@@ -46,7 +46,7 @@ services:
 #         - subnet: 194.20.1.0/24
 
 
-  ubuntu:
+  user_container:
     image: ubuntu:latest
     restart: always
     command: tail -f /dev/null # Questo comando non termina mai
@@ -55,3 +55,6 @@ services:
       interval: 10s
       timeout: 5s 
       retries: 2
+    ports:
+      - ${PORTA}:22
+    

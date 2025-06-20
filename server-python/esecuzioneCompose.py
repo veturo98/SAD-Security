@@ -3,7 +3,7 @@ import os
 import sys
 import subprocess
 
-def run_docker_compose(classe, room):
+def run_docker_compose(classe, room, porta):
     """
     Esegue il comando 'docker compose up' in una sottodirectory specifica.
 
@@ -28,6 +28,10 @@ def run_docker_compose(classe, room):
     print(f"Directory di lavoro cambiata in: {os.getcwd()}")
 
     command_exit_code = 0
+
+    # Setto la variabile relativa alla porta
+    os.environ["PORTA"] = str(porta)
+
     try:
         subprocess.run(["docker", "compose", "up", "-d", "--wait"], check=True, capture_output=False)
         print("Comando Docker Compose eseguito con successo.")
