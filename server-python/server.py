@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import time
 import subprocess
-import esecuzioneCompose
+import serviceCompose
 import socket
 
 
@@ -30,7 +30,7 @@ def trova_prima_porta_libera(start_port, end_port, host='127.0.0.1'):
     return None  # Nessuna porta libera trovata
 
 
-####    SOLUZIONE CON SCRIPT PYTHON     ####
+####    START CONTAINER     ####
 @app.route('/start-container/', methods=['POST'])
 def start_container():
     data = request.get_json()
@@ -80,7 +80,7 @@ def start_container():
     #Esecuzione dello script di avvio dei container
     try:
         # Lancio il compose
-        result = esecuzioneCompose.run_docker_compose(classe, room, porta)
+        result = serviceCompose.run_docker_compose(utente, classe, room, porta)
         print(result)
     except FileNotFoundError as e:
          print(f"Errore: {e}")
@@ -90,6 +90,40 @@ def start_container():
 
     # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
     return (f"Container '{classe}' e '{room}' per l'utente' {utente}' avviati con successo", 200)
+
+
+
+
+
+####    STOP CONTAINER     ####
+@app.route('/stop-container/', methods=['POST'])
+def stop_container():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Dati JSON mancanti o non validi nel corpo della richiesta"}), 400
+
+    utente = data.get('utente')
+    
+
+    
+    print(f"Ricevuta richiesta per distruggere il container dell'utente: {utente}")
+
+    time.sleep(1)
+
+    #Esecuzione dello script di distruzione dei container
+    try:
+        # Lancio il compose
+        result = serviceCompose.stop_docker_compose(utente)
+        print(result)
+    except FileNotFoundError as e:
+         print(f"Errore: {e}")
+    except subprocess.CalledProcessError as e:
+        print(f"Errore durante l'esecuzione del comando: {e}")
+        print(f"Errore standard: {e.stderr}")
+
+    # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
+    return (f"Container per l'utente' {utente}' distrutto con successo", 200)
+
 
 
 if __name__ == '__main__':
