@@ -10,5 +10,5 @@ services:
       timeout: 5s 
       retries: 2
     ports:
-      - ${PORTA}:22
+      - 10.10.10.1:${PORTA}:22
     

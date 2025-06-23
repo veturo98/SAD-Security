@@ -48,6 +48,7 @@ def run_docker_compose(utente, classe, room, porta):
     # Mi sposto nella cartella
     os.chdir(utente_dir)
     print(f"Directory di lavoro cambiata in: {os.getcwd()}")
+
     # Setto la variabile relativa alla porta
     os.environ["PORTA"] = str(porta)
 
@@ -97,27 +98,30 @@ def stop_docker_compose(utente):
     Args:
         utente (str): Il nome dell'utente (definisce la posizione dell'unico compose running per l'utente).
     """
-    # ... tutta la logica del tuo script ...
-    original_cwd = os.getcwd()
-    print(f"Directory di lavoro originale: {original_cwd}")
 
-    base_path = original_cwd
-    compose_dir = os.path.join(base_path, utente)
+    # Costruisco i path
+    base_path = os.getcwd()
+    print(f"Directory di lavoro originale: {base_path}")
 
-    if not os.path.isdir(compose_dir):
-        print(f"Errore: La directory Docker Compose '{compose_dir}' non esiste.")
+    utente_dir = os.path.join(base_path, "Running", utente)
+
+
+    if not os.path.isdir(utente_dir):
+        print(f"Errore: La directory Docker Compose '{utente_dir}' non esiste.")
         # Non usare sys.exit(1) qui se vuoi che il chiamante possa gestire l'errore
         # Potresti invece sollevare un'eccezione o restituire False
-        raise FileNotFoundError(f"La directory '{compose_dir}' non esiste.")
+        raise FileNotFoundError(f"La directory '{utente_dir}' non esiste.")
 
-    os.chdir(compose_dir)
+    # Mi sposto nella cartella utente
+    os.chdir(utente_dir)
     print(f"Directory di lavoro cambiata in: {os.getcwd()}")
 
-    command_exit_code = 0
 
+    # Eseguo il compose down
     try:
         subprocess.run(["docker", "compose", "down"], check=True, capture_output=False)
         print("Comando Docker Compose down eseguito con successo.")
+        command_exit_code = 0
     except subprocess.CalledProcessError as e:
         print("Errore durante l'esecuzione del comando Docker Compose down.")
         print(f"Codice di uscita: {e.returncode}")
@@ -129,7 +133,7 @@ def stop_docker_compose(utente):
         command_exit_code = 127
         raise # Rilancia l'eccezione
     finally:
-        os.chdir(original_cwd)
+        os.chdir(base_path)
         print(f"Tornato alla directory originale: {os.getcwd()}")
 
     return command_exit_code # Restituisce il codice di uscita
