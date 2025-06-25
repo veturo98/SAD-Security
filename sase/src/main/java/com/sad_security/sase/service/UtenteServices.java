@@ -14,25 +14,35 @@ public class UtenteServices {
     @Autowired
     private UserRepository userepository;
 
-    public boolean autenticaUtente(String username, String password){
-        Optional<Utente> utente = userepository.findByUsername(username);
-        
-        return utente.isPresent();
+    public boolean autenticaUtente(String username, String password) {
+
+        // Faccio la query per controllare se esiste l'utente
+        Optional<Utente> query = userepository.findByUsername(username);
+
+        // Se l'utente è presente effettuo i controlli
+        if (query.isPresent()) {
+            Utente utente = query.get();
+
+            // Se la password corrisponde allora l'utente è autenticato
+            if (utente.getPassword() == password)
+                return true;
+
+        }
+
+        return false;
     }
 
-    public boolean aggiungiUtente(String username, String password, String mail){
+    public boolean aggiungiUtente(String username, String password, String mail) {
 
         // Cerco se l'utente esiste già (mail o username già utilizzato)
         Optional<Utente> userName = userepository.findByUsername(username);
         Optional<Utente> userMail = userepository.findByMail(mail);
-              
 
         // Se l'utente esiste allora dico che già esiste
-        if (userName.isPresent() || userMail.isPresent()){
+        if (userName.isPresent() || userMail.isPresent()) {
             System.out.println("l'utente esiste già");
             return true;
-        }
-        else {
+        } else {
 
             // Creazione utente con credenziali inserite
             Utente newUtente = new Utente();
@@ -50,4 +60,3 @@ public class UtenteServices {
     }
 
 }
-
