@@ -1,14 +1,14 @@
 services:
 
   netcat:
-    image: ubuntu:latest
+    image: veturo98/server-ssh:1.1
     restart: always
-    command: tail -f /dev/null # Questo comando non termina mai
+    command: bash -c "/usr/sbin/sshd -D" # Questo comando non termina mai
     healthcheck:
       test: ["CMD", "echo", "test"]  
       interval: 10s
       timeout: 5s 
       retries: 2
     ports:
-      - 10.10.10.1:${PORTA}:22
+      - ${PORTA}:22
     
