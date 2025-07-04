@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sad_security.sase.service.UtenteServices;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
-public class StudentController {
+public class AccountController {
     // TBD
     // Schermate di gestione dell'utente
     @Autowired
@@ -47,5 +49,23 @@ public class StudentController {
         }
 
     }
+
+    //funzione che permette di cambiare la password
+    @PostMapping("/change-password")
+    public String CambioPassword(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
+     @PostMapping("/visualizza-messaggi")
+    public String VisualizzazioneMessaggi(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
+
+
 
 }

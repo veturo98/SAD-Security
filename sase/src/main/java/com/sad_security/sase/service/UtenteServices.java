@@ -22,10 +22,12 @@ public class UtenteServices {
         // Se l'utente è presente effettuo i controlli
         if (query.isPresent()) {
             Utente utente = query.get();
+            
 
             // Se la password corrisponde allora l'utente è autenticato
-            if (utente.getPassword() == password)
+            if (utente.getPassword().equals(password))
                 return true;
+                        
 
         }
 

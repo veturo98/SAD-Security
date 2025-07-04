@@ -36,7 +36,35 @@ public class RoomController {
         return roomService.startContainerAsync(Classe,Lab,Utente);
     }
 
+    @PostMapping("/crea-laboratorio")
+    public String CreazioneLaboratorio(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
+    @PostMapping("/pubblica-risultati")
+    public String PubblicazioneRisultati(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
+    @PostMapping("/inserisci-flag")
+    public String InserimentoFlag(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
 
+    @PostMapping("/visualizza-risultati")
+    public String VisualizzazioneRisultati(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
 
     // Dichiaro la classe che contiene il corpo della room
     @Data
