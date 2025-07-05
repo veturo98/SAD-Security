@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sad_security.sase.service.RoomService;
@@ -13,6 +14,7 @@ import lombok.Data;
 
 // Controller per la room: non restituisce pagine
 @RestController
+@RequestMapping("/room")
 public class RoomController {
 
     // Dichiaro i service
@@ -23,7 +25,7 @@ public class RoomController {
     }
 
     // Mappo la chiamata per l'avvio delle room
-    @PostMapping("/start-room")
+    @PostMapping("/start")
     public CompletableFuture<String> startRoom(@RequestBody startRoomBody startRoom) {
 
         // Formatto i campi pre l'invio della richiesta
@@ -36,21 +38,24 @@ public class RoomController {
         return roomService.startContainerAsync(Classe,Lab,Utente);
     }
 
-    @PostMapping("/crea-laboratorio")
+
+    @PostMapping("/crea")
     public String CreazioneLaboratorio(@RequestBody String entity) {
         //TODO: process POST request
         
         return entity;
     }
+   
     
-    @PostMapping("/pubblica-risultati")
+    @PostMapping("/risultati/pubblica")
     public String PubblicazioneRisultati(@RequestBody String entity) {
         //TODO: process POST request
         
         return entity;
     }
     
-    @PostMapping("/inserisci-flag")
+
+    @PostMapping("/flag")
     public String InserimentoFlag(@RequestBody String entity) {
         //TODO: process POST request
         
@@ -58,7 +63,7 @@ public class RoomController {
     }
     
 
-    @PostMapping("/visualizza-risultati")
+    @PostMapping("/risultati/visualizza")
     public String VisualizzazioneRisultati(@RequestBody String entity) {
         //TODO: process POST request
         

@@ -9,7 +9,7 @@ import com.sad_security.sase.model.Utente;
 import com.sad_security.sase.repository.UserRepository;
 
 @Service
-public class UtenteServices {
+public class UtenteService {
 
     @Autowired
     private UserRepository userepository;

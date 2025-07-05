@@ -6,33 +6,36 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.sad_security.sase.service.UtenteServices;
+import com.sad_security.sase.service.UtenteService;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequestMapping("/account")
 public class AccountController {
     // TBD
     // Schermate di gestione dell'utente
     @Autowired
-    private UtenteServices utenteServices;
+    private UtenteService utenteServices;
 
     @PostMapping("/check")
-    public String controllaLogin(@RequestParam String username, @RequestParam String password, Model Utente) {
+    public String controllaLogin(@RequestParam String username, @RequestParam String password, Model Utente, RedirectAttributes redirectAttributes) {
 
         boolean success = utenteServices.autenticaUtente(username, password);
         if (success) {
             Utente.addAttribute("username", username);
-            return "dashboard";
+            redirectAttributes.addFlashAttribute("username", username);
+            return "redirect:/dashboard";
 
         } else {
             Utente.addAttribute("errorMessage", "Username o password errate.");
-            return "login";
+            return "redirect:/login";
         }
 
     }
 
-    @PostMapping("/add-user")
+    @PostMapping("/add/user")
     public String registraUtente(@RequestParam String username, @RequestParam String mail,
             @RequestParam String password, Model Utente) {
 

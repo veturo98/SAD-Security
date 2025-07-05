@@ -11,7 +11,7 @@
         <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></h3>
 
         <h2 class="mb-4">Registrati</h2>
-        <form th:action="@{/add-user}" method="post">
+        <form th:action="@{/account/add/user}" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required />
