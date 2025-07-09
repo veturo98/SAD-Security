@@ -1,9 +1,9 @@
 services:
 
-  netcat:
+  buffer-overflow:
     image: veturo98/server-ssh:1.1
     restart: always
-    command: bash -c "/usr/sbin/sshd -D" # Questo comando non termina mai
+    command: tail -f /dev/null # Questo comando non termina mai
     healthcheck:
       test: ["CMD", "echo", "test"]  
       interval: 10s

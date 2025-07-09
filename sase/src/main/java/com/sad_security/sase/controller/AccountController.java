@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.sad_security.sase.service.UtenteService;
+import com.sad_security.sase.service.StudenteService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -15,39 +15,39 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/account")
 public class AccountController {
     // TBD
-    // Schermate di gestione dell'utente
+    // Schermate di gestione dello studente
     @Autowired
-    private UtenteService utenteServices;
+    private StudenteService studenteServices;
 
     @PostMapping("/check")
-    public String controllaLogin(@RequestParam String username, @RequestParam String password, Model Utente, RedirectAttributes redirectAttributes) {
+    public String controllaLogin(@RequestParam String username, @RequestParam String password, Model Studente, RedirectAttributes redirectAttributes) {
 
-        boolean success = utenteServices.autenticaUtente(username, password);
+        boolean success = studenteServices.autenticaStudente(username, password);
         if (success) {
-            Utente.addAttribute("username", username);
+            Studente.addAttribute("username", username);
             redirectAttributes.addFlashAttribute("username", username);
             return "redirect:/dashboard";
 
         } else {
-            Utente.addAttribute("errorMessage", "Username o password errate.");
+            Studente.addAttribute("errorMessage", "Username o password errate.");
             return "redirect:/login";
         }
 
     }
 
     @PostMapping("/add/user")
-    public String registraUtente(@RequestParam String username, @RequestParam String mail,
-            @RequestParam String password, Model Utente) {
+    public String registraStudente(@RequestParam String username, @RequestParam String mail,
+            @RequestParam String password, Model Studente) {
 
-        boolean exists = utenteServices.aggiungiUtente(username, password, mail);
+        boolean exists = studenteServices.aggiungiStudente(username, password, mail);
 
-        // Se l'utente esiste allora procedo verso la pagina di login
+        // Se lo studente esiste allora procedo verso la pagina di login
         if (exists) {
-            Utente.addAttribute("errorMessage", "Username o mail già usate.");
+            Studente.addAttribute("errorMessage", "Username o mail già usate.");
             return "registration";
 
         } else {
-            Utente.addAttribute("successMessage", "Registrazione avvenuta con successo! Accedi.");
+            Studente.addAttribute("successMessage", "Registrazione avvenuta con successo! Accedi.");
             return "login";
         }
 

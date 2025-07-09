@@ -10,8 +10,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "Utente")
-public class Utente {
+@Table(name = "Studente")
+public class Studente {
 
     // Dati dell'account utente
     @Id

@@ -3,7 +3,7 @@ package com.sad_security.sase;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.sad_security.sase.model.Utente;
+import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.repository.UserRepository;
 
 
@@ -22,19 +22,19 @@ public class DatabaseInitializer implements CommandLineRunner {
         if (userRepository.count() == 0) {
             System.out.println("Populating database with initial data...");
 
-            Utente user1 = new Utente();
+            Studente user1 = new Studente();
             user1.setUsername("alice");
             user1.setMail("alice@example.com");
             user1.setPassword("alicepassword");
             userRepository.save(user1);
 
-            Utente user2 = new Utente();
+            Studente user2 = new Studente();
             user2.setUsername("bob");
             user2.setMail("bob@example.com");
             user2.setPassword("bobpassword");
             userRepository.save(user2);
 
-            Utente user3 = new Utente();
+            Studente user3 = new Studente();
             user3.setUsername("charlie");
             user3.setMail("charlie@example.com");
             user3.setPassword("charliepassword");
