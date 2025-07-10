@@ -19,22 +19,26 @@ public class AccountController {
     @Autowired
     private StudenteService studenteServices;
 
-    @PostMapping("/check")
-    public String controllaLogin(@RequestParam String username, @RequestParam String password, Model Studente, RedirectAttributes redirectAttributes) {
 
-        boolean success = studenteServices.autenticaStudente(username, password);
-        if (success) {
-            Studente.addAttribute("username", username);
-            redirectAttributes.addFlashAttribute("username", username);
-            return "redirect:/dashboard";
+    // CON SPRING SECURITY QUESTA FUNZIONE RISULTA INUTILE DATO CHE LUI FA TUTTI I CONTROLLI ALL'ATTO DELL'INVIO DEL FORM.
+    // controlla dati inseriti nel form di login
+    // @PostMapping("/check")
+    // public String controllaLogin(@RequestParam String username, @RequestParam String password, Model Studente, RedirectAttributes redirectAttributes) {
 
-        } else {
-            Studente.addAttribute("errorMessage", "Username o password errate.");
-            return "redirect:/login";
-        }
+    //     boolean success = studenteServices.autenticaStudente(username, password);
+    //     if (success) {
+    //         Studente.addAttribute("username", username);
+    //         redirectAttributes.addFlashAttribute("username", username);
+    //         return "redirect:/dashboard";
 
-    }
+    //     } else {
+    //         Studente.addAttribute("errorMessage", "Username o password errate.");
+    //         return "redirect:/login";
+    //     }
 
+    // }
+
+    // inserisce nuovo studente al database
     @PostMapping("/add/user")
     public String registraStudente(@RequestParam String username, @RequestParam String mail,
             @RequestParam String password, Model Studente) {

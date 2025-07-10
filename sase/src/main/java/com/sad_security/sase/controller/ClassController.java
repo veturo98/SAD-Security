@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @RestController
-@RequestMapping("/controller")
+@RequestMapping("/classe")
 public class ClassController {
     
      
-    @PostMapping("/crea-classe")
+    @PostMapping("/crea")
     public String CreazioneClasse(@RequestBody String entity) {
         //TODO: process POST request
         

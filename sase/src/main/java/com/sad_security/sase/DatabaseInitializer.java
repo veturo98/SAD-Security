@@ -4,15 +4,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.sad_security.sase.model.Studente;
-import com.sad_security.sase.repository.UserRepository;
+import com.sad_security.sase.repository.StudenteRepository;
 
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
 
-    private final UserRepository userRepository;
+    private final StudenteRepository userRepository;
 
-    public DatabaseInitializer(UserRepository userRepository) {
+    public DatabaseInitializer(StudenteRepository userRepository) {
         this.userRepository = userRepository;
     }
 

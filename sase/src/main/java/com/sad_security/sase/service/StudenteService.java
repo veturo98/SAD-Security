@@ -3,16 +3,21 @@ package com.sad_security.sase.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sad_security.sase.model.Studente;
-import com.sad_security.sase.repository.UserRepository;
+import com.sad_security.sase.repository.StudenteRepository;
 
 @Service
 public class StudenteService {
 
     @Autowired
-    private UserRepository userepository;
+    private StudenteRepository userepository;
+
+
+    @Autowired 
+    private PasswordEncoder passwordEncoder;
 
     public boolean autenticaStudente(String username, String password) {
 
@@ -49,9 +54,13 @@ public class StudenteService {
             // Creazione studente con credenziali inserite
             Studente newStudente = new Studente();
 
+
+            // creo l'hash della password prima di salvare nel database
+            String encodedPassword = passwordEncoder.encode(password);
+
             newStudente.setUsername(username);
             newStudente.setMail(mail);
-            newStudente.setPassword(password);
+            newStudente.setPassword(encodedPassword);
 
             userepository.save(newStudente);
             System.out.println("studente creato");
