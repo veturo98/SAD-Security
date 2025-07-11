@@ -7,9 +7,12 @@
 </head>
 
 <body>
+    <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></h3>
+    <h3 th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></h3>
     <div layout:fragment="content">
-        <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></h3>
-        <h3 th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></h3>
+        <div th:if="${param.error}" class="alert alert-danger" style="color: red;">
+            Credenziali non valide.
+        </div>
         <h2 class="mb-4">Login</h2>
         <form th:action="@{/login}" method="post">
             <div class="mb-3">
@@ -20,9 +23,7 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required />
             </div>
-            <div th:if="${param.error}" class="alert alert-danger">
-                Credenziali non valide.
-            </div>
+
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>

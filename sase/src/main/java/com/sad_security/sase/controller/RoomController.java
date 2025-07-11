@@ -35,50 +35,66 @@ public class RoomController {
 
         System.out.println("Sono il controller ed ho ricevuto questo" + startRoom);
 
-        return roomService.startContainerAsync(Classe,Lab,Utente);
+        return roomService.startContainerAsync(Classe, Lab, Utente);
     }
 
+    // Mappo la chiamata per l'avvio delle room
+    @PostMapping("/stop")
+    public CompletableFuture<String> stopRoom(@RequestBody stopRoomBody stopRoom) {
+
+        // Formatto i campi pre l'invio della richiesta
+
+        String Utente = stopRoom.getUtente();
+
+        System.out.println("Sono il controller ed ho ricevuto questo" + stopRoom);
+
+        return roomService.stopContainer(Utente);
+    }
 
     @PostMapping("/crea")
     public String CreazioneLaboratorio(@RequestBody String entity) {
-        //TODO: process POST request
-        
+        // TODO: process POST request
+
         return entity;
     }
-   
-    
+
     @PostMapping("/risultati/pubblica")
     public String PubblicazioneRisultati(@RequestBody String entity) {
-        //TODO: process POST request
-        
+        // TODO: process POST request
+
         return entity;
     }
-    
 
     @PostMapping("/flag")
     public String InserimentoFlag(@RequestBody String entity) {
-        //TODO: process POST request
-        
+        // TODO: process POST request
+
         return entity;
     }
-    
 
     @PostMapping("/risultati/visualizza")
     public String VisualizzazioneRisultati(@RequestBody String entity) {
-        //TODO: process POST request
-        
+        // TODO: process POST request
+
         return entity;
     }
-    
 
-    // Dichiaro la classe che contiene il corpo della room
+    // Dichiaro la classe che contiene il corpo della richiesta di avvio room
     @Data
-    @AllArgsConstructor 
-    public static class startRoomBody{
-        
+    @AllArgsConstructor
+    public static class startRoomBody {
+
         private String nomeClass;
         private String nomeLab;
         private String utente;
-        
+
+    }
+
+    // Dichiaro la classe che contiene il corpo della richiesta di stop della room
+    @Data
+    @AllArgsConstructor
+    public static class stopRoomBody {
+        private String utente;
+
     }
 }

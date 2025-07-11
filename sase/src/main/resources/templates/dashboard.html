@@ -10,53 +10,85 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            const button = document.getElementById("start-room");
+            const start = document.getElementById("start-room");
+            const stop = document.getElementById("stop-room");
             const areaRisposta = document.getElementById("areaRisposta");
             const utente = document.getElementById("user").textContent;
-            
+
             //ottenere il token generato dalla applicazione
             const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
             const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
 
 
-            button.addEventListener("click", function () {
-                
-                areaRisposta.textContent = 'Avvio in corso....' 
+            // Richiesta di avvio di un laboratorio
+            start.addEventListener("click", function () {
+
+                areaRisposta.textContent = 'Avvio in corso....'
                 // Esempio di richiesta GET semplice
-                fetch('/room/start', { method: 'POST',
-                    headers:{
-                        'Content-Type' : 'application/json',
-                         [header]: token
+                fetch('/room/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
                     },
                     body: JSON.stringify({
                         'nomeClass': 'TestClass',
                         'nomeLab': 'BufferOverflow',
                         'utente': utente
                     })
-                    
-                 })
+
+                })
                     .then(response => response.text()) // Parsa la risposta come JSON
                     .then(data => {
-                        areaRisposta.textContent = 'Dati ricevuti: ' +data;
+                        areaRisposta.textContent = 'Dati ricevuti: ' + data;
                     })
                     .catch(error => {
                         console.error('Errore durante la richiesta:', error);
                         areaRisposta.textContent = 'Errore durante l\'invio della richiesta.';
                     });
             })
+
+            // Richiesta di chiusura del laboratorio
+            stop.addEventListener("click", function () {
+
+                areaRisposta.textContent = 'Stop container in corso....'
+                // Esempio di richiesta GET semplice
+                fetch('/room/stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({
+                        'utente': utente
+                    })
+
+                })
+                    .then(response => response.text()) // Parsa la risposta come JSON
+                    .then(data => {
+                        areaRisposta.textContent = 'Dati ricevuti: ' + data;
+                    })
+                    .catch(error => {
+                        console.error('Errore durante la richiesta:', error);
+                        areaRisposta.textContent = 'Errore durante l\'invio della richiesta.';
+                    });
+
+
+            })
         })
     </script>
 </head>
 
 <body>
-    
+
     <div layout:fragment="navbar">
         <p>Benvenuto, <span id="user" th:if="${username}" th:text="${username}"></span>!</p>
     </div>
 
     <div layout:fragment="content">
         <h1>Dashboard</h1>
-        <button id="start-room">Premi qui, fammi godere</button>
+        <button id="start-room">Avvia laboratorio</button>
+        <button id="stop-room">Stop laboratorio</button>
         <div id="areaRisposta"></div> <!-- ✅ Questo è il div mancante -->
     </div>
 
