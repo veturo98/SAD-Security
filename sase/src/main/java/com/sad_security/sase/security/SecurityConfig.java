@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.sad_security.sase.filter.JwtRequestFilter;
+
 import com.sad_security.sase.service.CustomStudentDetailsService;
 
 
@@ -23,8 +23,7 @@ import com.sad_security.sase.service.CustomStudentDetailsService;
 public class SecurityConfig{
 
 
-	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
+
 
 /*  BISOGNA USARE PER FORZA QUESTA FUNZIONE DI ENCRYPTION IN QUANTO SPRING SECURITY CONFRONTA L'HASH DELLA PASSWORD
  CONSERVATA IN DATABASE E QUELLO DELLA PASSWORD INSERITA DALL'UTENTE */
@@ -37,8 +36,7 @@ public class SecurityConfig{
 
 	@Bean
 	public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
-		http.
-		csrf().disable()
+		http
 		.authorizeHttpRequests(requests -> requests.requestMatchers( "/dashboard")
 		.authenticated()
 		.anyRequest().permitAll()
@@ -49,7 +47,7 @@ public class SecurityConfig{
 		.permitAll()
 		).logout( logout -> logout.permitAll()
 		);
-		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		
 
 
 	return http.build();

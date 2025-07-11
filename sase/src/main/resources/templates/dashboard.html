@@ -3,6 +3,9 @@
     layout:decorate="~{layout}">
 
 <head>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
     <title>Sad Security</title>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -11,13 +14,19 @@
             const areaRisposta = document.getElementById("areaRisposta");
             const utente = document.getElementById("user").textContent;
             
+            //ottenere il token generato dalla applicazione
+            const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+            const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+
+
             button.addEventListener("click", function () {
                 
                 areaRisposta.textContent = 'Avvio in corso....' 
                 // Esempio di richiesta GET semplice
                 fetch('/room/start', { method: 'POST',
                     headers:{
-                        'Content-Type' : 'application/json'
+                        'Content-Type' : 'application/json',
+                         [header]: token
                     },
                     body: JSON.stringify({
                         'nomeClass': 'TestClass',
@@ -40,6 +49,7 @@
 </head>
 
 <body>
+    
     <div layout:fragment="navbar">
         <p>Benvenuto, <span id="user" th:if="${username}" th:text="${username}"></span>!</p>
     </div>
