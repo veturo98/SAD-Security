@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Accesso Negato</title>
+</head>
+
+<body>
+
+    <div layout:fragment="navbar">
+        <a href="/home">Home</a>
+        <a href="/login">Login</a>
+    </div>
+
+    <div layout:fragment="content">
+        <section style="text-align: center; margin-top: 50px;">
+            <h1 style="font-size: 2em; color: #b30000;">Accesso Negato</h1>
+            <p>Non hai i permessi necessari per accedere a questa pagina.</p>
+            <a href="/home" style="margin-top: 20px; display: inline-block; color: #0056b3;">Torna alla Home</a>
+        </section>
+    </div>
+
+</body>
+</html>

@@ -10,9 +10,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service("studenteDetailsService")
 public class StudenteService implements UserDetailsService {
 
     @Autowired
@@ -46,7 +47,7 @@ public class StudenteService implements UserDetailsService {
             Studente studente = query.get();
 
             // Se la password corrisponde allora l'studente è autenticato
-            if (studente.getPassword().equals(password))
+            if (passwordEncoder.matches(password, studente.getPassword()))
                 return true;
 
         }
@@ -75,6 +76,7 @@ public class StudenteService implements UserDetailsService {
             newStudente.setUsername(username);
             newStudente.setMail(mail);
             newStudente.setPassword(encodedPassword);
+            newStudente.setRoles(List.of("STUDENTE"));
 
             studenteRepository.save(newStudente);
             System.out.println("studente creato");

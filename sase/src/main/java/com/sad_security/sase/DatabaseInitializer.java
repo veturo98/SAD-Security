@@ -1,5 +1,7 @@
 package com.sad_security.sase;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,19 +38,21 @@ public class DatabaseInitializer implements CommandLineRunner {
             user1.setUsername("alice");
             user1.setMail("alice@example.com");
             user1.setPassword(passwordEncoder.encode("alicepassword"));
+            user1.setRoles(List.of("STUDENTE"));
             userRepository.save(user1);
 
             Studente user2 = new Studente();
             user2.setUsername("bob");
             user2.setMail("bob@example.com");
-            user2.setPassword(passwordEncoder.encode("bobpassword")
-);
+            user2.setPassword(passwordEncoder.encode("bobpassword"));
+            user2.setRoles(List.of("STUDENTE"));          
             userRepository.save(user2);
 
             Studente user3 = new Studente();
             user3.setUsername("charlie");
             user3.setMail("charlie@example.com");
             user3.setPassword(passwordEncoder.encode("charliepassword"));
+            user3.setRoles(List.of("STUDENTE"));
             userRepository.save(user3);
 
             System.out.println("Students added.");
@@ -64,12 +68,14 @@ public class DatabaseInitializer implements CommandLineRunner {
             prof1.setUsername("fasolino");
             prof1.setMail("fasolino@unina.it");
             prof1.setPassword(passwordEncoder.encode("fasolinopassword"));
+            
             profRepository.save(prof1);
 
             Professore prof2 = new Professore();
-            prof1.setUsername("natella");
-            prof1.setMail("natella@unina.it");
-            prof1.setPassword(passwordEncoder.encode("natellapassword"));
+            prof2.setUsername("natella");
+            prof2.setMail("natella@unina.it");
+            prof2.setPassword(passwordEncoder.encode("natellapassword"));
+            prof1.setRoles(List.of("PROFESSORE"));
             profRepository.save(prof2);
 
             System.out.println("Prof added.");

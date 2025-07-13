@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title>Sad Security</title>
+</head>
+
+<body>
+    <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></h3>
+    <h3 th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></h3>
+    <div layout:fragment="content">
+        <div th:if="${param.error}" class="alert alert-danger" style="color: red;">
+            Credenziali non valide.
+        </div>
+        <h2 class="mb-4">Login professore</h2>
+        <form th:action="@{/professore/login}" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required />
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+</body>

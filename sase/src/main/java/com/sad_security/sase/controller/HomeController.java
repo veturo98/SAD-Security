@@ -3,6 +3,10 @@ package com.sad_security.sase.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
+
+import java.security.Principal;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 @Controller
@@ -16,6 +20,11 @@ public class HomeController {
     @GetMapping("/login")
     public String getLogin() {
         return "login";
+    }
+
+    @GetMapping("/professore/login")
+    public String getLoginProfessore() {
+        return "loginProfessore";
     }
 
     @GetMapping("/home")
@@ -39,5 +48,21 @@ public class HomeController {
         return "dashboard";
     }
     
+     @GetMapping("/professore/profDashboard")
+    public String getadminDashboard(Model model, Authentication authentication) {
+         
+        if (authentication != null) {
+            String username = authentication.getName(); // Ottieni l'username dell'utente autenticato
+            model.addAttribute("username", username); // Aggiungi l'username al modello per Thymeleaf
+        }
+        
+        return "profDashboard";
+    }
+
+
+    @GetMapping("/accessDenied")
+    public String accessDenied() {
+        return "accessDenied";
+    } 
 
 }

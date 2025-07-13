@@ -1,58 +1,103 @@
 package com.sad_security.sase.security;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 
-
-
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig{
+public class SecurityConfig {
 
-
-
-
-/*  BISOGNA USARE PER FORZA QUESTA FUNZIONE DI ENCRYPTION IN QUANTO SPRING SECURITY CONFRONTA L'HASH DELLA PASSWORD
- CONSERVATA IN DATABASE E QUELLO DELLA PASSWORD INSERITA DALL'UTENTE */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Usa BCryptPasswordEncoder
+        return new BCryptPasswordEncoder();
     }
- 
 
+    //AuthenticationProvider per professori
+    @Bean
+    public DaoAuthenticationProvider professoreAuthenticationProvider(
+            @Qualifier("professoreDetailsService") UserDetailsService professoreDetailsService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(professoreDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
-	@Bean
-	public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
-		http
-		.authorizeHttpRequests(requests -> requests.requestMatchers( "/dashboard")
-		.authenticated()
-		.anyRequest().permitAll()
-		)
-		.formLogin( form -> form.loginPage("/login")
-		.defaultSuccessUrl("/dashboard", true)
-		.failureUrl("/login?error")
-		.permitAll()
-		).logout( logout -> logout.permitAll()
-		);
-		
+    //AuthenticationProvider per studenti
+    @Bean
+    public DaoAuthenticationProvider studenteAuthenticationProvider(
+            @Qualifier("studenteDetailsService") UserDetailsService studenteDetailsService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(studenteDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
+    //AuthenticationManager che gestisce entrambi
+    @Bean
+    public AuthenticationManager authenticationManager(
+            DaoAuthenticationProvider professoreAuthenticationProvider,
+            DaoAuthenticationProvider studenteAuthenticationProvider) {
+        return new ProviderManager(List.of(professoreAuthenticationProvider, studenteAuthenticationProvider));
+    }
 
-	return http.build();
-	}
+    //Sicurezza per professore
+    @Bean
+    public SecurityFilterChain professoreFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/professore/**")
+            .authorizeHttpRequests(auth -> auth
+                // .requestMatchers("/professore/login", "/professore/profDashboard")
+                .anyRequest().hasRole("PROFESSORE")
+            )
+            .formLogin(form -> form
+                .loginPage("/professore/login")
+                .defaultSuccessUrl("/professore/profDashboard", true)
+                .failureUrl("/professore/login?error")
+                .permitAll()
+            )
+            .exceptionHandling(exception -> exception.accessDeniedPage("/accessDenied"))
+            .logout(logout -> logout.permitAll());
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
+        return http.build();
+    }
 
-		return authenticationConfiguration.getAuthenticationManager();
-		
+    // Sicurezza per studente
+   @Bean
+public SecurityFilterChain studenteFilterChain(HttpSecurity http) throws Exception {
+    http
+        .securityMatcher("/login","/dashboard")  
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/dashboard").hasRole("STUDENTE")
+            .anyRequest()
+            .authenticated()
+            
+        )
+        .formLogin(form -> form
+            .loginPage("/login")
+			.loginProcessingUrl("/login")
+            .defaultSuccessUrl("/dashboard", true)
+            .failureUrl("/login?error")
+            .permitAll()
+        )
+        .exceptionHandling(exception -> exception.accessDeniedPage("/accessDenied"))
+        .logout(logout -> logout.permitAll());
 
-	}
+    return http.build();
+}
 }
