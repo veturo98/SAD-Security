@@ -1,5 +1,6 @@
 package com.sad_security.sase.service;
 
+import com.sad_security.sase.model.Professore;
 import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.repository.StudenteRepository;
 
@@ -39,22 +40,18 @@ public class StudenteService implements UserDetailsService {
 
     public boolean autenticaStudente(String username, String password) {
 
-        // Faccio la query per controllare se esiste l'studente
-        Optional<Studente> query = studenteRepository.findByUsername(username);
+        Studente studente = studenteRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("Nome studente non trovato"));
 
-        // Se lo studente è presente effettuo i controlli
-        if (query.isPresent()) {
-            Studente studente = query.get();
-
-            // Se la password corrisponde allora lo studente è autenticato
-            if (passwordEncoder.matches(password, studente.getPassword()))
-                return true;
-
-        }
-
-        return false;
+        // Verifica la vecchia password
+    if (!passwordEncoder.matches(password, studente.getPassword())) {
+        return false; // password errata
+    }
+    return true;
     }
 
+
+    
     public boolean aggiungiStudente(String username, String password, String mail) {
 
         // Cerco se l'studente esiste già (mail o username già utilizzato)

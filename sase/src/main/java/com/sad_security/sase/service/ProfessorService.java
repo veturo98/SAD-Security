@@ -7,23 +7,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.*;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.sad_security.sase.model.Professore;
+import com.sad_security.sase.model.Room;
 import com.sad_security.sase.repository.ProfessoreRepository;
 
 @Service("professoreDetailsService")
 public class ProfessorService implements UserDetailsService {
     
- @Autowired
+    @Autowired
     private ProfessoreRepository professoreRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+
+    //Funzione chiamata da springSecurity durante il login del professore 
        @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     Optional<Professore> optionalprofessore = professoreRepository.findByUsername(username);
         if (optionalprofessore.isEmpty()) {
-            throw new UsernameNotFoundException("Studente non trovato");
+            throw new UsernameNotFoundException("professore non trovato");
         }
 
         Professore professore = optionalprofessore.get();
@@ -34,23 +39,38 @@ public class ProfessorService implements UserDetailsService {
                 .build();
     }
 
-    public boolean autentica(String username, String password) {
 
-        // Faccio la query per controllare se esiste il professore
-        Optional<Professore> query = professoreRepository.findByUsername(username);
+    //Controlla che esiste la password nel database
+    public boolean checkpassowrd(String password, String username) {
 
-        // Se il professore è presente effettuo i controlli
-        if (query.isPresent()) {
-            Professore studente = query.get();
+        Professore professore = professoreRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("Nome Professore non trovato"));
 
-            // Se la password corrisponde allora l'studente è autenticato
-            if (studente.getPassword().equals(password))
-                return true;
+        // Verifica la vecchia password
+    if (!passwordEncoder.matches(password, professore.getPassword())) {
+        return false; // password errata
 
-        }
 
-        return false;
+    }
+    // Aggiorna la nuova password
+    // professore.setPassword(passwordEncoder.encode(password));
+    // professoreRepository.save(professore);
+
+    return true;
     }
 
+    public boolean cambiaPasswordProfessore(String username,String oldpassword, String newpassword) {
+    
+        Optional<Professore> optional = professoreRepository.findByUsername(username);
+        Boolean controllocredenziali = checkpassowrd(oldpassword, username);
+    if (optional.isPresent() && controllocredenziali) {
+        
+        Professore professore = optional.get();
+        professore.setPassword(passwordEncoder.encode(newpassword));
+        professoreRepository.save(professore);
+        return true;
+    }
+    return false;
+}
 
 }

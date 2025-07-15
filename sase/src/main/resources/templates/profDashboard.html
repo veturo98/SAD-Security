@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layoutDashboard}">
 
 <head>
     <title>Sad Security - Home</title>
@@ -9,10 +9,6 @@
     </head>
 
 <body>
-    <div layout:fragment="navbar">
-        <a href="/registrati">Registrati</a>
-        <a href="/login">Login</a>
-    </div>
 
     <main layout:fragment="content" class="home-layout">
         <div class="sidebar">
@@ -27,8 +23,8 @@
 
             <div class="sidebar-settings">
                 <h3>Impostazioni</h3>
-                <button>cambio password</button>
-                <button>logout</button>
+                <button class="sidebar-item" data-option="Cambia Password">cambio password</button>
+                <button class="sidebar-item" data-option="Logout">logout</button>
             </div>
         </div>
 

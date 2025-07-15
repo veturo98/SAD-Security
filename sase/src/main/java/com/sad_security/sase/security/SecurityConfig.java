@@ -60,7 +60,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain professoreFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/professore/**", "/classe/crea")
+            .securityMatcher("/professore/**", "/classe/crea", "/account/professore/**" )
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().hasRole("PROFESSORE")
             )
