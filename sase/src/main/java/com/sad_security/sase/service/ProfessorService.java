@@ -5,9 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.*;
 
@@ -24,16 +21,25 @@ public class ProfessorService implements UserDetailsService {
 
        @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return professoreRepository.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("Professore non trovato"));
+    Optional<Professore> optionalprofessore = professoreRepository.findByUsername(username);
+        if (optionalprofessore.isEmpty()) {
+            throw new UsernameNotFoundException("Studente non trovato");
+        }
+
+        Professore professore = optionalprofessore.get();
+
+        return User.withUsername(professore.getUsername())
+                .password(professore.getPassword())
+                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_PROFESSORE")))
+                .build();
     }
 
     public boolean autentica(String username, String password) {
 
-        // Faccio la query per controllare se esiste l'studente
+        // Faccio la query per controllare se esiste il professore
         Optional<Professore> query = professoreRepository.findByUsername(username);
 
-        // Se l'studente è presente effettuo i controlli
+        // Se il professore è presente effettuo i controlli
         if (query.isPresent()) {
             Professore studente = query.get();
 

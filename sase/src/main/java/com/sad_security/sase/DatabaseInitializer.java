@@ -38,21 +38,18 @@ public class DatabaseInitializer implements CommandLineRunner {
             user1.setUsername("alice");
             user1.setMail("alice@example.com");
             user1.setPassword(passwordEncoder.encode("alicepassword"));
-            user1.setRoles(List.of("STUDENTE"));
             userRepository.save(user1);
 
             Studente user2 = new Studente();
             user2.setUsername("bob");
             user2.setMail("bob@example.com");
-            user2.setPassword(passwordEncoder.encode("bobpassword"));
-            user2.setRoles(List.of("STUDENTE"));          
+            user2.setPassword(passwordEncoder.encode("bobpassword"));       
             userRepository.save(user2);
 
             Studente user3 = new Studente();
             user3.setUsername("charlie");
             user3.setMail("charlie@example.com");
             user3.setPassword(passwordEncoder.encode("charliepassword"));
-            user3.setRoles(List.of("STUDENTE"));
             userRepository.save(user3);
 
             System.out.println("Students added.");
@@ -75,7 +72,6 @@ public class DatabaseInitializer implements CommandLineRunner {
             prof2.setUsername("natella");
             prof2.setMail("natella@unina.it");
             prof2.setPassword(passwordEncoder.encode("natellapassword"));
-            prof1.setRoles(List.of("PROFESSORE"));
             profRepository.save(prof2);
 
             System.out.println("Prof added.");

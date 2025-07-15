@@ -42,11 +42,11 @@ public class StudenteService implements UserDetailsService {
         // Faccio la query per controllare se esiste l'studente
         Optional<Studente> query = studenteRepository.findByUsername(username);
 
-        // Se l'studente è presente effettuo i controlli
+        // Se lo studente è presente effettuo i controlli
         if (query.isPresent()) {
             Studente studente = query.get();
 
-            // Se la password corrisponde allora l'studente è autenticato
+            // Se la password corrisponde allora lo studente è autenticato
             if (passwordEncoder.matches(password, studente.getPassword()))
                 return true;
 
@@ -76,7 +76,7 @@ public class StudenteService implements UserDetailsService {
             newStudente.setUsername(username);
             newStudente.setMail(mail);
             newStudente.setPassword(encodedPassword);
-            newStudente.setRoles(List.of("STUDENTE"));
+            // newStudente.setRoles(List.of("STUDENTE"));
 
             studenteRepository.save(newStudente);
             System.out.println("studente creato");

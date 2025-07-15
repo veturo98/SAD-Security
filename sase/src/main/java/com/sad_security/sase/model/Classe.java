@@ -22,4 +22,5 @@ public class Classe {
     @Column(name = "studente")
     private String studente;
 
+    
 }

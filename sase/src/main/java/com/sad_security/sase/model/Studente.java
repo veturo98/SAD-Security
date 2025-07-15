@@ -40,14 +40,10 @@ public class Studente  implements UserDetails{
     private String password;
 
 
-     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles = new ArrayList<>();
-
        @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-            .collect(Collectors.toList());
+        // Restituisce un ruolo fisso per tutti gli studenti
+        return List.of(new SimpleGrantedAuthority("ROLE_STUDENTE"));
     }
 
         

@@ -1,100 +1,50 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
 <head>
+    <title>Sad Security - Home</title>
+
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-
-    <title>Sad Security</title>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-
-            const start = document.getElementById("start-room");
-            const stop = document.getElementById("stop-room");
-            const areaRisposta = document.getElementById("areaRisposta");
-            const utente = document.getElementById("user").textContent;
-
-            //ottenere il token generato dalla applicazione
-            const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
-            const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
-
-
-            // Richiesta di avvio di un laboratorio
-            start.addEventListener("click", function () {
-
-                areaRisposta.textContent = 'Avvio in corso....'
-                // Esempio di richiesta GET semplice
-                fetch('/room/start', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        [header]: token
-                    },
-                    body: JSON.stringify({
-                        'nomeClass': 'TestClass',
-                        'nomeLab': 'BufferOverflow',
-                        'utente': utente
-                    })
-
-                })
-                    .then(response => response.text()) // Parsa la risposta come JSON
-                    .then(data => {
-                        areaRisposta.textContent = 'Dati ricevuti: ' + data;
-                    })
-                    .catch(error => {
-                        console.error('Errore durante la richiesta:', error);
-                        areaRisposta.textContent = 'Errore durante l\'invio della richiesta.';
-                    });
-            })
-
-            // Richiesta di chiusura del laboratorio
-            stop.addEventListener("click", function () {
-
-                areaRisposta.textContent = 'Stop container in corso....'
-                // Esempio di richiesta GET semplice
-                fetch('/room/stop', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        [header]: token
-                    },
-                    body: JSON.stringify({
-                        'utente': utente
-                    })
-
-                })
-                    .then(response => response.text()) // Parsa la risposta come JSON
-                    .then(data => {
-                        areaRisposta.textContent = 'Dati ricevuti: ' + data;
-                    })
-                    .catch(error => {
-                        console.error('Errore durante la richiesta:', error);
-                        areaRisposta.textContent = 'Errore durante l\'invio della richiesta.';
-                    });
-
-
-            })
-        })
-    </script>
-</head>
+    </head>
 
 <body>
-
     <div layout:fragment="navbar">
-        <p>Benvenuto, professore <span id="user" th:if="${username}" th:text="${username}"></span>!</p>
+        <a href="/registrati">Registrati</a>
+        <a href="/login">Login</a>
     </div>
 
-    <div layout:fragment="content">
-        <h1>admin Dashboard</h1>
-        <button id="start-room">Avvia laboratorio</button>
-        <button id="stop-room">Stop laboratorio</button>
-        <div id="areaRisposta"></div> <!-- ✅ Questo è il div mancante -->
-    </div>
+    <main layout:fragment="content" class="home-layout">
+        <div class="sidebar">
+            <h2>Operazioni Disponibili</h2>
+            <ul>
+                <li><a href="#" class="sidebar-item" data-option="CreaClasse">Crea Nuova Classe</a></li>
+                <li><a href="#" class="sidebar-item" data-option="CreaLaboratorio">Crea laboratorio</a></li>
+                <li><a href="#" class="sidebar-item" data-option="Aggiungi studente">Aggiungi studente</a></li>
+                <li><a href="#" class="sidebar-item" data-option="Conferma Richieste">Conferma Richieste</a></li>
+                <li><a href="#" class="sidebar-item" data-option="Pubblica risultati">Pubblica risultati</a></li>
+            </ul>
 
-    <div>
-        <!-- CONTENUTO DELLA ROOM-->
-    </div>
+            <div class="sidebar-settings">
+                <h3>Impostazioni</h3>
+                <button>cambio password</button>
+                <button>logout</button>
+            </div>
+        </div>
+
+        <div class="content-display">
+            <h1 id="Section-title">Seleziona una Operazione</h1>
+            <div id="section-description">
+                <p>Benvenuto nella piattaforma Sad Security. Seleziona una delle operazioni disponibili dalla barra laterale sinistra per visualizzarne i dettagli e le istruzioni.</p>
+                <p>Qui potrai trovare descrizioni dettagliate e informazioni relative all'operazione selezionata.</p>
+            </div>
+        </div>
+    </main>
+
+    <th:block layout:fragment="scripts">
+        <script th:src="@{/js/home.js}"></script>
+    </th:block>
+
 </body>
 
 </html>
