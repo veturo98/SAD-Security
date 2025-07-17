@@ -13,7 +13,7 @@ import com.sad_security.sase.model.RoomClasse;
 @Repository
 public interface RoomClasseRepository extends JpaRepository<RoomClasse, Long>{
     
-    Optional<RoomClasse> findByClasseAndRoom(Optional<Classe> classe, Optional<Room> room);
+    Optional<RoomClasse> findByClasseAndRoom(String classe, String room);
     List<RoomClasse> findByClasse(String classe);
     
 }                        

@@ -35,8 +35,7 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    @Autowired
-    private ClassService classService;
+  
 
     // Mappo la chiamata per l'avvio delle room
     @PostMapping("/studente/start")
@@ -95,14 +94,9 @@ public class RoomController {
             // Salva la room nel database
             roomService.aggiungiRoom(roomName);
 
-            // preparo gli oggetti che servono per salvare l'associazione nel db
-            // non faccio controlli partiolari su room e class perché sono sicuro che
-            // esistono
-            Optional<Classe> cl = classService.cercaClasse(classeNome);
-            Optional<Room> rm = roomService.cercaRoom(roomName);
-
+         
             // salvare l'associazione
-            boolean associazione = roomService.aggiungiassociazione(cl, rm);
+            boolean associazione = roomService.aggiungiassociazione(classeNome, roomName);
             if (associazione) {
                 response.put("message", "L'associazione tra questa classe e room è già stata fatta ");
                 response.put("type", "error");
@@ -127,23 +121,27 @@ public class RoomController {
         return response;
     }
 
+    ///////////////////////////////
+    // COMMENTATO PERCHé DUPLICATO NON SO COSA FARE 
     // utile per ottenere tutte le room presenti nel DB
-    @GetMapping("/professore/checkroom")
-    @ResponseBody
-    public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
 
-        boolean exists = roomService.checkRoom(roomName);
-        Map<String, String> response = new HashMap<>();
-        if (exists) {
-            response.put("message", "La room esiste già");
-            response.put("type", "error");
-        } else {
-            response.put("message", "Nome room disponibile");
-            response.put("type", "success");
-        }
+    ///////////////////////////////
+    // @GetMapping("/professore/checkroom")
+    // @ResponseBody
+    // public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
 
-        return response;
-    }
+    //     boolean exists = roomService.checkRoom(roomName);
+    //     Map<String, String> response = new HashMap<>();
+    //     if (exists) {
+    //         response.put("message", "La room esiste già");
+    //         response.put("type", "error");
+    //     } else {
+    //         response.put("message", "Nome room disponibile");
+    //         response.put("type", "success");
+    //     }
+
+    //     return response;
+    // }
 
     @GetMapping("/studente/checkroom")
     @ResponseBody

@@ -130,23 +130,23 @@ public class RoomService {
     }
 
     public boolean getRoomList(String classe) {
+    // Cerco se la room è stata già creata
+    List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
 
-        // Cerco se la roomè stata già creata
-        List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
+    List<String> roomNames = roomList.stream()
+                                     .map(RoomClasse::getRoom)
+                                     .collect(Collectors.toList());
 
-        List<String> roomNames = roomList.stream()
-                .map(RoomClasse::getRoomName) // o .map(r -> r.getRoomName())
-                .collect(Collectors.toList());
-
-        // Se la room esiste non faccio niente
-        if (roomName.isPresent()) {
-            System.out.println("la room esiste già");
-            return true;
-        } else {
-            System.out.println("la room non esiste");
-            return false;
-        }
+    // Se esistono room, restituisco true
+    if (!roomNames.isEmpty()) {
+        System.out.println("La room esiste già");
+        return true;
+    } else {
+        System.out.println("La room non esiste");
+        return false;
     }
+}
+
 
     public CompletableFuture<String> createRoom(String roomName, MultipartFile yamlFile) {
         try {
@@ -178,7 +178,7 @@ public class RoomService {
     @Autowired
     private RoomClasseRepository roomClasseRepository;
 
-    public boolean aggiungiassociazione(Optional<Classe> classe, Optional<Room> room) {
+    public boolean aggiungiassociazione(String classe, String room) {
         // Cerco se l'associazione
         Optional<RoomClasse> roomClass = roomClasseRepository.findByClasseAndRoom(classe, room);
         // Se la classe esiste non faccio niente
@@ -189,8 +189,8 @@ public class RoomService {
 
             // Creazione associazione
             RoomClasse rc = new RoomClasse();
-            rc.setClasse(classe.get());
-            rc.setRoom(room.get());
+            rc.setClasse(classe);
+            rc.setRoom(room);
 
             roomClasseRepository.save(rc);
             System.out.println("Associazione room class creata");

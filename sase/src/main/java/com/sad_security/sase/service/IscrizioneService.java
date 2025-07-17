@@ -19,17 +19,17 @@ public class IscrizioneService {
     private IscrizioneRepository iscrizioneRepository;
 
 
-    public void aggiungiIscrizione (Optional <Studente> studente, Optional<Classe> classe){
+    public void aggiungiIscrizione (String studente, String classe){
 
-        Optional <Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente.get(), classe.get());
+        Optional <Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);
 
         if (iscrizione.isPresent()){
             System.out.println("l'utente è già iscritto");
            
         }
         Iscrizione iscriviti = new Iscrizione();
-        iscriviti.setStudente(studente.get());
-        iscriviti.setClasse(classe.get());
+        iscriviti.setStudente(studente);
+        iscriviti.setClasse(classe);
 
         iscrizioneRepository.save(iscriviti);
         System.out.println("l'utente si è iscritto alla classe");
@@ -37,9 +37,9 @@ public class IscrizioneService {
     }
 
 
-    public boolean controllaIscrizione (Optional <Studente> studente, Optional<Classe> classe){
+    public boolean controllaIscrizione (String studente, String classe){
 
-        Optional <Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente.get(), classe.get());
+        Optional <Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);
 
         if (iscrizione.isPresent()){
             System.out.println("l'utente è già iscritto");
@@ -51,11 +51,11 @@ public class IscrizioneService {
 
     
     // Restituisce lista di nomi di classi a cui l'utente è iscritto
-    public List<String> getNomiClassiIscritte(Studente studente) {
-        List<Iscrizione> iscrizioni = iscrizioneRepository.findByStudente(studente);
-        return iscrizioni.stream()
-                         .map(iscrizione -> iscrizione.getClasse().getNome()) 
-                         .collect(Collectors.toList());
-    }
+  public List<String> getNomiClassiIscritte(String studente) {
+    List<Iscrizione> iscrizioni = iscrizioneRepository.findByStudente(studente);
+    return iscrizioni.stream()
+                     .map(Iscrizione::getClasse) // non getClasse().getNome()!
+                     .collect(Collectors.toList());
+}
 
 }

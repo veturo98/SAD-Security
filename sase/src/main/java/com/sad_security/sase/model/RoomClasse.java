@@ -13,11 +13,11 @@ public class RoomClasse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    
     @JoinColumn(name = "classe") // perché "nome" è la @Id di Classe
     private String classe;
 
-    @ManyToOne
+    
     @JoinColumn(name = "room") // supponiamo che Room abbia @Id Long id
     private String room;
 }

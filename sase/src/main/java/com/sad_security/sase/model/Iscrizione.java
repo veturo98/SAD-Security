@@ -23,11 +23,11 @@ public class Iscrizione {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long iscrizioneId;
 
-    @ManyToOne
+   
     @JoinColumn(name = "studente", nullable = false)
     private String studente;
 
-    @ManyToOne
+    
     @JoinColumn(name = "classe", nullable = false)
     private String classe;
 }

@@ -12,11 +12,11 @@ public class RoomAvviata {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+   
     @JoinColumn(name = "Utente") // identifiativo dell'utente
     private String studente;
 
-    @ManyToOne
+    
     @JoinColumn(name = "Room") // identifiativo della room
     private String room;
 }
