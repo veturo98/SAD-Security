@@ -115,7 +115,7 @@
     <div class="sidebar">
         <h2>Operazioni Disponibili</h2>
         <ul id="student-sidebar-options">
-            <li><a href="#" class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</a></li>
+            <!-- <li><a href="#" class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</a></li> -->
             
             <!-- Qui verranno aggiunte dinamicamente nuove voci -->
             <li th:each="classe : ${classiUtente}" th:if="${classiUtente != null}">
@@ -125,8 +125,9 @@
 
         <div class="sidebar-settings">
             <h3>Impostazioni</h3>
+            <button class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</button>
             <button class="sidebar-item" data-option="Cambia Password">Cambia Password</button>
-            <button class="sidebar-item" data-option="Logout">logout</button>
+            <button class="sidebar-item" data-option="Logout">Logout</button>
         </div>
     </div>
 

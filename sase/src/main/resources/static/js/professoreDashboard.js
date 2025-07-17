@@ -409,7 +409,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         Logout: {
             title: "Logout applicazione ",
-            desc: `Esci dalla webapp</p>
+            desc: `<p>Esci dalla webapp</p>
                 `
 
         }
@@ -452,7 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         confermaPasswordRealtime(); //controlla le nuove password
                     }, 0);
                 } else if (key === "Logout") {
-                    console
+                    
                     descEl.innerHTML = content[key].desc;
                     logoutUser();
                 }
