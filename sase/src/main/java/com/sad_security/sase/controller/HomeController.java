@@ -4,9 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
 
-import java.security.Principal;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 @Controller

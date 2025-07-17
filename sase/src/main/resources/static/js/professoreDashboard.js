@@ -39,66 +39,66 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-  // ottiene le classi dal db
+    // ottiene le classi dal db
     function caricaClassiNelSelect(selectId) {
-    const select = document.getElementById(selectId);
-    if (!select) {
-        console.warn(`Elemento select con ID '${selectId}' non trovato.`);
-        return;
-    }
-
-    // Recupera i token CSRF da Spring Security (meta tag)
-    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-
-    fetch('/classe/getClassi', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Errore nella risposta del server");
-        }
-        return response.json(); // solo UNA volta
-    })
-    .then(classNames => {
-        select.innerHTML = '';
-
-        if (!Array.isArray(classNames) || classNames.length === 0) {
-            const option = document.createElement('option');
-            option.disabled = true;
-            option.selected = true;
-            option.textContent = 'Nessuna classe disponibile';
-            select.appendChild(option);
+        const select = document.getElementById(selectId);
+        if (!select) {
+            console.warn(`Elemento select con ID '${selectId}' non trovato.`);
             return;
         }
 
-        const defaultOption = document.createElement('option');
-        defaultOption.disabled = true;
-        defaultOption.selected = true;
-        defaultOption.textContent = 'Seleziona una classe';
-        select.appendChild(defaultOption);
+        // Recupera i token CSRF da Spring Security (meta tag)
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
-        classNames.forEach(nome => {
-            const option = document.createElement('option');
-            option.value = nome;
-            option.textContent = nome;
-            select.appendChild(option);
-        });
-    })
-    .catch(error => {
-        console.error("Errore durante il caricamento delle classi:", error);
-        select.innerHTML = '';
-        const option = document.createElement('option');
-        option.disabled = true;
-        option.selected = true;
-        option.textContent = 'Errore nel caricamento';
-        select.appendChild(option);
-    });
-}
+        fetch('/classe/getClassi', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Errore nella risposta del server");
+                }
+                return response.json(); // solo UNA volta
+            })
+            .then(classNames => {
+                select.innerHTML = '';
+
+                if (!Array.isArray(classNames) || classNames.length === 0) {
+                    const option = document.createElement('option');
+                    option.disabled = true;
+                    option.selected = true;
+                    option.textContent = 'Nessuna classe disponibile';
+                    select.appendChild(option);
+                    return;
+                }
+
+                const defaultOption = document.createElement('option');
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                defaultOption.textContent = 'Seleziona una classe';
+                select.appendChild(defaultOption);
+
+                classNames.forEach(nome => {
+                    const option = document.createElement('option');
+                    option.value = nome;
+                    option.textContent = nome;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Errore durante il caricamento delle classi:", error);
+                select.innerHTML = '';
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.selected = true;
+                option.textContent = 'Errore nel caricamento';
+                select.appendChild(option);
+            });
+    }
 
 
 
@@ -136,7 +136,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Crea laboratorio
-   
     function CreaLaboratorio() {
         const form = document.getElementById("create-lab-form");
 
@@ -452,7 +451,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         confermaPasswordRealtime(); //controlla le nuove password
                     }, 0);
                 } else if (key === "Logout") {
-                    
+
                     descEl.innerHTML = content[key].desc;
                     logoutUser();
                 }

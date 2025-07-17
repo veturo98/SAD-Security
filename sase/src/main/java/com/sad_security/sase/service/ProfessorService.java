@@ -10,23 +10,21 @@ import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.sad_security.sase.model.Professore;
-import com.sad_security.sase.model.Room;
 import com.sad_security.sase.repository.ProfessoreRepository;
 
 @Service("professoreDetailsService")
 public class ProfessorService implements UserDetailsService {
-    
+
     @Autowired
     private ProfessoreRepository professoreRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-    //Funzione chiamata da springSecurity durante il login del professore 
-       @Override
+    // Funzione chiamata da springSecurity durante il login del professore
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Optional<Professore> optionalprofessore = professoreRepository.findByUsername(username);
+        Optional<Professore> optionalprofessore = professoreRepository.findByUsername(username);
         if (optionalprofessore.isEmpty()) {
             throw new UsernameNotFoundException("professore non trovato");
         }
@@ -39,38 +37,36 @@ public class ProfessorService implements UserDetailsService {
                 .build();
     }
 
-
-    //Controlla che esiste la password nel database
+    // Controlla che esiste la password nel database
     public boolean checkpassowrd(String password, String username) {
 
         Professore professore = professoreRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Nome Professore non trovato"));
+                .orElseThrow(() -> new UsernameNotFoundException("Nome Professore non trovato"));
 
         // Verifica la vecchia password
-    if (!passwordEncoder.matches(password, professore.getPassword())) {
-        return false; // password errata
+        if (!passwordEncoder.matches(password, professore.getPassword())) {
+            return false; // password errata
 
+        }
+        // Aggiorna la nuova password
+        // professore.setPassword(passwordEncoder.encode(password));
+        // professoreRepository.save(professore);
 
-    }
-    // Aggiorna la nuova password
-    // professore.setPassword(passwordEncoder.encode(password));
-    // professoreRepository.save(professore);
-
-    return true;
-    }
-
-    public boolean cambiaPasswordProfessore(String username,String oldpassword, String newpassword) {
-    
-        Optional<Professore> optional = professoreRepository.findByUsername(username);
-        Boolean controllocredenziali = checkpassowrd(oldpassword, username);
-    if (optional.isPresent() && controllocredenziali) {
-        
-        Professore professore = optional.get();
-        professore.setPassword(passwordEncoder.encode(newpassword));
-        professoreRepository.save(professore);
         return true;
     }
-    return false;
-}
+
+    public boolean cambiaPasswordProfessore(String username, String oldpassword, String newpassword) {
+
+        Optional<Professore> optional = professoreRepository.findByUsername(username);
+        Boolean controllocredenziali = checkpassowrd(oldpassword, username);
+        if (optional.isPresent() && controllocredenziali) {
+
+            Professore professore = optional.get();
+            professore.setPassword(passwordEncoder.encode(newpassword));
+            professoreRepository.save(professore);
+            return true;
+        }
+        return false;
+    }
 
 }

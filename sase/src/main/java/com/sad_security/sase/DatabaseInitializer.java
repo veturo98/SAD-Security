@@ -1,6 +1,5 @@
 package com.sad_security.sase;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

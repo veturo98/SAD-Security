@@ -3,11 +3,9 @@ package com.sad_security.sase.controller;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sad_security.sase.model.Classe;
 import com.sad_security.sase.model.Room;
 import com.sad_security.sase.service.ClassService;
-import com.sad_security.sase.service.RoomClasseService;
 import com.sad_security.sase.service.RoomService;
 
 import lombok.AllArgsConstructor;
@@ -41,13 +38,8 @@ public class RoomController {
     @Autowired
     private ClassService classService;
 
-    @Autowired
-    private RoomClasseService roomClasseService;
-
-
-
     // Mappo la chiamata per l'avvio delle room
-    @PostMapping("/start")
+    @PostMapping("/studente/start")
     public CompletableFuture<String> startRoom(@RequestBody startRoomBody startRoom) {
 
         // Formatto i campi pre l'invio della richiesta
@@ -61,7 +53,7 @@ public class RoomController {
     }
 
     // Mappo la chiamata per l'avvio delle room
-    @PostMapping("/stop")
+    @PostMapping("/studente/stop")
     public CompletableFuture<String> stopRoom(@RequestBody stopRoomBody stopRoom) {
 
         // Formatto i campi pre l'invio della richiesta
@@ -74,65 +66,69 @@ public class RoomController {
     }
 
     // Il professore crea un nuovo laboratorio
-    @PostMapping("/creaLaboratorio")
+    @PostMapping("/professore/creaLaboratorio")
     @ResponseBody
     public Map<String, String> creaLaboratorio(
-        @RequestParam("classeId") String classeNome,
-        @RequestParam("room") String roomName,
-        @RequestParam("yamlFile") MultipartFile yamlFile) {
+            @RequestParam("classeId") String classeNome,
+            @RequestParam("room") String roomName,
+            @RequestParam("yamlFile") MultipartFile yamlFile) {
 
-    Map<String, String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
-    try {
+        try {
             // Verifica che il file non sia vuoto e sia YAML
-        if (yamlFile.isEmpty() || 
-            (!yamlFile.getOriginalFilename().endsWith(".yaml") && 
-             !yamlFile.getOriginalFilename().endsWith(".yml"))) {
-            response.put("message", "File non valido. Deve essere un file .yaml o .yml");
+            String originalFilename = yamlFile.getOriginalFilename();
+
+            if (yamlFile.isEmpty() ||
+                    originalFilename == null ||
+                    (!originalFilename.endsWith(".yaml") &&
+                            !originalFilename.endsWith(".yml"))) {
+                response.put("message", "File non valido. Deve essere un file .yaml o .yml");
+                response.put("type", "error");
+                return response;
+            }
+
+            // Leggi il contenuto YAML (opzionale, a seconda di cosa ti serve)
+            String yamlContent = new String(yamlFile.getBytes(), StandardCharsets.UTF_8);
+            System.out.println("Contenuto YAML:\n" + yamlContent);
+
+            // Salva la room nel database
+            roomService.aggiungiRoom(roomName);
+
+            // preparo gli oggetti che servono per salvare l'associazione nel db
+            // non faccio controlli partiolari su room e class perché sono sicuro che
+            // esistono
+            Optional<Classe> cl = classService.cercaClasse(classeNome);
+            Optional<Room> rm = roomService.cercaRoom(roomName);
+
+            // salvare l'associazione
+            boolean associazione = roomService.aggiungiassociazione(cl, rm);
+            if (associazione) {
+                response.put("message", "L'associazione tra questa classe e room è già stata fatta ");
+                response.put("type", "error");
+                return response;
+            }
+
+            // service per inviare dati al backend
+            roomService.createRoom(classeNome, roomName, yamlFile);
+
+            response.put("message", "Laboratorio creato con successo.");
+            response.put("type", "success");
+        } catch (IOException e) {
+            e.printStackTrace();
+            response.put("message", "Errore durante il caricamento del file.");
             response.put("type", "error");
-            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("message", "Errore nella creazione del laboratorio.");
+            response.put("type", "error");
         }
 
-        // Leggi il contenuto YAML (opzionale, a seconda di cosa ti serve)
-        String yamlContent = new String(yamlFile.getBytes(), StandardCharsets.UTF_8);
-        System.out.println("Contenuto YAML:\n" + yamlContent);
-
-        // Salva la room nel database 
-        roomService.aggiungiRoom(roomName);
-
-        // preparo gli oggetti che servono per salvare l'associazione nel db
-        // non faccio controlli partiolari su room e class perché sono sicuro che esistono  
-        Optional <Classe> cl = classService.cercaClasse(classeNome);
-        Optional <Room> rm = roomService.cercaRoom(roomName);
-
-        // salvare l'associazione
-        boolean associazione = roomClasseService.aggiungiassociazione(cl, rm);
-        if(associazione){
-            response.put("message", "L'associazione tra questa classe e room è già stata fatta ");
-            response.put("type", "error");
-            return response;
-        }
-
-        //service per inviare dati al backend
-        roomService.createRoom(classeNome, roomName, yamlFile);
-
-        response.put("message", "Laboratorio creato con successo.");
-        response.put("type", "success");
-    } catch (IOException e) {
-        e.printStackTrace();
-        response.put("message", "Errore durante il caricamento del file.");
-        response.put("type", "error");
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.put("message", "Errore nella creazione del laboratorio.");
-        response.put("type", "error");
+        return response;
     }
 
-    return response;
-}
-
     // utile per ottenere tutte le room presenti nel DB
-    @GetMapping("/checkroom")
+    @GetMapping("/professore/checkroom")
     @ResponseBody
     public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
 
@@ -149,21 +145,21 @@ public class RoomController {
         return response;
     }
 
-    @PostMapping("/risultati/pubblica")
+    @PostMapping("/professore/risultati/pubblica")
     public String PubblicazioneRisultati(@RequestBody String entity) {
         // TODO: process POST request
 
         return entity;
     }
 
-    @PostMapping("/utente/flag")
+    @PostMapping("/studente/flag")
     public String InserimentoFlag(@RequestBody String entity) {
         // TODO: process POST request
 
         return entity;
     }
 
-    @PostMapping("/risultati/visualizza")
+    @PostMapping({ "/professore/risultati/visualizza", "/studente/risultati/visualizza" })
     public String VisualizzazioneRisultati(@RequestBody String entity) {
         // TODO: process POST request
 
@@ -189,7 +185,7 @@ public class RoomController {
 
     }
 
-       @Data
+    @Data
     @AllArgsConstructor
     public static class createRoomBody {
 

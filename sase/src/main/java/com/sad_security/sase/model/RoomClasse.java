@@ -14,10 +14,10 @@ public class RoomClasse {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "classe_nome") // perché "nome" è la @Id di Classe
+    @JoinColumn(name = "classe") // perché "nome" è la @Id di Classe
     private Classe classe;
 
     @ManyToOne
-    @JoinColumn(name = "room_id") // supponiamo che Room abbia @Id Long id
+    @JoinColumn(name = "room") // supponiamo che Room abbia @Id Long id
     private Room room;
 }

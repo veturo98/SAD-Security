@@ -9,12 +9,10 @@ import com.sad_security.sase.controller.RoomController.startRoomBody;
 import com.sad_security.sase.controller.RoomController.stopRoomBody;
 import com.sad_security.sase.model.Classe;
 import com.sad_security.sase.model.Room;
-import com.sad_security.sase.model.Studente;
-import com.sad_security.sase.repository.ClasseRepository;
+import com.sad_security.sase.model.RoomClasse;
+import com.sad_security.sase.repository.RoomClasseRepository;
 import com.sad_security.sase.repository.RoomRepository;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,10 +45,10 @@ public class RoomService {
             // Creo il corpo della POST ed effettuo la richiesta
             startRoomBody request_body = new startRoomBody(classe, room, user);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request_body, String.class);
-         
+
             // Restituisco la risposta della POST
             return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
-        
+
         } catch (Exception e) {
 
             // Restituisco l'errore
@@ -58,7 +56,7 @@ public class RoomService {
         }
     }
 
-        // Effettuo una richiesta asincrona al gestore delle risorse
+    // Effettuo una richiesta asincrona al gestore delle risorse
     @Async
     public CompletableFuture<String> stopContainer(String user) {
 
@@ -70,10 +68,10 @@ public class RoomService {
             // Creo il corpo della POST ed effettuo la richiesta
             stopRoomBody request_body = new stopRoomBody(user);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request_body, String.class);
-         
+
             // Restituisco la risposta della POST
             return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
-        
+
         } catch (Exception e) {
 
             // Restituisco l'errore
@@ -86,33 +84,27 @@ public class RoomService {
         return roomRepository.findBylab(roomName);
     }
 
-
     // aggiunge la room
     public boolean aggiungiRoom(String room) {
 
         // Cerco se la roomè stata già creata
         Optional<Room> roomName = roomRepository.findBylab(room);
         // Se la room esiste non faccio niente
-        if (roomName.isPresent() ) {
+        if (roomName.isPresent()) {
             System.out.println("la room esiste già");
             return true;
         } else {
 
-            // Creazione room 
+            // Creazione room
             Room newcRoom = new Room();
 
-            
-
             newcRoom.setLab(room);
-          
-    
 
             roomRepository.save(newcRoom);
             System.out.println("Room creata");
 
             return false;
         }
-
 
     }
 
@@ -121,7 +113,7 @@ public class RoomService {
         // Cerco se la roomè stata già creata
         Optional<Room> roomName = roomRepository.findBylab(room);
         // Se la room esiste non faccio niente
-        if (roomName.isPresent() ) {
+        if (roomName.isPresent()) {
             System.out.println("la room esiste già");
             return true;
         } else {
@@ -130,55 +122,78 @@ public class RoomService {
         }
     }
 
+    public CompletableFuture<String> createRoom(String classeName, String roomName, MultipartFile yamlFile) {
 
+        try {
 
-     public CompletableFuture<String>  createRoom(String classeName, String roomName, MultipartFile yamlFile) {
-
-    
- try {
-
-             // Costruisco l'URL da contattare
+            // Costruisco l'URL da contattare
             String url = dockerApiBaseUrl + "/crea-lab/";
-
 
             // Creo il corpo della POST ed effettuo la richiesta
             createRoomBody request_body = new createRoomBody(classeName, roomName, yamlFile);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request_body, String.class);
-         
+
             // Restituisco la risposta della POST
             return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
-        
+
         } catch (Exception e) {
 
             // Restituisco l'errore
             return CompletableFuture.completedFuture("Errore: " + e.getMessage());
         }
 
-
     }
-//      @Async
-// public CompletableFuture<String> creaClasse(String classe, String room, String user) {
-//     try {
-//         // Costruisco l'URL da contattare
-//         String url = dockerApiBaseUrl + "/crea-laboratorio/";
+    // @Async
+    // public CompletableFuture<String> creaClasse(String classe, String room,
+    // String user) {
+    // try {
+    // // Costruisco l'URL da contattare
+    // String url = dockerApiBaseUrl + "/crea-laboratorio/";
 
-//         // Creo un oggetto con i dati da inviare
+    // // Creo un oggetto con i dati da inviare
 
-//         requestBody.put("nomeClasse", classe);
-//         requestBody.put("nomeLab", room);
-//         requestBody.put("utente", user);
+    // requestBody.put("nomeClasse", classe);
+    // requestBody.put("nomeLab", room);
+    // requestBody.put("utente", user);
 
-//         // Invio la richiesta POST
-//         ResponseEntity<String> response = restTemplate.postForEntity(url, requestBody, String.class);
+    // // Invio la richiesta POST
+    // ResponseEntity<String> response = restTemplate.postForEntity(url,
+    // requestBody, String.class);
 
-//         // Restituisco la risposta del server Python
-//         return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
+    // // Restituisco la risposta del server Python
+    // return CompletableFuture.completedFuture("Risposta server Python: " +
+    // response.getBody());
 
-//     } catch (Exception e) {
-//         // In caso di errore, restituisco il messaggio di errore
-//         return CompletableFuture.completedFuture("Errore durante la creazione della classe: " + e.getMessage());
-//     }
-// }
+    // } catch (Exception e) {
+    // // In caso di errore, restituisco il messaggio di errore
+    // return CompletableFuture.completedFuture("Errore durante la creazione della
+    // classe: " + e.getMessage());
+    // }
+    // }
 
+    
+    @Autowired
+    private RoomClasseRepository roomClasseRepository;
+
+    public boolean aggiungiassociazione(Optional<Classe> classe, Optional<Room> room) {
+        // Cerco se l'associazione
+        Optional<RoomClasse> roomClass = roomClasseRepository.findByClasseAndRoom(classe, room);
+        // Se la classe esiste non faccio niente
+        if (roomClass.isPresent()) {
+            System.out.println("l'associazione già");
+            return true;
+        } else {
+
+            // Creazione associazione
+            RoomClasse rc = new RoomClasse();
+            rc.setClasse(classe.get());
+            rc.setRoom(room.get());
+
+            roomClasseRepository.save(rc);
+            System.out.println("Associazione room class creata");
+
+            return false;
+        }
+    }
 
 }

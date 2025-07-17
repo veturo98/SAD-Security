@@ -3,14 +3,11 @@ package com.sad_security.sase.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sad_security.sase.model.Classe;
-import com.sad_security.sase.model.Iscrizione;
-import com.sad_security.sase.model.Room;
 import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.service.ClassService;
 import com.sad_security.sase.service.IscrizioneService;
 import com.sad_security.sase.service.StudenteService;
 
-import org.springframework.ui.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

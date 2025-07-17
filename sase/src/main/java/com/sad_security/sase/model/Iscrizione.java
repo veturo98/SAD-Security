@@ -1,6 +1,5 @@
 package com.sad_security.sase.model;
 
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,10 +24,10 @@ public class Iscrizione {
     private Long iscrizioneId;
 
     @ManyToOne
-    @JoinColumn(name = "studente_id", nullable = false)
+    @JoinColumn(name = "studente", nullable = false)
     private Studente studente;
 
     @ManyToOne
-    @JoinColumn(name = "classe_nome", nullable = false)
+    @JoinColumn(name = "classe", nullable = false)
     private Classe classe;
 }

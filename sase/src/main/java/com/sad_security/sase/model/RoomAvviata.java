@@ -5,18 +5,18 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "RoomStudente")
-public class RoomStudente {
+@Table(name = "RoomAvviata")
+public class RoomAvviata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "utente_nome") // identifiativo dell'utente
+    @JoinColumn(name = "Utente") // identifiativo dell'utente
     private Studente studente;
 
     @ManyToOne
-    @JoinColumn(name = "room_nome") // identifiativo della room
+    @JoinColumn(name = "Room") // identifiativo della room
     private Room room;
 }

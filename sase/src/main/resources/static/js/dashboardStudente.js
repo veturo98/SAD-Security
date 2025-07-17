@@ -41,11 +41,11 @@ document.addEventListener("DOMContentLoaded", function () {
         areaRisposta.textContent = 'Avvio in corso...';
 
         try {
-            const response = await fetch('/room/start', {
+            const response = await fetch('/room/studente/start', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    [header]: token
+                    //[header]: token
                 },
                 body: JSON.stringify({
                     'nomeClass': nomeClasse,
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         areaRisposta.textContent = 'Stop container in corso...';
 
         try {
-            const response = await fetch('/room/stop', {
+            const response = await fetch('/room/studente/stop', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

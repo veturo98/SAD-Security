@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.sad_security.sase.model.Classe;
 import com.sad_security.sase.model.Iscrizione;
-import com.sad_security.sase.model.RoomClasse;
 import com.sad_security.sase.model.Studente;
 
 import java.util.List;
