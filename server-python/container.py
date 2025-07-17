@@ -1,3 +1,5 @@
+import os
+import shutil
 import socket
 import subprocess
 import time
@@ -75,5 +77,30 @@ def stop_container():
 
     # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
     return (f"Container per l'utente' {utente}' distrutto con successo", 200)
+
+
+# CREAZIONE ROOM
+def crea_room():
+    
+    # Ricevo i dati dal form
+    nomeRoom = request.form.get('nomeLab')
+    yaml_file = request.files.get('yamlFile')
+
+    if not nomeRoom or not yaml_file:
+        return jsonify({"error": "Parametri mancanti"}), 400
+
+    print(f"Ricevuto nome room: {nomeRoom}")
+    print(f"Nome file: {yaml_file.filename}")
+
+    # Costruisco i path
+    base_path = os.getcwd()
+    room_path = os.path.join(base_path, "Room", nomeRoom)
+    os.makedirs(room_path, exist_ok=True)
+
+    file_path = os.path.join(room_path, 'docker-compose.yml')
+    yaml_file.save(file_path)
+
+    print(f"File YAML salvato in: {file_path}")
+    return jsonify({"message": "Room creata con successo!"}), 200
 
 

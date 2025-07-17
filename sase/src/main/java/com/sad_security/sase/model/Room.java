@@ -14,8 +14,8 @@ public class Room {
 
     // Dati della room
     @Id
-    @Column(name = "lab")
-    private String lab;
+    @Column(name = "nome")
+    private String nome;
 
     @Column(name = "timestamp")
     private String studente;

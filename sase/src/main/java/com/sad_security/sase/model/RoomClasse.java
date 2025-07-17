@@ -15,9 +15,9 @@ public class RoomClasse {
 
     @ManyToOne
     @JoinColumn(name = "classe") // perché "nome" è la @Id di Classe
-    private Classe classe;
+    private String classe;
 
     @ManyToOne
     @JoinColumn(name = "room") // supponiamo che Room abbia @Id Long id
-    private Room room;
+    private String room;
 }

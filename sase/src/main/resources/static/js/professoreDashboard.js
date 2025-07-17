@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            fetch(`/room/checkroom?roomName=${encodeURIComponent(roomName)}`)
+            fetch(`/room/professore/checkroom?roomName=${encodeURIComponent(roomName)}`)
                 .then(res => res.json())
                 .then(data => {
                     msg.textContent = data.message;
@@ -337,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
             title: "Crea Laboratorio",
             desc: `
                 <p>Imposta un nuovo laboratorio, specifica la durata, il contenuto e gli studenti assegnati.</p>
-                <form id="create-lab-form" action="/room/creaLaboratorio" method="post">
+                <form id="create-lab-form" action="/room/professore/creaLaboratorio" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
                 <div class="form-group">
                     <label for="classSelect"> Nome classe:</label>

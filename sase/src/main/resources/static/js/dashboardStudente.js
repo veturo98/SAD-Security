@@ -9,28 +9,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function setupIscrizioneClasse() {
-    const form = document.getElementById("create-lab-form");
-    const select = document.getElementById("classSelect");
-    const messageEl = document.getElementById("form-lab-message");
+        const form = document.getElementById("create-lab-form");
+        const select = document.getElementById("classSelect");
+        const messageEl = document.getElementById("form-lab-message");
 
-    if (!form || !select || !messageEl) return;
+        if (!form || !select || !messageEl) return;
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-        const nomeClasse = select.value;
-        messageEl.textContent = ""; // pulizia precedente
-        messageEl.style.color = "black";
+            const nomeClasse = select.value;
+            messageEl.textContent = ""; // pulizia precedente
+            messageEl.style.color = "black";
 
-        if (!nomeClasse) {
-            messageEl.textContent = "Seleziona una classe valida.";
-            messageEl.style.color = "red";
-            return;
-        }
+            if (!nomeClasse) {
+                messageEl.textContent = "Seleziona una classe valida.";
+                messageEl.style.color = "red";
+                return;
+            }
 
-        iscriviStudente(nomeClasse, messageEl);
-    });
-}
+            iscriviStudente(nomeClasse, messageEl);
+        });
+    }
 
 
 
@@ -146,38 +146,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Iscrive lo studente a una classe tramite il form
-   function iscriviStudente(nomeClasse, messageEl) {
-    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    function iscriviStudente(nomeClasse, messageEl) {
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
 
-    fetch('/classe/iscriviti', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRF-TOKEN': csrfToken || ''
-        },
-        body: new URLSearchParams({ nomeClasse })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data || !data.message) {
-            messageEl.textContent = "Errore imprevisto nella risposta del server.";
-            messageEl.style.color = "red";
-            return;
-        }
+        fetch('/classe/iscriviti', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': csrfToken || ''
+            },
+            body: new URLSearchParams({ nomeClasse })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (!data || !data.message) {
+                    messageEl.textContent = "Errore imprevisto nella risposta del server.";
+                    messageEl.style.color = "red";
+                    return;
+                }
 
-        messageEl.textContent = data.message;
-        messageEl.style.color = data.type === "success" ? "green" : "red";
+                messageEl.textContent = data.message;
+                messageEl.style.color = data.type === "success" ? "green" : "red";
 
-        if (data.type === "success") {
-            caricaClassiIscritte(); // aggiorna la sidebar
-        }
-    })
-    .catch(error => {
-        console.error("Errore:", error);
-        messageEl.textContent = "Errore durante l'iscrizione.";
-        messageEl.style.color = "red";
-    });
-}
+                if (data.type === "success") {
+                    caricaClassiIscritte(); // aggiorna la sidebar
+                }
+            })
+            .catch(error => {
+                console.error("Errore:", error);
+                messageEl.textContent = "Errore durante l'iscrizione.";
+                messageEl.style.color = "red";
+            });
+    }
 
 
 
@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (startBtn && stopBtn && areaRisposta) {
                 startBtn.addEventListener("click", () => {
-                    startRoomContainer(nomeClasse, "BufferOverflow", utente, csrfToken, csrfHeader, areaRisposta);
+                    startRoomContainer(nomeClasse, "ciccio6", utente, csrfToken, csrfHeader, areaRisposta);
                 });
 
                 stopBtn.addEventListener("click", () => {

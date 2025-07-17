@@ -17,7 +17,7 @@ def run_docker_compose(utente, classe, room, porta):
     print(f"Directory di lavoro originale: {base_path}")
 
     # Costruisco il path del laboratorio da copiare e della cartella utente
-    lab_path = os.path.join(base_path, "Lab", room, "docker-compose.yml")
+    lab_path = os.path.join(base_path, "Room", room, "docker-compose.yml")
     utente_dir = os.path.join(base_path, "Running", utente)
 
 

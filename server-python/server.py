@@ -1,8 +1,4 @@
 from flask import Flask, request, jsonify
-import time
-import subprocess
-import compose
-import socket
 import container
 
 
@@ -18,6 +14,12 @@ def start():
 @app.route('/stop-container/', methods=['POST'])
 def stop():
     return container.stop_container()
+
+
+####    CREA ROOM          ####
+@app.route('/crea-room/', methods=['POST'])
+def crea():
+    return container.crea_room()
 
 
 if __name__ == '__main__':

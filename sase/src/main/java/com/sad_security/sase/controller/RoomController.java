@@ -110,7 +110,7 @@ public class RoomController {
             }
 
             // service per inviare dati al backend
-            roomService.createRoom(classeNome, roomName, yamlFile);
+            roomService.createRoom(roomName, yamlFile);
 
             response.put("message", "Laboratorio creato con successo.");
             response.put("type", "success");
@@ -129,6 +129,23 @@ public class RoomController {
 
     // utile per ottenere tutte le room presenti nel DB
     @GetMapping("/professore/checkroom")
+    @ResponseBody
+    public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
+
+        boolean exists = roomService.checkRoom(roomName);
+        Map<String, String> response = new HashMap<>();
+        if (exists) {
+            response.put("message", "La room esiste già");
+            response.put("type", "error");
+        } else {
+            response.put("message", "Nome room disponibile");
+            response.put("type", "success");
+        }
+
+        return response;
+    }
+
+    @GetMapping("/studente/checkroom")
     @ResponseBody
     public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
 
@@ -189,7 +206,6 @@ public class RoomController {
     @AllArgsConstructor
     public static class createRoomBody {
 
-        private String nomeClass;
         private String nomeLab;
         private MultipartFile yamlFile;
 

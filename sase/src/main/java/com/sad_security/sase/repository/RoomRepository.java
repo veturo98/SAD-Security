@@ -9,5 +9,5 @@ import com.sad_security.sase.model.Room;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
-    Optional<Room> findBylab(String lab);
+    Optional<Room> findBynome(String nome);
 }

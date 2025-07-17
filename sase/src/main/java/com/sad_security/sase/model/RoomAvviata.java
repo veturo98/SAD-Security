@@ -14,9 +14,9 @@ public class RoomAvviata {
 
     @ManyToOne
     @JoinColumn(name = "Utente") // identifiativo dell'utente
-    private Studente studente;
+    private String studente;
 
     @ManyToOne
     @JoinColumn(name = "Room") // identifiativo della room
-    private Room room;
+    private String room;
 }

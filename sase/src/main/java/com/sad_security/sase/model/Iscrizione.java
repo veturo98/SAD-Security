@@ -25,9 +25,9 @@ public class Iscrizione {
 
     @ManyToOne
     @JoinColumn(name = "studente", nullable = false)
-    private Studente studente;
+    private String studente;
 
     @ManyToOne
     @JoinColumn(name = "classe", nullable = false)
-    private Classe classe;
+    private String classe;
 }
