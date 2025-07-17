@@ -50,11 +50,18 @@
 </head>
 
 <body>
+
     <header>
         <div>
             <a href="/home"><img src="/images/logosito.png" alt="Sad Security Logo"></a>
         </div>
-       
+
+        <div>
+            <p th:if="${username}">
+                Benvenuto, <span id="user" th:text="${username}"></span>!
+            </p>
+        </div>
+
     </header>
 
     <main layout:fragment="content">

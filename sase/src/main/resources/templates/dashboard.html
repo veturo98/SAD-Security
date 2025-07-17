@@ -79,13 +79,10 @@
         })
     </script>
 </head>
+-->
 
 
-
-    <div layout:fragment="navbar">
-        <p>Benvenuto, <span id="user" th:if="${username}" th:text="${username}"></span>!</p>
-    </div>
-
+<!-- 
     <div layout:fragment="content">
         <h1>Dashboard</h1>
         <button id="start-room">Avvia laboratorio</button>
@@ -102,8 +99,10 @@
   -->
 <!-- QUELLO CHE STA SOPRA DEVE ESSERE INSERITO NEL FILE JS ALL'INTERNO DI APPOSITE FUNZIONI CHE SI OCCUPANDO DI AVVIARE E FERMARE LE ROOM -->
 
-  <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layoutDashboard}">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layoutDashboard}">
+
 <head>
     <title>Sad Security - Studente</title>
     <meta name="_csrf" th:content="${_csrf.token}" />
@@ -111,36 +110,40 @@
 </head>
 
 <body>
-<main layout:fragment="content" class="home-layout">
-    <div class="sidebar">
-        <h2>Operazioni Disponibili</h2>
-        <ul id="student-sidebar-options">
-            <!-- <li><a href="#" class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</a></li> -->
-            
-            <!-- Qui verranno aggiunte dinamicamente nuove voci -->
-            <li th:each="classe : ${classiUtente}" th:if="${classiUtente != null}">
-                <a href="#" class="sidebar-item" th:data-option="${classe.nome}" th:text="${classe.nome}"></a>
-            </li>
-        </ul>
 
-        <div class="sidebar-settings">
-            <h3>Impostazioni</h3>
-            <button class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</button>
-            <button class="sidebar-item" data-option="Cambia Password">Cambia Password</button>
-            <button class="sidebar-item" data-option="Logout">Logout</button>
+    <main layout:fragment="content" class="home-layout">
+
+        
+        <div class="sidebar">
+            <h2>Operazioni Disponibili</h2>
+            <ul id="student-sidebar-options">
+
+
+                <!-- Qui verranno aggiunte dinamicamente nuove voci -->
+                <li th:each="classe : ${classiUtente}" th:if="${classiUtente != null}">
+                    <a href="#" class="sidebar-item" th:data-option="${classe.nome}" th:text="${classe.nome}"></a>
+                </li>
+            </ul>
+
+            <div class="sidebar-settings">
+                <h3>Impostazioni</h3>
+                <button class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</button>
+                <button class="sidebar-item" data-option="Cambia Password">Cambia Password</button>
+                <button class="sidebar-item" data-option="Logout">Logout</button>
+            </div>
         </div>
-    </div>
 
-    <div class="content-display">
-        <h1 id="Section-title">Benvenuto Studente</h1>
-        <div id="section-description">
-            <p>Seleziona un'opzione dalla barra laterale per iniziare.</p>
+        <div class="content-display">
+            <h1 id="Section-title">Benvenuto Studente</h1>
+            <div id="section-description">
+                <p>Seleziona un'opzione dalla barra laterale per iniziare.</p>
+            </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<th:block layout:fragment="scripts">
-    <script th:src="@{/js/dashboardStudente.js}"></script>
-</th:block>
+    <th:block layout:fragment="scripts">
+        <script th:src="@{/js/dashboardStudente.js}"></script>
+    </th:block>
 </body>
+
 </html>
