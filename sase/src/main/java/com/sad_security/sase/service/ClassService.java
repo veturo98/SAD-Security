@@ -39,7 +39,7 @@ public boolean aggiungiClasse(String classe){
     
 
             ClasseRepository.save(newcClasse);
-            System.out.println("classe creato");
+            System.out.println("Classe creata");
 
             return false;
         }
@@ -49,6 +49,12 @@ public boolean aggiungiClasse(String classe){
 public List <Classe> trovaTutteLeClassi (){
 
     return ClasseRepository.findAll();
+    
+}
+
+public Optional<Classe> cercaClasse (String classe){
+
+    return ClasseRepository.findBynome(classe);
     
 }
 

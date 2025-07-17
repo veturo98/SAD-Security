@@ -80,7 +80,7 @@ public class SecurityConfig {
    @Bean
 public SecurityFilterChain studenteFilterChain(HttpSecurity http) throws Exception {
     http
-        .securityMatcher("/login", "/dashboard")  
+        .securityMatcher( "/account/studente/**", "/login", "/studente/dashboard","/classe/getClassiIscritte","/classe/iscriviti")  
         .authorizeHttpRequests(auth -> auth
             .anyRequest()
             .hasRole("STUDENTE")
@@ -90,7 +90,7 @@ public SecurityFilterChain studenteFilterChain(HttpSecurity http) throws Excepti
         .formLogin(form -> form
             .loginPage("/login")
 			.loginProcessingUrl("/login")
-            .defaultSuccessUrl("/dashboard", true)
+            .defaultSuccessUrl("/studente/dashboard", true)
             .failureUrl("/login?error")
             .permitAll()
         )

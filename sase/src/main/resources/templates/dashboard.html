@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
     layout:decorate="~{layout}">
 
@@ -99,4 +99,47 @@
 
 
 </html> 
- 
+  -->
+<!-- QUELLO CHE STA SOPRA DEVE ESSERE INSERITO NEL FILE JS ALL'INTERNO DI APPOSITE FUNZIONI CHE SI OCCUPANDO DI AVVIARE E FERMARE LE ROOM -->
+
+  <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layoutDashboard}">
+<head>
+    <title>Sad Security - Studente</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+
+<body>
+<main layout:fragment="content" class="home-layout">
+    <div class="sidebar">
+        <h2>Operazioni Disponibili</h2>
+        <ul id="student-sidebar-options">
+            <li><a href="#" class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</a></li>
+            
+            <!-- Qui verranno aggiunte dinamicamente nuove voci -->
+            <li th:each="classe : ${classiUtente}" th:if="${classiUtente != null}">
+                <a href="#" class="sidebar-item" th:data-option="${classe.nome}" th:text="${classe.nome}"></a>
+            </li>
+        </ul>
+
+        <div class="sidebar-settings">
+            <h3>Impostazioni</h3>
+            <button class="sidebar-item" data-option="Cambia Password">Cambia Password</button>
+            <button class="sidebar-item" data-option="Logout">logout</button>
+        </div>
+    </div>
+
+    <div class="content-display">
+        <h1 id="Section-title">Benvenuto Studente</h1>
+        <div id="section-description">
+            <p>Seleziona un'opzione dalla barra laterale per iniziare.</p>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/dashboardStudente.js}"></script>
+</th:block>
+</body>
+</html>

@@ -14,7 +14,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String getLayout() {
-        return "layout";
+        return "home";
     }
 
     @GetMapping("/login")
@@ -37,7 +37,7 @@ public class HomeController {
         return "registration";
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping("/studente/dashboard")
     public String getDashboard(Model model, Authentication authentication) {
          
         if (authentication != null) {

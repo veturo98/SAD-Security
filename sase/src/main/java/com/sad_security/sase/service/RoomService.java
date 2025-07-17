@@ -81,6 +81,12 @@ public class RoomService {
         }
     }
 
+    // Cerca room
+    public Optional<Room> cercaRoom(String roomName) {
+        return roomRepository.findBylab(roomName);
+    }
+
+
     // aggiunge la room
     public boolean aggiungiRoom(String room) {
 

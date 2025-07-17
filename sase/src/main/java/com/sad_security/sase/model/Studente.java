@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -16,6 +17,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -46,6 +48,11 @@ public class Studente  implements UserDetails{
         return List.of(new SimpleGrantedAuthority("ROLE_STUDENTE"));
     }
 
+     @OneToMany(mappedBy = "studente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Iscrizione> iscrizioni = new ArrayList<>();
+
+     @OneToMany(mappedBy = "studente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoomStudente> roomStudente = new ArrayList<>();
         
     @Override
     public boolean isAccountNonExpired() { return true; }

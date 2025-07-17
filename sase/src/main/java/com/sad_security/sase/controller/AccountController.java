@@ -76,15 +76,47 @@ public class AccountController {
 
     }
 
-    //funzione che permette di cambiare la password
-    // @PostMapping("/change-password")
-    // public String CambioPassword(@RequestBody String entity) {
+    // funzione che permette di cambiare la password allo studente
+    @PostMapping("/studente/change-password")
+    @ResponseBody   
+    public Map<String, String> CambioPassword(@RequestParam String newPassword, @RequestParam String oldPassword, HttpServletRequest request, HttpServletResponse respons) {
         
-    //     Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+         Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
 
         
-    //     return entity;
-    // }
+
+        Map<String, String> res = new HashMap<>();
+
+        if (authentication == null || !authentication.isAuthenticated() ||
+        authentication instanceof AnonymousAuthenticationToken) {
+        res.put("message", "Professore non autenticato");
+        res.put("type", "error");
+        return res;
+    }
+
+    // nome del professore che ha fatto la richiesta
+    String username = authentication.getName();
+    boolean changePassowrd = studenteServices.cambiaPasswordStudente(username,oldPassword ,newPassword);
+
+    if (changePassowrd) {
+        // Effettua il logout manuale dopo il cambio password
+        SecurityContextHolder.clearContext();
+
+        // Invalida la sessione per rimuovere i dati di autenticazione
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        res.put("message", "credenziali cambiate con successo");
+        res.put("type", "success");
+    } else {
+        res.put("message", "errore nel cambio delle credenziali");
+        res.put("type", "error");
+    }
+
+
+        return res;
+    }
 
      //funzione che permette di cambiare la password al professore
     @PostMapping("/professore/change-password")
@@ -92,6 +124,8 @@ public class AccountController {
     public Map<String, String> CambioProfessorePassword(@RequestParam String newPassword, @RequestParam String oldPassword, HttpServletRequest request, HttpServletResponse response) {
      
         Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+
+        
 
         Map<String, String> res = new HashMap<>();
 
@@ -143,6 +177,38 @@ public class AccountController {
         String username = authentication.getName();
 
         boolean exists = professorService.checkpassowrd(oldPassword, username);
+
+        
+        
+        if (exists) {
+            response.put("message", "credenziali vecchie valide");
+            response.put("type", "success");
+        } else {
+            response.put("message", "password errata");
+            response.put("type", "error");
+        }
+
+        return response;
+    }
+
+
+    // Utile per verificare se la password  dello studente vecchia è corretta
+    @GetMapping("/studente/checkOldPassword")
+    @ResponseBody
+    public Map<String, String> checkOldPasswordStudente(@RequestParam String oldPassword) {
+        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+
+        Map<String, String> response = new HashMap<>();
+
+        if (authentication == null || !authentication.isAuthenticated() ||
+        authentication instanceof AnonymousAuthenticationToken) {
+        response.put("message", "Utente non autenticato");
+        response.put("type", "error");
+        return response;
+    }
+        String username = authentication.getName();
+
+        boolean exists = studenteServices.checkpassowrd(oldPassword, username);
 
         
         

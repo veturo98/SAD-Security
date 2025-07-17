@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -17,10 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sad_security.sase.model.Classe;
 import com.sad_security.sase.model.Room;
+import com.sad_security.sase.service.ClassService;
+import com.sad_security.sase.service.RoomClasseService;
 import com.sad_security.sase.service.RoomService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,11 +35,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class RoomController {
 
     // Dichiaro i service
-    private final RoomService roomService;
+    @Autowired
+    private RoomService roomService;
 
-    public RoomController(RoomService roomService) {
-        this.roomService = roomService;
-    }
+    @Autowired
+    private ClassService classService;
+
+    @Autowired
+    private RoomClasseService roomClasseService;
+
+
 
     // Mappo la chiamata per l'avvio delle room
     @PostMapping("/start")
@@ -66,7 +76,7 @@ public class RoomController {
     // Il professore crea un nuovo laboratorio
     @PostMapping("/creaLaboratorio")
     @ResponseBody
-public Map<String, String> creaLaboratorio(
+    public Map<String, String> creaLaboratorio(
         @RequestParam("classeId") String classeNome,
         @RequestParam("room") String roomName,
         @RequestParam("yamlFile") MultipartFile yamlFile) {
@@ -87,8 +97,21 @@ public Map<String, String> creaLaboratorio(
         String yamlContent = new String(yamlFile.getBytes(), StandardCharsets.UTF_8);
         System.out.println("Contenuto YAML:\n" + yamlContent);
 
-        // Salva la room (dovrai adattare alla tua logica)
+        // Salva la room nel database 
         roomService.aggiungiRoom(roomName);
+
+        // preparo gli oggetti che servono per salvare l'associazione nel db
+        // non faccio controlli partiolari su room e class perché sono sicuro che esistono  
+        Optional <Classe> cl = classService.cercaClasse(classeNome);
+        Optional <Room> rm = roomService.cercaRoom(roomName);
+
+        // salvare l'associazione
+        boolean associazione = roomClasseService.aggiungiassociazione(cl, rm);
+        if(associazione){
+            response.put("message", "L'associazione tra questa classe e room è già stata fatta ");
+            response.put("type", "error");
+            return response;
+        }
 
         //service per inviare dati al backend
         roomService.createRoom(classeNome, roomName, yamlFile);

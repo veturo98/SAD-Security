@@ -8,48 +8,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    // funzione per la creazione della classe
-    function attachFormListener() {
-        const form = document.getElementById("create-class-form");
-        if (!form) return;
-
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const formData = new FormData(form);
-
-            fetch(form.action, {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').getAttribute('content')
-                },
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const msgEl = document.getElementById("form-message");
-                    msgEl.textContent = data.message;
-                    msgEl.style.color = data.type === "success" ? "green" : "red";
-                })
-                .catch(error => {
-                    console.error("Errore:", error);
-                });
-        });
-    }
-
 
 
     // ottiene le classi dal db
     function caricaClassiNelSelect(selectId) {
         const select = document.getElementById(selectId);
-        if (!select) return;
+        if (!select) {
+            console.warn(`Elemento select con ID '${selectId}' non trovato.`);
+            return;
+        }
 
-        // chiama il controller che interroga il DB
-        fetch('/classe/getClassi')
-            .then(response => response.json())
+        // Recupera i token CSRF da Spring Security (meta tag)
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+        fetch('/classe/getClassi', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Errore nella risposta del server");
+                }
+                return response.json(); // solo UNA volta
+            })
             .then(classNames => {
-                const select = document.getElementById('classSelect');
-                select.innerHTML = ''; // svuota se necessario
+                select.innerHTML = '';
+
+                if (!Array.isArray(classNames) || classNames.length === 0) {
+                    const option = document.createElement('option');
+                    option.disabled = true;
+                    option.selected = true;
+                    option.textContent = 'Nessuna classe disponibile';
+                    select.appendChild(option);
+                    return;
+                }
+
+                const defaultOption = document.createElement('option');
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                defaultOption.textContent = 'Seleziona una classe';
+                select.appendChild(defaultOption);
 
                 classNames.forEach(nome => {
                     const option = document.createElement('option');
@@ -58,78 +60,108 @@ document.addEventListener("DOMContentLoaded", function () {
                     select.appendChild(option);
                 });
             })
-            .catch(console.error);
+            .catch(error => {
+                console.error("Errore durante il caricamento delle classi:", error);
+                select.innerHTML = '';
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.selected = true;
+                option.textContent = 'Errore nel caricamento';
+                select.appendChild(option);
+            });
     }
 
 
-
-    // verifica che il laboratorio non esista già
-    function controllaLab() {
-        const input = document.getElementById("roomName");
-        const msg = document.getElementById("form-roomName-message");
-
-        if (!input || !msg) return;
-
-        input.addEventListener("blur", function () {
-
-            const roomName = input.value.trim();
-
-            if (!roomName) {
-                msg.textContent = "Il nome del laboratorio non può essere vuoto.";
-                msg.style.color = "red";
-                return;
-            }
-
-            fetch(`/room/checkroom?roomName=${encodeURIComponent(roomName)}`)
-                .then(res => res.json())
-                .then(data => {
-                    msg.textContent = data.message;
-                    msg.style.color = data.type === "error" ? "red" : "green";
-                })
-                .catch(err => {
-                    console.error("Errore nella verifica del laboratorio:", err);
-                    msg.textContent = "Errore durante la verifica.";
-                    msg.style.color = "red";
-                });
-        });
-    }
+    //crea una nuova sezione nel menu con la classe selezionata
+    function iscriviStudente(nomeClasse) {
+    const params = new URLSearchParams();
+    params.append("nomeClasse", nomeClasse);
 
 
+    fetch('/classe/iscriviti', {
+        method: 'POST',
+        body: params,
+        credentials: 'same-origin', // per cookies/sessione
+        headers: {
+            'X-CSRF-TOKEN': csrfToken // se usi Spring Security
+        }
+    })
+    .then(async response => {
+        const text = await response.text();
 
-    // Crea laboratorio
-    //bisogna controllare che il nome del laboratorio non esista già
-    function CreaLaboratorio() {
-        const form = document.getElementById("create-lab-form");
+        if (!response.ok) {
+            // Gestione messaggio d'errore personalizzato restituito dal backend
+            throw new Error(text || "Errore durante l'iscrizione");
+        }
 
-        if (!form) return;
+        console.log("Risposta dal server:", text);
+        alert(text); // Mostra messaggio positivo dal server
+        caricaClassiIscritte(); // Aggiorna la lista delle classi iscritte
+    })
+    .catch(error => {
+        console.error("Errore:", error);
+        alert(error.message); // Mostra messaggio di errore ricevuto dal server
+    });
+}
 
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
 
-            const formData = new FormData(form);
-
-            fetch(form.action, {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').getAttribute('content')
-
-                },
-                body: formData
+ // funzione per caricare le classi iscritte dall'utente e popolare la sidebar
+    function caricaClassiIscritte() {
+        
+        fetch('/classe/getClassiIscritte', { credentials: 'same-origin' })
+            .then(res => {
+                if (!res.ok) throw new Error('Errore nel recupero classi iscritte');
+                return res.json();
             })
-                .then(response => response.json())
-                .then(data => {
-                    const msgEl = document.getElementById("form-lab-message");
-                    msgEl.textContent = data.message;
-                    msgEl.style.color = data.type === "success" ? "green" : "red";
-                })
-                .catch(error => {
-                    console.error("Errore nella creazione del laboratorio:", error);
-                    const msgEl = document.getElementById("form-lab-message");
-                    msgEl.textContent = "Errore durante l'invio del modulo.";
-                    msgEl.style.color = "red";
-                });
+            .then(classiIscritte => {
+                if (Array.isArray(classiIscritte)) {
+                    classiIscritte.forEach(nomeClasse => {
+                        aggiungiClasseAllaSidebar(nomeClasse);
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Errore caricamento classi iscritte:', err);
+            });
+    }
+
+
+function aggiungiClasseAllaSidebar(nomeClasse) {
+        const sidebar = document.getElementById("student-sidebar-options");
+
+        if (!sidebar) return;
+
+        // Controlla se la classe è già presente nella sidebar
+        const esiste = Array.from(sidebar.querySelectorAll("a.sidebar-item"))
+            .some(link => link.textContent.trim() === nomeClasse);
+
+        if (esiste) return; // evita duplicati
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#";
+        a.classList.add("sidebar-item");
+        a.dataset.option = nomeClasse;
+        a.textContent = nomeClasse;
+
+        li.appendChild(a);
+        sidebar.appendChild(li);
+
+        // (Opzionale) Gestione click
+        a.addEventListener("click", () => {
+            titleEl.textContent = `Classe: ${nomeClasse}`;
+descEl.innerHTML = `
+    <p>Hai selezionato la classe <strong>${nomeClasse}</strong>.</p>
+    <button id="start-room-btn" class="btn">Avvia Room</button>
+    <button id="stop-room-btn" class="btn" style="margin-left: 10px;">Ferma Room</button>
+    <div id="room-status-message" style="margin-top: 10px; font-weight: bold;"></div>
+`;
+
         });
     }
+
+    // La funzione è la prima ad essere chiamata subito dopo il caricamento del DOM così inserisce subito le classi nella sidebar
+    caricaClassiIscritte();
 
 
 
@@ -150,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            fetch(`/account/professore/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, {
+            fetch(`/account/studente/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, {
                 credentials: 'same-origin'
             })
                 .then(res => res.json())
@@ -168,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //verifica che la nuova passord e quella di conferma sono uguali 
     function confermaPasswordRealtime() {
-        const oldPasswordInput = document.getElementById("oldPassword");
+        // const oldPasswordInput = document.getElementById("oldPassword");
         const newPasswordInput = document.getElementById("newPassword");
         const confirmPasswordInput = document.getElementById("confirmPassword");
         const msgConfirmPassword = document.getElementById("confirm-password-message");
@@ -275,77 +307,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    
 
 
 
 
     const content = {
-        CreaClasse: {
-            title: "Crea Nuova Classe",
+        IscrivitiClasse: {
+            title: "Iscriviti ad una classe",
             desc: `
-                <p>Utilizza il modulo sottostante per creare una nuova classe per l'organizzazione dei tuoi studenti.</p>
-                <form id="create-class-form" action="/classe/crea" method="post">
-                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
-                    <div class="form-group">
-                        <label for="className">Nome Classe:</label>
-                        <input type="text" id="className" name="classe" required>
-                    </div>
-                    <button type="submit">Crea Classe</button>
-                </form>
-                <div id="form-message" style="margin-top: 15px; font-weight: bold;"></div>
-            `
-        },
-        CreaLaboratorio: {
-            title: "Crea Laboratorio",
-            desc: `
-                <p>Imposta un nuovo laboratorio, specifica la durata, il contenuto e gli studenti assegnati.</p>
-                <form id="create-lab-form" action="/room/creaLaboratorio" method="post">
+                <p>Seleziona una classe a cui iscriverti</p>
+                <form id="create-lab-form" action="/classe/iscriviti" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
                 <div class="form-group">
                     <label for="classSelect"> Nome classe:</label>
-                    <select id="classSelect" name="classeId">
-                        <option value="">Caricamento classi...</option>
+                    <select id="classSelect" name="nomeClasse">
+                        <option value="">Selezione classe...</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="roomName">Nome Laboratorio:</label>
-                    <input type="text" id="roomName" name="room" required>
-                    <div id="form-roomName-message" style="margin-top: 15px; font-weight: bold;"></div>
-                </div>
-                <div class="form-group">    
-                    <label for="yamlFile">File YAML:</label>
-                    <input type="file" id="yamlFile" name="yamlFile" accept=".yaml,.yml" required>
-                </div>
-                   <button type="submit">Crea Laboratorio</button>
+                 <button type="submit">Iscriviti a Classe</button>
                 </form>
-
                 <div id="form-lab-message" style="margin-top: 15px; font-weight: bold;"></div>
-                `
-        },
-        "Aggiungi studente": {
-            title: "Aggiungi Studente",
-            desc: `
-                <p>Aggiungi uno studente ad una classe esistente, inserendo nome, matricola e classe di appartenenza.</p>
-                `
-        },
-        "Conferma Richieste": {
-            title: "Conferma Richieste",
-            desc: `
-                <p>Visualizza e approva/rifiuta le richieste di iscrizione o partecipazione agli esami/laboratori.</p>
-                `
-        },
-        "Pubblica risultati": {
-            title: "Pubblica Risultati",
-            desc: `
-                <p>Inserisci e pubblica i risultati degli esami o laboratori per la visione degli studenti.</p>
-                `
-
+            `
         },
         "Cambia Password": {
             title: "Cambia Password",
             desc: `
-                <p>Cambia la password del professore</p>
-                <form id="change-password-form" action="/account/professore/change-password" method="post">
+                <p>Cambia la password dell'utente</p>
+                <form id="change-password-form" action="/account/studente/change-password" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
                     <div>
                         <label for="oldPassword">Vecchia Password:</label>
@@ -384,26 +373,14 @@ document.addEventListener("DOMContentLoaded", function () {
             if (content[key]) {
                 titleEl.textContent = content[key].title;
 
-                if (key === "CreaClasse") {
+                if (key === "IscrivitiClasse") {
                     descEl.innerHTML = content[key].desc;
-                    attachFormListener();  //  listener della creazione classi
-
-                } else if (key === "CreaLaboratorio") {
-
-                    //quando clicco sull'opzione della sidebar ne carica il contenuto nella parte centrale della pagina 
-                    descEl.innerHTML = content[key].desc;
+                    caricaClassiNelSelect("classSelect");//  listener per l'iscrizione a classi
+                   
                     setTimeout(() => {
-                        caricaClassiNelSelect("classSelect");
-                        controllaLab();
-                        CreaLaboratorio();
+                        iscriviStudente();
                     }, 0);
-                } else if (key === "Aggiungi studente") {
-                    descEl.innerHTML = content[key].desc;
 
-                } else if (key === "Conferma Richieste") {
-                    descEl.innerHTML = content[key].desc;
-                } else if (key === "Pubblica risultati") {
-                    descEl.innerHTML = content[key].desc;
                 } else if (key === "Cambia Password") {
 
                     descEl.innerHTML = content[key].desc;
