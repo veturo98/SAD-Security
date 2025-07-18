@@ -3,6 +3,7 @@ package com.sad_security.sase.controller;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -34,8 +36,6 @@ public class RoomController {
     // Dichiaro i service
     @Autowired
     private RoomService roomService;
-
-  
 
     // Mappo la chiamata per l'avvio delle room
     @PostMapping("/studente/start")
@@ -94,7 +94,6 @@ public class RoomController {
             // Salva la room nel database
             roomService.aggiungiRoom(roomName);
 
-         
             // salvare l'associazione
             boolean associazione = roomService.aggiungiassociazione(classeNome, roomName);
             if (associazione) {
@@ -121,43 +120,29 @@ public class RoomController {
         return response;
     }
 
-    ///////////////////////////////
-    // COMMENTATO PERCHé DUPLICATO NON SO COSA FARE 
-    // utile per ottenere tutte le room presenti nel DB
-
-    ///////////////////////////////
-    // @GetMapping("/professore/checkroom")
-    // @ResponseBody
-    // public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
-
-    //     boolean exists = roomService.checkRoom(roomName);
-    //     Map<String, String> response = new HashMap<>();
-    //     if (exists) {
-    //         response.put("message", "La room esiste già");
-    //         response.put("type", "error");
-    //     } else {
-    //         response.put("message", "Nome room disponibile");
-    //         response.put("type", "success");
-    //     }
-
-    //     return response;
-    // }
-
-    @GetMapping("/studente/checkroom")
+  
+    @GetMapping({"/professore/checkroom","/studente/checkroom"})
     @ResponseBody
     public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
 
-        boolean exists = roomService.checkRoom(roomName);
-        Map<String, String> response = new HashMap<>();
-        if (exists) {
-            response.put("message", "La room esiste già");
-            response.put("type", "error");
-        } else {
-            response.put("message", "Nome room disponibile");
-            response.put("type", "success");
-        }
+    boolean exists = roomService.checkRoom(roomName);
+    Map<String, String> response = new HashMap<>();
+    if (exists) {
+    response.put("message", "La room esiste già");
+    response.put("type", "error");
+    } else {
+    response.put("message", "Nome room disponibile");
+    response.put("type", "success");
+    }
 
-        return response;
+    return response;
+    }
+
+
+    @GetMapping("/getRoomsPerClasse")
+    public ResponseEntity<List<String>> getRoomsPerClasse(@RequestParam String nomeClasse) {
+        List<String> rooms = roomService.getRoomListbyClasse(nomeClasse);
+        return ResponseEntity.ok(rooms);
     }
 
     @PostMapping("/professore/risultati/pubblica")

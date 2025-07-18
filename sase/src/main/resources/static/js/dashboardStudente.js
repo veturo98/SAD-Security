@@ -8,6 +8,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+    async function getLabsPerClasse(nomeClasse) {
+        try {
+            const response = await fetch(`/room/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error("Errore nel recupero dei lab della classe");
+
+            return await response.json(); // supponiamo sia un array di nomi di lab
+        } catch (error) {
+            console.error("Errore durante il caricamento dei lab:", error);
+            return [];
+        }
+    }
+
+
+
     function setupIscrizioneClasse() {
         const form = document.getElementById("create-lab-form");
         const select = document.getElementById("classSelect");
@@ -112,21 +132,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
             select.innerHTML = '';
 
+            // Se nessuna classe è disponibile
             if (!Array.isArray(classNames) || classNames.length === 0) {
                 const option = document.createElement('option');
                 option.disabled = true;
                 option.selected = true;
+                option.value = ""; // Assicura che non possa essere selezionata per iscrizione
                 option.textContent = 'Nessuna classe disponibile';
                 select.appendChild(option);
                 return;
             }
 
+            // Aggiungi opzione predefinita
             const defaultOption = document.createElement('option');
             defaultOption.disabled = true;
             defaultOption.selected = true;
+            defaultOption.value = ""; // Impedisce l'iscrizione con questa voce
             defaultOption.textContent = 'Seleziona una classe';
             select.appendChild(defaultOption);
 
+            // Aggiungi opzioni reali
             classNames.forEach(nome => {
                 const option = document.createElement('option');
                 option.value = nome;
@@ -140,10 +165,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const option = document.createElement('option');
             option.disabled = true;
             option.selected = true;
+            option.value = ""; // Anche qui, per sicurezza
             option.textContent = 'Errore nel caricamento';
             select.appendChild(option);
         }
     }
+
 
     // Iscrive lo studente a una classe tramite il form
     function iscriviStudente(nomeClasse, messageEl) {
@@ -204,53 +231,119 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Aggiunge una classe alla sidebar con relativo listener
-    function aggiungiClasseAllaSidebar(nomeClasse) {
-        const sidebar = document.getElementById("student-sidebar-options");
-        if (!sidebar) return;
+function aggiungiClasseAllaSidebar(nomeClasse) {
+    const sidebar = document.getElementById("student-sidebar-options");
+    if (!sidebar) return;
 
-        const exists = Array.from(sidebar.querySelectorAll("a.sidebar-item"))
-            .some(link => link.textContent.trim() === nomeClasse);
+    const exists = Array.from(sidebar.querySelectorAll("a.sidebar-item"))
+        .some(link => link.textContent.trim() === nomeClasse);
+    if (exists) return;
 
-        if (exists) return;
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = "#";
+    a.classList.add("sidebar-item");
+    a.dataset.option = nomeClasse;
+    a.textContent = nomeClasse;
 
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = "#";
-        a.classList.add("sidebar-item");
-        a.dataset.option = nomeClasse;
-        a.textContent = nomeClasse;
+    li.appendChild(a);
+    sidebar.appendChild(li);
 
-        li.appendChild(a);
-        sidebar.appendChild(li);
+    a.addEventListener("click", async () => {
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
+        const utente = document.getElementById("user")?.textContent || "unknown";
 
-        a.addEventListener("click", () => {
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
-            const utente = document.getElementById("user")?.textContent || "unknown";
+        titleEl.textContent = `Classe: ${nomeClasse}`;
+        descEl.innerHTML = `<p>Seleziona una room per la classe <strong>${nomeClasse}</strong>:</p>`;
 
-            titleEl.textContent = `Classe: ${nomeClasse}`;
-            descEl.innerHTML = `
-                <p>Hai selezionato la classe <strong>${nomeClasse}</strong>.</p>
-                <button id="start-room-btn" class="btn">Avvia Room</button>
-                <button id="stop-room-btn" class="btn" style="margin-left: 10px;">Ferma Room</button>
-                <div id="room-status-message" style="margin-top: 10px; font-weight: bold;"></div>
-            `;
+        const labs = await getLabsPerClasse(nomeClasse);
 
-            const startBtn = document.getElementById("start-room-btn");
-            const stopBtn = document.getElementById("stop-room-btn");
-            const areaRisposta = document.getElementById("room-status-message");
+        if (!Array.isArray(labs) || labs.length === 0) {
+            descEl.innerHTML += "<p>Nessuna room disponibile per questa classe.</p>";
+            return;
+        }
 
-            if (startBtn && stopBtn && areaRisposta) {
-                startBtn.addEventListener("click", () => {
-                    startRoomContainer(nomeClasse, "ciccio6", utente, csrfToken, csrfHeader, areaRisposta);
-                });
+        const listContainer = document.createElement("ul");
+        listContainer.classList.add("room-list");
 
-                stopBtn.addEventListener("click", () => {
-                    stopRoomContainer(utente, csrfToken, csrfHeader, areaRisposta);
-                });
-            }
+        labs.forEach(nomeLab => {
+            const roomItem = document.createElement("li");
+            roomItem.style.cursor = "pointer";
+            roomItem.style.padding = "8px";
+            roomItem.style.borderBottom = "1px solid #ccc";
+            roomItem.textContent = nomeLab;
+
+            roomItem.addEventListener("click", () => {
+                renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader);
+            });
+
+            listContainer.appendChild(roomItem);
         });
-    }
+
+        descEl.appendChild(listContainer);
+    });
+}
+
+
+function renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader) {
+    descEl.innerHTML = `
+        <h3>Room: ${nomeLab}</h3>
+        <p>Stai visualizzando la room <strong>${nomeLab}</strong> della classe <strong>${nomeClasse}</strong>.</p>
+        <div style="margin-top: 10px;">
+            <button class="btn start-room-btn">Avvia Room</button>
+            <button class="btn stop-room-btn" style="margin-left: 10px;">Ferma Room</button>
+        </div>
+        <div class="room-status" style="margin-top: 10px; font-weight: bold;"></div>
+        <button class="btn" style="margin-top: 20px;" id="back-to-list">⬅ Torna alle Room</button>
+    `;
+
+    const startBtn = descEl.querySelector(".start-room-btn");
+    const stopBtn = descEl.querySelector(".stop-room-btn");
+    const areaRisposta = descEl.querySelector(".room-status");
+    const backBtn = descEl.querySelector("#back-to-list");
+
+    startBtn.addEventListener("click", () => {
+        startRoomContainer(nomeClasse, nomeLab, utente, csrfToken, csrfHeader, areaRisposta);
+    });
+
+    stopBtn.addEventListener("click", () => {
+        stopRoomContainer(utente, csrfToken, csrfHeader, areaRisposta);
+    });
+
+    backBtn.addEventListener("click", async () => {
+        // Ricarica la lista delle room per la classe
+        titleEl.textContent = `Classe: ${nomeClasse}`;
+        descEl.innerHTML = `<p>Seleziona una room per la classe <strong>${nomeClasse}</strong>:</p>`;
+
+        const labs = await getLabsPerClasse(nomeClasse);
+
+        if (!Array.isArray(labs) || labs.length === 0) {
+            descEl.innerHTML += "<p>Nessuna room disponibile per questa classe.</p>";
+            return;
+        }
+
+        const listContainer = document.createElement("ul");
+        listContainer.classList.add("room-list");
+
+        labs.forEach(nomeLab => {
+            const roomItem = document.createElement("li");
+            roomItem.style.cursor = "pointer";
+            roomItem.style.padding = "8px";
+            roomItem.style.borderBottom = "1px solid #ccc";
+            roomItem.textContent = nomeLab;
+
+            roomItem.addEventListener("click", () => {
+                renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader);
+            });
+
+            listContainer.appendChild(roomItem);
+        });
+
+        descEl.appendChild(listContainer);
+    });
+}
+
 
     // Verifica vecchia password
     function oldPasswordCheck() {

@@ -129,6 +129,17 @@ public class RoomService {
         }
     }
 
+    public List <String> getRoomListbyClasse(String classe) {
+
+        // Cerco se la roomè stata già creata
+        List <RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
+       
+        return roomList.stream()
+                   .map(RoomClasse::getRoom)
+                   .distinct()
+                   .collect(Collectors.toList());
+    }
+
     public boolean getRoomList(String classe) {
     // Cerco se la room è stata già creata
     List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
