@@ -28,7 +28,7 @@ public class HomeController {
     public String getHome() {
         return "home";
     }
-    
+
     @GetMapping("/registrati")
     public String getRegistrati() {
         return "registration";
@@ -36,30 +36,29 @@ public class HomeController {
 
     @GetMapping("/studente/dashboard")
     public String getDashboard(Model model, Authentication authentication) {
-         
+
         if (authentication != null) {
             String username = authentication.getName(); // Ottieni l'username dell'utente autenticato
             model.addAttribute("username", username); // Aggiungi l'username al modello per Thymeleaf
         }
-        
+
         return "dashboard";
     }
-    
-     @GetMapping("/professore/profDashboard")
+
+    @GetMapping("/professore/profDashboard")
     public String getadminDashboard(Model model, Authentication authentication) {
-         
+
         if (authentication != null) {
             String username = authentication.getName(); // Ottieni l'username dell'utente autenticato
             model.addAttribute("username", username); // Aggiungi l'username al modello per Thymeleaf
         }
-        
+
         return "profDashboard";
     }
-
 
     @GetMapping("/accessDenied")
     public String accessDenied() {
         return "accessDenied";
     }
-   
+
 }

@@ -9,10 +9,9 @@ import com.sad_security.sase.model.Classe;
 
 @Repository
 public interface ClasseRepository extends JpaRepository<Classe, String> {
-    // Spring Data JPA fornirà automaticamente le implementazioni dei metodi CRUD (save, findById, findAll, count, etc.)
+    // Spring Data JPA fornirà automaticamente le implementazioni dei metodi CRUD
+    // (save, findById, findAll, count, etc.)
     // Puoi aggiungere qui metodi personalizzati se necessario, ad esempio:
     Optional<Classe> findBynome(String Classe);
-  
 
-    
 }

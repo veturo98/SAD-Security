@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sad_security.sase.controller.RoomController.startRoomBody;
 import com.sad_security.sase.controller.RoomController.stopRoomBody;
-import com.sad_security.sase.model.Classe;
 import com.sad_security.sase.model.Room;
 import com.sad_security.sase.model.RoomClasse;
 import com.sad_security.sase.repository.RoomClasseRepository;
@@ -91,8 +90,8 @@ public class RoomService {
         return roomRepository.findBynome(roomName);
     }
 
-    // aggiunge la room
-    public boolean aggiungiRoom(String room) {
+    // crea una nuova entry all'interno del database room
+    public boolean salvaNuovaRoom(String room, String descrizione, String flag) {
 
         // Cerco se la room è stata già creata
         Optional<Room> roomName = roomRepository.findBynome(room);
@@ -103,18 +102,21 @@ public class RoomService {
         } else {
 
             // Creazione room
-            Room newcRoom = new Room();
+            Room newRoom = new Room();
 
-            newcRoom.setNome(room);
+            newRoom.setNome(room);
+            newRoom.setDescrizione(descrizione);
+            newRoom.setFlag(flag);
 
-            roomRepository.save(newcRoom);
-            System.out.println("Room creata");
+            roomRepository.save(newRoom);
+            System.out.println("Room salvata nel database");
 
             return false;
         }
 
     }
 
+    // Controlla se la room esiste
     public boolean checkRoom(String room) {
 
         // Cerco se la roomè stata già creata
@@ -129,37 +131,55 @@ public class RoomService {
         }
     }
 
-    public List <String> getRoomListbyClasse(String classe) {
+    // Ottieni la lista delle room dal nome della classe
+    public List<String> getRoomListbyClasse(String classe) {
 
         // Cerco se la roomè stata già creata
-        List <RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
-       
+        List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
+
         return roomList.stream()
-                   .map(RoomClasse::getRoom)
-                   .distinct()
-                   .collect(Collectors.toList());
+                .map(RoomClasse::getRoom)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    public boolean getRoomList(String classe) {
-    // Cerco se la room è stata già creata
-    List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
+    
+    // public boolean getRoomList(String classe) {
+    //     // Cerco se la room è stata già creata
+    //     List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
 
-    List<String> roomNames = roomList.stream()
-                                     .map(RoomClasse::getRoom)
-                                     .collect(Collectors.toList());
+    //     List<String> roomNames = roomList.stream()
+    //             .map(RoomClasse::getRoom)
+    //             .collect(Collectors.toList());
 
-    // Se esistono room, restituisco true
-    if (!roomNames.isEmpty()) {
-        System.out.println("La room esiste già");
-        return true;
-    } else {
-        System.out.println("La room non esiste");
-        return false;
+    //     // Se esistono room, restituisco true
+    //     if (!roomNames.isEmpty()) {
+    //         System.out.println("La room esiste già");
+    //         return true;
+    //     } else {
+    //         System.out.println("La room non esiste");
+    //         return false;
+    //     }
+    // }
+
+    public String getDescrizione(String nomeRoom) {
+        // Cerco se la room è stata già creata
+        Optional<Room> room = roomRepository.findBynome(nomeRoom);
+
+        String descrizioneRoom = room.get().getDescrizione();
+        System.out.println("Descrizione di " + nomeRoom + " " + descrizioneRoom);
+
+        // Se esistono room, restituisco true
+        if (descrizioneRoom.isEmpty()) {
+            System.out.println("Nessuna descrizione!");
+            return "Nessuna descrizione";
+        } else {
+            return descrizioneRoom;
+        }
     }
-}
 
-
-    public CompletableFuture<String> createRoom(String roomName, MultipartFile yamlFile) {
+    // Aggiunge la nuova room creata sul server che gestisce le risorse
+    public CompletableFuture<String> aggiungiRisorsaServer(String roomName, MultipartFile yamlFile) {
         try {
             String url = dockerApiBaseUrl + "/crea-room/";
 

@@ -3,10 +3,8 @@ package com.sad_security.sase.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sad_security.sase.model.Classe;
-import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.service.ClassService;
 import com.sad_security.sase.service.IscrizioneService;
-import com.sad_security.sase.service.StudenteService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +35,6 @@ public class ClassController {
 
     @Autowired
     private IscrizioneService iscrizioneService;
-    
- 
-   
 
     // utile per ottenere tutte le classi presenti nel DB
     @GetMapping("/getClassi")
@@ -73,31 +67,26 @@ public class ClassController {
 
     @PostMapping("/iscriviti")
     @ResponseBody
-    public Map<String, String> IscrizioneClasse(@RequestParam("nomeClasse") String nomeClasse ) {
-        
-        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
-        
-       
+    public Map<String, String> IscrizioneClasse(@RequestParam("nomeClasse") String nomeClasse) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         Map<String, String> response = new HashMap<>();
 
         if (authentication == null || !authentication.isAuthenticated() ||
-        authentication instanceof AnonymousAuthenticationToken) {
-        response.put("message", "Professore non autenticato");
-        response.put("type", "error");
-        return response;
+                authentication instanceof AnonymousAuthenticationToken) {
+            response.put("message", "Professore non autenticato");
+            response.put("type", "error");
+            return response;
         }
-
-      
 
         // ottengo l'oggetto studente
         String studentName = authentication.getName();
-          
-        
 
         // Verifica se l'utente è gia iscritto a quella classe
-        boolean iscritto = iscrizioneService.controllaIscrizione(studentName, nomeClasse); 
+        boolean iscritto = iscrizioneService.controllaIscrizione(studentName, nomeClasse);
 
-        if(iscritto){
+        if (iscritto) {
             response.put("message", "L'utente è già iscritto alla classe ");
             response.put("type", "error");
             return response;
@@ -107,24 +96,21 @@ public class ClassController {
         response.put("message", "L'utente si è iscritto alla classe ");
         response.put("type", "success");
         return response;
-    
-    }
 
+    }
 
     @GetMapping("/getClassiIscritte")
-@ResponseBody
-public List<String> getClassiIscrittePerStudente(Authentication authentication) {
-    String username = authentication.getName();
-    
+    @ResponseBody
+    public List<String> getClassiIscrittePerStudente(Authentication authentication) {
+        String username = authentication.getName();
 
-    if (username.isEmpty()) {
-        return Collections.emptyList();
+        if (username.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Ottieni lista di nomi classi a cui è iscritto lo studente
+        return iscrizioneService.getNomiClassiIscritte(username);
     }
-
-    // Ottieni lista di nomi classi a cui è iscritto lo studente
-    return iscrizioneService.getNomiClassiIscritte(username);
-}
-
 
     @PostMapping("/conferma-richiesta")
     public String ConfermaRichiesta(@RequestBody String entity) {

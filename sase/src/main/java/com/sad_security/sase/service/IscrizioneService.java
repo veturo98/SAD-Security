@@ -7,25 +7,22 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sad_security.sase.model.Classe;
 import com.sad_security.sase.model.Iscrizione;
-import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.repository.IscrizioneRepository;
 
 @Service
 public class IscrizioneService {
-    
+
     @Autowired
     private IscrizioneRepository iscrizioneRepository;
 
+    public void aggiungiIscrizione(String studente, String classe) {
 
-    public void aggiungiIscrizione (String studente, String classe){
+        Optional<Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);
 
-        Optional <Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);
-
-        if (iscrizione.isPresent()){
+        if (iscrizione.isPresent()) {
             System.out.println("l'utente è già iscritto");
-           
+
         }
         Iscrizione iscriviti = new Iscrizione();
         iscriviti.setStudente(studente);
@@ -33,15 +30,14 @@ public class IscrizioneService {
 
         iscrizioneRepository.save(iscriviti);
         System.out.println("l'utente si è iscritto alla classe");
-        
+
     }
 
+    public boolean controllaIscrizione(String studente, String classe) {
 
-    public boolean controllaIscrizione (String studente, String classe){
+        Optional<Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);
 
-        Optional <Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);
-
-        if (iscrizione.isPresent()){
+        if (iscrizione.isPresent()) {
             System.out.println("l'utente è già iscritto");
             return true;
         }
@@ -49,13 +45,12 @@ public class IscrizioneService {
 
     }
 
-    
     // Restituisce lista di nomi di classi a cui l'utente è iscritto
-  public List<String> getNomiClassiIscritte(String studente) {
-    List<Iscrizione> iscrizioni = iscrizioneRepository.findByStudente(studente);
-    return iscrizioni.stream()
-                     .map(Iscrizione::getClasse) // non getClasse().getNome()!
-                     .collect(Collectors.toList());
-}
+    public List<String> getNomiClassiIscritte(String studente) {
+        List<Iscrizione> iscrizioni = iscrizioneRepository.findByStudente(studente);
+        return iscrizioni.stream()
+                .map(Iscrizione::getClasse) // non getClasse().getNome()!
+                .collect(Collectors.toList());
+    }
 
 }

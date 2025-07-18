@@ -1,6 +1,5 @@
 package com.sad_security.sase.service;
 
-
 import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.repository.StudenteRepository;
 
@@ -37,7 +36,8 @@ public class StudenteService implements UserDetailsService {
                 .build();
     }
 
-      // Metodo per ritornare un oggetto utile all'iscrizione dello studente alla classe
+    // Metodo per ritornare un oggetto utile all'iscrizione dello studente alla
+    // classe
     public Optional<Studente> findByUsername(String username) {
         return studenteRepository.findByUsername(username);
     }
@@ -45,17 +45,15 @@ public class StudenteService implements UserDetailsService {
     public boolean autenticaStudente(String username, String password) {
 
         Studente studente = studenteRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Nome studente non trovato"));
+                .orElseThrow(() -> new UsernameNotFoundException("Nome studente non trovato"));
 
         // Verifica la vecchia password
-    if (!passwordEncoder.matches(password, studente.getPassword())) {
-        return false; // password errata
-    }
-    return true;
+        if (!passwordEncoder.matches(password, studente.getPassword())) {
+            return false; // password errata
+        }
+        return true;
     }
 
-
-    
     public boolean aggiungiStudente(String username, String password, String mail) {
 
         // Cerco se l'studente esiste già (mail o username già utilizzato)
@@ -87,31 +85,31 @@ public class StudenteService implements UserDetailsService {
 
     }
 
-    //Controlla che esiste la password nel database
+    // Controlla che esiste la password nel database
     public boolean checkpassowrd(String password, String username) {
 
         Studente studente = studenteRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Nome Studente non trovato"));
+                .orElseThrow(() -> new UsernameNotFoundException("Nome Studente non trovato"));
 
         // Verifica la vecchia password
-    if (!passwordEncoder.matches(password, studente.getPassword())) {
-        return false; // password errata
-    }
-      return true;
-    }
-
-       public boolean cambiaPasswordStudente(String username,String oldpassword, String newpassword) {
-    
-        Optional<Studente> optional = studenteRepository.findByUsername(username);
-        Boolean controllocredenziali = checkpassowrd(oldpassword, username);
-    if (optional.isPresent() && controllocredenziali) {
-        
-        Studente studente = optional.get();
-        studente.setPassword(passwordEncoder.encode(newpassword));
-        studenteRepository.save(studente);
+        if (!passwordEncoder.matches(password, studente.getPassword())) {
+            return false; // password errata
+        }
         return true;
     }
-    return false;
-}
+
+    public boolean cambiaPasswordStudente(String username, String oldpassword, String newpassword) {
+
+        Optional<Studente> optional = studenteRepository.findByUsername(username);
+        Boolean controllocredenziali = checkpassowrd(oldpassword, username);
+        if (optional.isPresent() && controllocredenziali) {
+
+            Studente studente = optional.get();
+            studente.setPassword(passwordEncoder.encode(newpassword));
+            studenteRepository.save(studente);
+            return true;
+        }
+        return false;
+    }
 
 }

@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sad_security.sase.model.Classe;
-import com.sad_security.sase.model.Room;
-import com.sad_security.sase.service.ClassService;
 import com.sad_security.sase.service.RoomService;
 
 import lombok.AllArgsConstructor;
@@ -40,6 +36,10 @@ public class RoomController {
     // Mappo la chiamata per l'avvio delle room
     @PostMapping("/studente/start")
     public CompletableFuture<String> startRoom(@RequestBody startRoomBody startRoom) {
+
+        // RICOMINCIA DA QUA DEVI CERCA IL TIMESTAMP E QUA DEVI ANDA A METTE QUELLO
+        // SCHIFO DI CHIAMATE AL DATABASE PER SALVARE L'ASSOCIAZIONE CHE PRIMA NON
+        // TENEVAMO, PER ORA MANDA SOLO LE RICHIESTE AL SERVER PYTHON
 
         // Formatto i campi pre l'invio della richiesta
         String Classe = startRoom.getNomeClass();
@@ -65,11 +65,13 @@ public class RoomController {
     }
 
     // Il professore crea un nuovo laboratorio
-    @PostMapping("/professore/creaLaboratorio")
+    @PostMapping("/professore/creaRoom")
     @ResponseBody
-    public Map<String, String> creaLaboratorio(
+    public Map<String, String> creaRoom(
             @RequestParam("classeId") String classeNome,
             @RequestParam("room") String roomName,
+            @RequestParam("descrizione") String descrizione,
+            @RequestParam("flag") String flag,
             @RequestParam("yamlFile") MultipartFile yamlFile) {
 
         Map<String, String> response = new HashMap<>();
@@ -92,7 +94,7 @@ public class RoomController {
             System.out.println("Contenuto YAML:\n" + yamlContent);
 
             // Salva la room nel database
-            roomService.aggiungiRoom(roomName);
+            roomService.salvaNuovaRoom(roomName, descrizione, flag);
 
             // salvare l'associazione
             boolean associazione = roomService.aggiungiassociazione(classeNome, roomName);
@@ -103,7 +105,7 @@ public class RoomController {
             }
 
             // service per inviare dati al backend
-            roomService.createRoom(roomName, yamlFile);
+            roomService.aggiungiRisorsaServer(roomName, yamlFile);
 
             response.put("message", "Laboratorio creato con successo.");
             response.put("type", "success");
@@ -120,24 +122,28 @@ public class RoomController {
         return response;
     }
 
-  
-    @GetMapping({"/professore/checkroom","/studente/checkroom"})
+    @GetMapping({ "/professore/checkroom", "/studente/checkroom" })
     @ResponseBody
     public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
 
-    boolean exists = roomService.checkRoom(roomName);
-    Map<String, String> response = new HashMap<>();
-    if (exists) {
-    response.put("message", "La room esiste già");
-    response.put("type", "error");
-    } else {
-    response.put("message", "Nome room disponibile");
-    response.put("type", "success");
+        boolean exists = roomService.checkRoom(roomName);
+        Map<String, String> response = new HashMap<>();
+        if (exists) {
+            response.put("message", "La room esiste già");
+            response.put("type", "error");
+        } else {
+            response.put("message", "Nome room disponibile");
+            response.put("type", "success");
+        }
+
+        return response;
     }
 
-    return response;
+    @GetMapping("/studente/getDescrizioneRoom")
+    public ResponseEntity<String> getDescrizioneRoom(@RequestParam String nomeRoom) {
+        String descrizione = roomService.getDescrizione(nomeRoom);
+        return ResponseEntity.ok(descrizione);
     }
-
 
     @GetMapping("/getRoomsPerClasse")
     public ResponseEntity<List<String>> getRoomsPerClasse(@RequestParam String nomeClasse) {

@@ -1,6 +1,5 @@
 package com.sad_security.sase;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +31,6 @@ public class DatabaseInitializer implements CommandLineRunner {
         if (userRepository.count() == 0) {
             System.out.println("Populating database with initial data...");
 
-
             Studente user1 = new Studente();
             user1.setUsername("alice");
             user1.setMail("alice@example.com");
@@ -42,7 +40,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             Studente user2 = new Studente();
             user2.setUsername("bob");
             user2.setMail("bob@example.com");
-            user2.setPassword(passwordEncoder.encode("bobpassword"));       
+            user2.setPassword(passwordEncoder.encode("bobpassword"));
             userRepository.save(user2);
 
             Studente user3 = new Studente();
@@ -64,7 +62,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             prof1.setUsername("fasolino");
             prof1.setMail("fasolino@unina.it");
             prof1.setPassword(passwordEncoder.encode("fasolinopassword"));
-            
+
             profRepository.save(prof1);
 
             Professore prof2 = new Professore();

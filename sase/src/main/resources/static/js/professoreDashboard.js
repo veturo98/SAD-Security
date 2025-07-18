@@ -337,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
             title: "Crea Laboratorio",
             desc: `
                 <p>Imposta un nuovo laboratorio, specifica la durata, il contenuto e gli studenti assegnati.</p>
-                <form id="create-lab-form" action="/room/professore/creaLaboratorio" method="post">
+                <form id="create-lab-form" action="/room/professore/creaRoom" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
                 <div class="form-group">
                     <label for="classSelect"> Nome classe:</label>
@@ -349,6 +349,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     <label for="roomName">Nome Laboratorio:</label>
                     <input type="text" id="roomName" name="room" required>
                     <div id="form-roomName-message" style="margin-top: 15px; font-weight: bold;"></div>
+                </div>
+                <div class="form-group">
+                <label for="roomDescrizione">Descrizione Laboratorio:</label>
+                    <input type="text" id="roomDescrizione" name="descrizione" required>
+                    <div id="form-roomDescrizione-message" style="margin-top: 15px; font-weight: bold;"></div>
+                </div>
+                <div class="form-group">
+                <label for="roomFlag">Flag:</label>
+                    <input type="text" id="roomFlag" name="flag" required>
+                    <div id="form-roomFlag-message" style="margin-top: 15px; font-weight: bold;"></div>
                 </div>
                 <div class="form-group">    
                     <label for="yamlFile">File YAML:</label>

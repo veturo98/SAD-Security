@@ -6,7 +6,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const descEl = document.getElementById("section-description");
 
 
+    async function getDescrizione(nomeLab) {
+        try {
+            const response = await fetch(`/room/studente/getDescrizioneRoom?nomeRoom=${encodeURIComponent(nomeLab)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
+            if (!response.ok) throw new Error("Errore nel recupero della descrizione della room");
+
+            return await response.text(); // supponiamo sia un array di nomi di lab
+        } catch (error) {
+            console.error("Errore durante il caricamento della descrizione:", error);
+            return [];
+        }
+    }
 
     async function getLabsPerClasse(nomeClasse) {
         try {
@@ -231,65 +247,68 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Aggiunge una classe alla sidebar con relativo listener
-function aggiungiClasseAllaSidebar(nomeClasse) {
-    const sidebar = document.getElementById("student-sidebar-options");
-    if (!sidebar) return;
+    function aggiungiClasseAllaSidebar(nomeClasse) {
+        const sidebar = document.getElementById("student-sidebar-options");
+        if (!sidebar) return;
 
-    const exists = Array.from(sidebar.querySelectorAll("a.sidebar-item"))
-        .some(link => link.textContent.trim() === nomeClasse);
-    if (exists) return;
+        const exists = Array.from(sidebar.querySelectorAll("a.sidebar-item"))
+            .some(link => link.textContent.trim() === nomeClasse);
+        if (exists) return;
 
-    const li = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = "#";
-    a.classList.add("sidebar-item");
-    a.dataset.option = nomeClasse;
-    a.textContent = nomeClasse;
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#";
+        a.classList.add("sidebar-item");
+        a.dataset.option = nomeClasse;
+        a.textContent = nomeClasse;
 
-    li.appendChild(a);
-    sidebar.appendChild(li);
+        li.appendChild(a);
+        sidebar.appendChild(li);
 
-    a.addEventListener("click", async () => {
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
-        const utente = document.getElementById("user")?.textContent || "unknown";
+        a.addEventListener("click", async () => {
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
+            const utente = document.getElementById("user")?.textContent || "unknown";
 
-        titleEl.textContent = `Classe: ${nomeClasse}`;
-        descEl.innerHTML = `<p>Seleziona una room per la classe <strong>${nomeClasse}</strong>:</p>`;
+            titleEl.textContent = `Classe: ${nomeClasse}`;
+            descEl.innerHTML = `<p>Seleziona una room per la classe <strong>${nomeClasse}</strong>:</p>`;
 
-        const labs = await getLabsPerClasse(nomeClasse);
+            const labs = await getLabsPerClasse(nomeClasse);
 
-        if (!Array.isArray(labs) || labs.length === 0) {
-            descEl.innerHTML += "<p>Nessuna room disponibile per questa classe.</p>";
-            return;
-        }
+            if (!Array.isArray(labs) || labs.length === 0) {
+                descEl.innerHTML += "<p>Nessuna room disponibile per questa classe.</p>";
+                return;
+            }
 
-        const listContainer = document.createElement("ul");
-        listContainer.classList.add("room-list");
+            const listContainer = document.createElement("ul");
+            listContainer.classList.add("room-list");
 
-        labs.forEach(nomeLab => {
-            const roomItem = document.createElement("li");
-            roomItem.style.cursor = "pointer";
-            roomItem.style.padding = "8px";
-            roomItem.style.borderBottom = "1px solid #ccc";
-            roomItem.textContent = nomeLab;
+            labs.forEach(nomeLab => {
+                const roomItem = document.createElement("li");
+                roomItem.style.cursor = "pointer";
+                roomItem.style.padding = "8px";
+                roomItem.style.borderBottom = "1px solid #ccc";
+                roomItem.textContent = nomeLab;
 
-            roomItem.addEventListener("click", () => {
-                renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader);
+                roomItem.addEventListener("click", () => {
+                    renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader);
+                });
+
+                listContainer.appendChild(roomItem);
             });
 
-            listContainer.appendChild(roomItem);
+            descEl.appendChild(listContainer);
         });
-
-        descEl.appendChild(listContainer);
-    });
-}
+    }
 
 
-function renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader) {
-    descEl.innerHTML = `
+    async function renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader) {
+
+        const descrizione = await getDescrizione(nomeLab);
+
+        descEl.innerHTML = `
         <h3>Room: ${nomeLab}</h3>
-        <p>Stai visualizzando la room <strong>${nomeLab}</strong> della classe <strong>${nomeClasse}</strong>.</p>
+        <p>Descrizione<br>${descrizione}.</p>
         <div style="margin-top: 10px;">
             <button class="btn start-room-btn">Avvia Room</button>
             <button class="btn stop-room-btn" style="margin-left: 10px;">Ferma Room</button>
@@ -298,51 +317,51 @@ function renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader) {
         <button class="btn" style="margin-top: 20px;" id="back-to-list">⬅ Torna alle Room</button>
     `;
 
-    const startBtn = descEl.querySelector(".start-room-btn");
-    const stopBtn = descEl.querySelector(".stop-room-btn");
-    const areaRisposta = descEl.querySelector(".room-status");
-    const backBtn = descEl.querySelector("#back-to-list");
+        const startBtn = descEl.querySelector(".start-room-btn");
+        const stopBtn = descEl.querySelector(".stop-room-btn");
+        const areaRisposta = descEl.querySelector(".room-status");
+        const backBtn = descEl.querySelector("#back-to-list");
 
-    startBtn.addEventListener("click", () => {
-        startRoomContainer(nomeClasse, nomeLab, utente, csrfToken, csrfHeader, areaRisposta);
-    });
-
-    stopBtn.addEventListener("click", () => {
-        stopRoomContainer(utente, csrfToken, csrfHeader, areaRisposta);
-    });
-
-    backBtn.addEventListener("click", async () => {
-        // Ricarica la lista delle room per la classe
-        titleEl.textContent = `Classe: ${nomeClasse}`;
-        descEl.innerHTML = `<p>Seleziona una room per la classe <strong>${nomeClasse}</strong>:</p>`;
-
-        const labs = await getLabsPerClasse(nomeClasse);
-
-        if (!Array.isArray(labs) || labs.length === 0) {
-            descEl.innerHTML += "<p>Nessuna room disponibile per questa classe.</p>";
-            return;
-        }
-
-        const listContainer = document.createElement("ul");
-        listContainer.classList.add("room-list");
-
-        labs.forEach(nomeLab => {
-            const roomItem = document.createElement("li");
-            roomItem.style.cursor = "pointer";
-            roomItem.style.padding = "8px";
-            roomItem.style.borderBottom = "1px solid #ccc";
-            roomItem.textContent = nomeLab;
-
-            roomItem.addEventListener("click", () => {
-                renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader);
-            });
-
-            listContainer.appendChild(roomItem);
+        startBtn.addEventListener("click", () => {
+            startRoomContainer(nomeClasse, nomeLab, utente, csrfToken, csrfHeader, areaRisposta);
         });
 
-        descEl.appendChild(listContainer);
-    });
-}
+        stopBtn.addEventListener("click", () => {
+            stopRoomContainer(utente, csrfToken, csrfHeader, areaRisposta);
+        });
+
+        backBtn.addEventListener("click", async () => {
+            // Ricarica la lista delle room per la classe
+            titleEl.textContent = `Classe: ${nomeClasse}`;
+            descEl.innerHTML = `<p>Seleziona una room per la classe <strong>${nomeClasse}</strong>:</p>`;
+
+            const labs = await getLabsPerClasse(nomeClasse);
+
+            if (!Array.isArray(labs) || labs.length === 0) {
+                descEl.innerHTML += "<p>Nessuna room disponibile per questa classe.</p>";
+                return;
+            }
+
+            const listContainer = document.createElement("ul");
+            listContainer.classList.add("room-list");
+
+            labs.forEach(nomeLab => {
+                const roomItem = document.createElement("li");
+                roomItem.style.cursor = "pointer";
+                roomItem.style.padding = "8px";
+                roomItem.style.borderBottom = "1px solid #ccc";
+                roomItem.textContent = nomeLab;
+
+                roomItem.addEventListener("click", () => {
+                    renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader);
+                });
+
+                listContainer.appendChild(roomItem);
+            });
+
+            descEl.appendChild(listContainer);
+        });
+    }
 
 
     // Verifica vecchia password

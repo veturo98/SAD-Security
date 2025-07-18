@@ -7,16 +7,15 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
 // DATO CHE SONO ENTRAMBI CORTI VALUTARE DI METTERE IN UN UNICO REPOSITORY LE INFORMAZIONI DI STUDENTE E PROFESSORE.
 // 
 @Repository
 public interface StudenteRepository extends JpaRepository<Studente, Long> {
-    // Spring Data JPA fornirà automaticamente le implementazioni dei metodi CRUD (save, findById, findAll, count, etc.)
+    // Spring Data JPA fornirà automaticamente le implementazioni dei metodi CRUD
+    // (save, findById, findAll, count, etc.)
     // Puoi aggiungere qui metodi personalizzati se necessario, ad esempio:
     Optional<Studente> findByUsername(String username);
+
     Optional<Studente> findByMail(String mail);
 
-    
 }
-

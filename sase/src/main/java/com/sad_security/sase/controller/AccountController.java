@@ -94,7 +94,6 @@ public class AccountController {
         // nome del professore che ha fatto la richiesta
         String username = authentication.getName();
 
-
         // Logica condizionata
         String requestPath = request.getRequestURI(); // Esempio: "/path1"
         boolean changePassowrd;
@@ -123,7 +122,6 @@ public class AccountController {
 
         return res;
     }
-
 
     // Utile per verificare se la password vecchia è corretta
     @GetMapping({ "/professore/checkOldPassword", "/studente/checkOldPassword" })
@@ -163,7 +161,7 @@ public class AccountController {
         return response;
     }
 
-    @PostMapping({"professore/visualizza-messaggi", "studente/visualizza-messaggi"})
+    @PostMapping({ "professore/visualizza-messaggi", "studente/visualizza-messaggi" })
     public String VisualizzazioneMessaggi(@RequestBody String entity) {
         // TODO: process POST request
 
