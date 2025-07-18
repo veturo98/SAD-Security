@@ -1,5 +1,7 @@
 package com.sad_security.sase.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,10 +20,10 @@ public class RoomAvviata {
     @JoinColumn(name = "Room") // identifiativo della room
     private String room;
 
-    @Column(name = "timestamp")
-    private int timestamp;
+    @Column(name = "tempoAvvio")
+    private LocalDateTime timestamp;
 
     @Column(name = "score")
-    private String password;
+    private long score;
 
 }

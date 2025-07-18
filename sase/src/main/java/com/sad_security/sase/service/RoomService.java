@@ -9,10 +9,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sad_security.sase.controller.RoomController.startRoomBody;
 import com.sad_security.sase.controller.RoomController.stopRoomBody;
 import com.sad_security.sase.model.Room;
+import com.sad_security.sase.model.RoomAvviata;
 import com.sad_security.sase.model.RoomClasse;
+import com.sad_security.sase.repository.RoomAvviataRepository;
 import com.sad_security.sase.repository.RoomClasseRepository;
 import com.sad_security.sase.repository.RoomRepository;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -229,5 +233,71 @@ public class RoomService {
             return false;
         }
     }
+
+
+    @Autowired
+    private RoomAvviataRepository roomAvviataRepository;
+    
+
+    //Verifica se l'utente ha avviato una room, e nel caso viene creata l'associazione nel database
+    public boolean VerificaRoomAvviata(String room, String studente) {
+        
+        // Cerco se l'utnete ha già avviato la room
+        Optional<RoomAvviata> roomAvviata = roomAvviataRepository.findByRoomAndStudente( room, studente);
+        
+        // Se la room è stata già avviata dallo studente ritorno
+        if (roomAvviata.isPresent()) {
+            System.out.println("l'utente ha già avviato la room");
+            return true;
+        } else {
+
+            // Creazione associazione
+            RoomAvviata roomAvv = new RoomAvviata();
+            roomAvv.setRoom(room);
+            roomAvv.setStudente(studente);
+            roomAvv.setTimestamp(LocalDateTime.now());
+
+            roomAvviataRepository.save(roomAvv);
+            System.out.println("Associazione creata: room '" + room + "' avviata dallo studente '" + studente + "'.");
+
+            return false;
+        }
+    }
+
+
+    // Verifica se la flag inserita è corretta
+    public LocalDateTime flagCorretta(String studente, String room ,String flag ){
+
+        // Ottengo la flag corrispondente alla room nel database
+       String flagDatabase = roomRepository.findBynome(flag).get().getFlag();
+
+       if(flagDatabase.equals(flag)){
+
+        LocalDateTime startTimestamp = roomAvviataRepository.findTimeByRoomAndStudente(room,studente);
+        return startTimestamp;
+       }
+       return null;
+       
+    }
+
+     // Calcola score 
+    public boolean calcoloScore (String room, String studente, LocalDateTime tempoAvvio, LocalDateTime tempoCompletamento){
+
+       RoomAvviata roomAvv = roomAvviataRepository.findByRoomAndStudente(room, studente).get();
+
+        long tempoImpiegato = Duration.between(tempoAvvio, tempoCompletamento).toMinutes();
+        long score = 100-((tempoImpiegato/120)*100);
+        
+        // RoomAvviata roomAvv = new RoomAvviata();
+
+
+        if(score<0){
+            score =0;
+        }
+        
+        roomAvv.setScore(score);
+        roomAvviataRepository.save(roomAvv);
+        return true;
+    } 
 
 }

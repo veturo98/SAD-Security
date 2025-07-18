@@ -2,6 +2,7 @@ package com.sad_security.sase.controller;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,14 @@ public class RoomController {
 
         System.out.println("Sono il controller ed ho ricevuto questo" + startRoom);
 
+        // controllo se la room è già stata avviata dall'utente
+        boolean giàAvviata = roomService.VerificaRoomAvviata(Lab, Utente);
+
+        if (giàAvviata){
+             return CompletableFuture.completedFuture("La room è già stata avviata per questo utente.");
+        }
+        
+        
         return roomService.startContainerAsync(Classe, Lab, Utente);
     }
 
@@ -145,6 +154,7 @@ public class RoomController {
         return ResponseEntity.ok(descrizione);
     }
 
+
     @GetMapping("/getRoomsPerClasse")
     public ResponseEntity<List<String>> getRoomsPerClasse(@RequestParam String nomeClasse) {
         List<String> rooms = roomService.getRoomListbyClasse(nomeClasse);
@@ -158,11 +168,23 @@ public class RoomController {
         return entity;
     }
 
+    // per verificare la flag ho bisogno dello studente, room e classe 
     @PostMapping("/studente/flag")
-    public String InserimentoFlag(@RequestBody String entity) {
-        // TODO: process POST request
+    public String InserimentoFlag(@RequestParam String nomeClass, @RequestParam String nomeRoom, @RequestParam String studente, @RequestParam String flag ) {
+        
+        // salvo timestamp 
+        LocalDateTime submitTime =  LocalDateTime.now();
+        
+        LocalDateTime startTime = roomService.flagCorretta(studente, nomeRoom,flag);
+        
+        // chiamo la funzione del clacolo dello score
+        if (startTime != null){
+            roomService.calcoloScore(nomeRoom, studente, submitTime, startTime);
+            return "Flag corretta";
+        }
+        
 
-        return entity;
+        return "Flag sbagliata";
     }
 
     @PostMapping({ "/professore/risultati/visualizza", "/studente/risultati/visualizza" })
