@@ -192,38 +192,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    // verifica che la password vecchia sia corretta
-    function oldPasswordCheck() {
-        const oldpasswordInput = document.getElementById("oldPassword");
-        const msgOldPassword = document.getElementById("old-password-message");
+    // // verifica che la password vecchia sia corretta
+    // function oldPasswordCheck() {
+    //     const oldpasswordInput = document.getElementById("oldPassword");
+    //     const msgOldPassword = document.getElementById("old-password-message");
 
-        if (!oldpasswordInput) return;
+    //     if (!oldpasswordInput) return;
 
-        oldpasswordInput.addEventListener("blur", function () {
+    //     oldpasswordInput.addEventListener("blur", function () {
 
-            const oldPassword = oldpasswordInput.value.trim();
+    //         const oldPassword = oldpasswordInput.value.trim();
 
-            if (!oldPassword) {
-                msgOldPassword.textContent = "Il campo password non può essere vuoto.";
-                msgOldPassword.style.color = "red";
-                return;
-            }
+    //         if (!oldPassword) {
+    //             msgOldPassword.textContent = "Il campo password non può essere vuoto.";
+    //             msgOldPassword.style.color = "red";
+    //             return;
+    //         }
 
-            fetch(`/account/professore/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, {
-                credentials: 'same-origin'
-            })
-                .then(res => res.json())
-                .then(data => {
-                    msgOldPassword.textContent = data.message;
-                    msgOldPassword.style.color = data.type === "error" ? "red" : "green";
-                })
-                .catch(err => {
-                    console.error("Errore nella verifica della vecchia password:", err);
-                    msgOldPassword.textContent = "Errore durante la verifica.";
-                    msgOldPassword.style.color = "red";
-                });
-        });
-    }
+    //         fetch(`/account/professore/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, {
+    //             credentials: 'same-origin'
+    //         })
+    //             .then(res => res.json())
+    //             .then(data => {
+    //                 msgOldPassword.textContent = data.message;
+    //                 msgOldPassword.style.color = data.type === "error" ? "red" : "green";
+    //             })
+    //             .catch(err => {
+    //                 console.error("Errore nella verifica della vecchia password:", err);
+    //                 msgOldPassword.textContent = "Errore durante la verifica.";
+    //                 msgOldPassword.style.color = "red";
+    //             });
+    //     });
+    // }
 
     //verifica che la nuova passord e quella di conferma sono uguali 
     function confermaPasswordRealtime() {
@@ -287,10 +287,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         messageElement.style.color = "green";
                         form.reset();
                         setTimeout(() => {
-                            window.location.href = "/login";  // Metti qui l'URL della tua pagina di login
+                            window.location.href = "/professore/login";  // Metti qui l'URL della tua pagina di login
                         }, 1000); // aspetta 2 secondi per far vedere il messaggio
                     } else {
-                        messageElement.textContent = data.message || "Errore nel cambio password";
+                        messageElement.textContent = data.msg || "Errore nel cambio password";
                         messageElement.style.color = "red";
                     }
                 })
@@ -991,7 +991,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     descEl.innerHTML = content[key].desc;
                     setTimeout(() => {
-                        oldPasswordCheck();// controlla old passwrod
+                        // oldPasswordCheck();// controlla old passwrod
                         cambiaPassword();//crea nuova password
                         confermaPasswordRealtime(); //controlla le nuove password
                     }, 0);

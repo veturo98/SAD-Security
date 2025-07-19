@@ -639,34 +639,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // Verifica vecchia password
-    function oldPasswordCheck() {
-        const oldpasswordInput = document.getElementById("oldPassword");
-        const msgOldPassword = document.getElementById("old-password-message");
-        if (!oldpasswordInput || !msgOldPassword) return;
+    // // Verifica vecchia password
+    // function oldPasswordCheck() {
+    //     const oldpasswordInput = document.getElementById("oldPassword");
+    //     const msgOldPassword = document.getElementById("old-password-message");
+    //     if (!oldpasswordInput || !msgOldPassword) return;
 
-        oldpasswordInput.addEventListener("blur", async () => {
-            const oldPassword = oldpasswordInput.value.trim();
+    //     oldpasswordInput.addEventListener("blur", async () => {
+    //         const oldPassword = oldpasswordInput.value.trim();
 
-            if (!oldPassword) {
-                msgOldPassword.textContent = "Il campo password non può essere vuoto.";
-                msgOldPassword.style.color = "red";
-                return;
-            }
+    //         if (!oldPassword) {
+    //             msgOldPassword.textContent = "Il campo password non può essere vuoto.";
+    //             msgOldPassword.style.color = "red";
+    //             return;
+    //         }
 
-            try {
-                const res = await fetch(`/account/studente/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, { credentials: 'same-origin' });
-                const data = await res.json();
+    //         try {
+    //             const res = await fetch(`/account/studente/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, { credentials: 'same-origin' });
+    //             const data = await res.json();
 
-                msgOldPassword.textContent = data.message;
-                msgOldPassword.style.color = data.type === "error" ? "red" : "green";
-            } catch (error) {
-                console.error("Errore nella verifica della vecchia password:", error);
-                msgOldPassword.textContent = "Errore durante la verifica.";
-                msgOldPassword.style.color = "red";
-            }
-        });
-    }
+    //             msgOldPassword.textContent = data.message;
+    //             msgOldPassword.style.color = data.type === "error" ? "red" : "green";
+    //         } catch (error) {
+    //             console.error("Errore nella verifica della vecchia password:", error);
+    //             msgOldPassword.textContent = "Errore durante la verifica.";
+    //             msgOldPassword.style.color = "red";
+    //         }
+    //     });
+    // }
 
     // Conferma nuova password in tempo reale
     function confermaPasswordRealtime() {
@@ -731,7 +731,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.location.href = "/login";
                     }, 1000);
                 } else {
-                    messageElement.textContent = data.message || "Errore nel cambio password";
+                    messageElement.textContent = data.msg || "Errore nel cambio password";
                     messageElement.style.color = "red";
                 }
             } catch (error) {
@@ -857,7 +857,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     setupIscrizioneClasse();
                 });
             } else if (key === "Cambia Password") {
-                oldPasswordCheck();
+                // oldPasswordCheck();
                 confermaPasswordRealtime();
                 cambiaPassword();
             } else if (key === "Logout") {

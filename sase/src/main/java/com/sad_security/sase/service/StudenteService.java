@@ -1,16 +1,21 @@
 package com.sad_security.sase.service;
 
-import com.sad_security.sase.model.Studente;
-import com.sad_security.sase.repository.StudenteRepository;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Optional;
+import com.sad_security.sase.model.Studente;
+import com.sad_security.sase.repository.StudenteRepository;
 
 @Service("studenteDetailsService")
 public class StudenteService implements UserDetailsService {
@@ -82,6 +87,92 @@ public class StudenteService implements UserDetailsService {
 
             return false;
         }
+
+    }
+
+    // FUNZIONI DI VALIDAZIONE
+    public Map<String, String> validaRegistrazione(String password, String mail) {
+
+        // Esito della validazione
+        Map<String, String> result = new HashMap<>();
+
+        // Controllo la password e nel caso esco
+        Map<String, String> validazione = validaPassword(password);
+        if (!validazione.isEmpty()) {
+            result = validazione;
+            return result;
+        }
+
+        // Controllo la mail - Pattern: qualcosa@qualcosa.dominio
+        String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+
+        if (!mail.matches(regex)) {
+            result.put("msg", "L'email non è valida.");
+            result.put("type", "error");
+
+            return result;
+        }
+
+        // Nessun errore
+        return Collections.emptyMap();
+
+    }
+
+    // Validazione della password
+    public Map<String, String> validaPassword(String password) {
+
+        Map<String, String> result = new HashMap<>();
+
+        // Vuota
+        if (password == null || password.isEmpty()) {
+            result.put("msg", "La password non può essere vuota.");
+            result.put("type", "error");
+
+            return result;
+        }
+
+        // Troppo corta
+        if (password.length() < 8) {
+            result.put("msg", "La password deve contenere almeno 8 caratteri.");
+            result.put("type", "error");
+
+            return result;
+        }
+
+        // Senza maiuscole
+        if (!password.matches(".*[A-Z].*")) {
+            result.put("msg", "La password deve contenere almeno una lettera maiuscola.");
+            result.put("type", "error");
+
+            return result;
+        }
+
+        // Senza numeri
+        if (!password.matches(".*\\d.*")) {
+            result.put("msg", "La password deve contenere almeno un numero.");
+            result.put("type", "error");
+
+            return result;
+        }
+
+        // Senza caratteri speciali
+        if (!password.matches(".*[!@#$%^&*()\\-+=\\[\\]{};:,.<>/?].*")) {
+            result.put("msg", "La password deve contenere almeno un carattere speciale.");
+            result.put("type", "error");
+
+            return result;
+        }
+
+        // Contiene spazi
+        if (password.matches(".*\\s.*")) {
+            result.put("msg", "La password non può contenere spazi.");
+            result.put("type", "error");
+
+            return result;
+        }
+
+        // Nessun errore
+        return Collections.emptyMap();
 
     }
 

@@ -4,14 +4,17 @@
 
 <head>
     <title>Sad Security</title>
+    <script th:src="@{/js/registration.js}"></script>
+
 </head>
 
 <body>
+
     <div layout:fragment="content">
-        <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></h3>
+        <div id="registration-error" style="color: red; margin-top: 10px;"></div>
 
         <h2 class="mb-4">Registrati</h2>
-        <form th:action="@{/account/add/user}" method="post">
+        <form id="registration-form" th:action="@{/account/add/user}" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required />

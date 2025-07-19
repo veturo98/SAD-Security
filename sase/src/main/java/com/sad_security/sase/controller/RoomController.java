@@ -180,13 +180,6 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-    @PostMapping("/professore/risultati/pubblica")
-    public String PubblicazioneRisultati(@RequestBody String entity) {
-        // TODO: process POST request
-
-        return entity;
-    }
-
     // per verificare la flag ho bisogno dello studente, room e classe
     @PostMapping("/studente/flag")
     public Map<String, String> InserimentoFlag(@RequestParam String room, @RequestParam String studente,

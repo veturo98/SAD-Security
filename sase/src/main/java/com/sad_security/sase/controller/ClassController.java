@@ -21,7 +21,6 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -128,19 +127,6 @@ public class ClassController {
         return iscrizioneService.getNomiClassiIscritte(username);
     }
 
-    @PostMapping("/conferma-richiesta")
-    public String ConfermaRichiesta(@RequestBody String entity) {
-        // TODO: process POST request
-
-        return entity;
-    }
-
-    @PostMapping("/aggiungi-studente")
-    public String AggiuntaStudene(@RequestBody String entity) {
-        // TODO: process POST request
-
-        return entity;
-    }
 
     // Dichiaro la classe che contiene il corpo della richiesta di stop della room
     @Data
