@@ -3,6 +3,7 @@ package com.sad_security.sase.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sad_security.sase.model.Classe;
+import com.sad_security.sase.model.Iscrizione;
 import com.sad_security.sase.service.ClassService;
 import com.sad_security.sase.service.IscrizioneService;
 
@@ -44,6 +45,21 @@ public class ClassController {
         return classi.stream()
                 .map(Classe::getNome)
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("/professore/lista-iscritti")
+    @ResponseBody
+    public List<Map<String, Object>> getStudenti(@RequestParam("classeId") String classe) {
+        List<Iscrizione> iscrizioni = iscrizioneService.trovaStudenti(classe);
+
+        return iscrizioni.stream()
+                .map(r -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("studente", r.getStudente());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
     }
 
     // In questo caso uso map perché devo solamente restituire un messaggio di

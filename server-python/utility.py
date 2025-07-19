@@ -14,3 +14,9 @@ def trova_prima_porta_libera(start_port, end_port, host='127.0.0.1'):
             except OSError:
                 continue
     return None  # Nessuna porta libera trovata
+
+def sostituisci_spazi_con_hyphen(s):
+    if ' ' in s:
+        return s.replace(' ', '-')
+    return s
+

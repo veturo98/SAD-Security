@@ -14,4 +14,7 @@ public interface IscrizioneRepository extends JpaRepository<Iscrizione, Long> {
   Optional<Iscrizione> findByStudenteAndClasse(String studenteName, String classeName);
 
   List<Iscrizione> findByStudente(String studenteName); // restituisce una lista di classi a cui l'utente è iscritto
+
+  List<Iscrizione> findByClasse(String classe); // restituisce la lista di studenti iscritti alla classe
+
 }

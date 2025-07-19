@@ -12,14 +12,14 @@ from flask import jsonify, request
 
 # AVVIO DEI CONTAINER
 def start_container():
+
     data = request.get_json()
     if not data:
         return jsonify({"error": "Dati JSON mancanti o non validi nel corpo della richiesta"}), 400
 
     classe = data.get('nomeClass')
     room = data.get('nomeLab')
-    utente = data.get('utente')
-    
+    utente = data.get('utente')    
     
     print(f"Ricevuta richiesta per avviare il container: {room}")
     print(f"Ricevuta richiesta per avviare la classe: {classe}")
@@ -46,15 +46,19 @@ def start_container():
         print(f"Errore durante l'esecuzione del comando: {e}")
         print(f"Errore standard: {e.stderr}")
 
-    # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
-    return (f"Container '{classe}' e '{room}' per l'utente' {utente}' avviati con successo", 200)
+    #########   #########   #########   #########   #########   #########   #########   #########
+    # ATTENZIONE - il campo IP deve contenere l'indirizzo del nodo che esegue il server.py 
+    ip = "localhost"
+    return jsonify({"msg" : f"Room {room} avviata con successo per l'utente {utente}! Per il collegamento usa il comando nella box.", "command" : f"ssh -p {porta} root@{ip}"}), 200
+    #########   #########   #########   #########   #########   #########   #########   #########
 
 
 # FUNZIONE DI STOP DEI CONTAINER
 def stop_container():
+
     data = request.get_json()
     if not data:
-        return jsonify({"error": "Dati JSON mancanti o non validi nel corpo della richiesta"}), 400
+        return None, 400
 
     utente = data.get('utente')
     
@@ -76,7 +80,7 @@ def stop_container():
         print(f"Errore standard: {e.stderr}")
 
     # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
-    return (f"Container per l'utente' {utente}' distrutto con successo", 200)
+    return jsonify({"msg" : "Container distrutto con successo"}), 200
 
 
 # CREAZIONE ROOM

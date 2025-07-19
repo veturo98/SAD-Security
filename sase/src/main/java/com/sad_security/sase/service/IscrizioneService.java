@@ -53,4 +53,11 @@ public class IscrizioneService {
                 .collect(Collectors.toList());
     }
 
+
+    // Restituisce gli studenti iscritti alla classe 
+    public List<Iscrizione> trovaStudenti(String classe) {
+        List<Iscrizione> iscrizioni = iscrizioneRepository.findByClasse(classe);
+        return iscrizioni;
+    }
+
 }

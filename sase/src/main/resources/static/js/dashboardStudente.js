@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Funzione per avviare il container di una room
-    async function startRoomContainer(nomeClasse, nomeLab, utente, token, header, areaRisposta) {
+    async function startRoomContainer(nomeClasse, nomeLab, utente, token, header, areaRisposta, commandBox) {
         areaRisposta.textContent = 'Avvio in corso...';
 
         try {
@@ -89,8 +89,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
             });
 
-            const data = await response.text();
-            areaRisposta.textContent = 'Risposta: ' + data;
+            const data = await response.json();
+
+            areaRisposta.textContent = 'Risposta: ' + data.msg;
+            commandBox.textContent = data.command;
 
         } catch (error) {
             console.error('Errore durante la richiesta:', error);
@@ -112,8 +114,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify({ 'utente': utente })
             });
 
-            const data = await response.text();
-            areaRisposta.textContent = 'Risposta: ' + data;
+            const data = await response.json();
+            areaRisposta.textContent = 'Risposta: ' + data.msg;
 
         } catch (error) {
             console.error('Errore durante la richiesta:', error);
@@ -188,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Carica le classi nel select specificato e popola dinamicamente le room al cambio classe
-    async function caricaClassieRoomNelSelect(classSelectId, roomSelectId) {
+    async function caricaRisultati(classSelectId, roomSelectId) {
         const classSelect = document.getElementById(classSelectId);
         const roomSelect = document.getElementById(roomSelectId);
 
@@ -532,14 +534,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const descrizione = await getDescrizione(nomeLab);
 
         descEl.innerHTML = `
-        <h3>Room: ${nomeLab}</h3>
-        <p>Descrizione<br>${descrizione.descrizione}.</p>
+        <h2>Room: ${nomeLab}</h3>
+        <p>${descrizione.descrizione}.</p>
         <div style="margin-top: 10px;">
             <button class="btn start-room-btn">Avvia Room</button>
             <button class="btn stop-room-btn" style="margin-left: 10px;">Ferma Room</button>
         </div>
         <div>
-        <p id="insFlag" hidden>Inserisci la flag</p>
+        <h3 id="insFlag" hidden>Inserisci la flag</h3>
         <form id="submit-flag" action="/room/studente/flag" method="post">
             <input type="hidden" name="room" value="${nomeLab}" />
             <input type="hidden" name="studente" value="${utente}" />
@@ -548,18 +550,21 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <p id="flag-result-msg" style="display: none;"></p>
         <div class="room-status" style="margin-top: 10px; font-weight: bold;"></div>
+        <div id="command-box" class="command-box" hidden></div>
         <button class="btn" style="margin-top: 20px;" id="back-to-list">⬅ Torna alle Room</button>
     `;
 
         const startBtn = descEl.querySelector(".start-room-btn");
         const stopBtn = descEl.querySelector(".stop-room-btn");
         const areaRisposta = descEl.querySelector(".room-status");
+        const commandBox = descEl.querySelector(".command-box")
         const backBtn = descEl.querySelector("#back-to-list");
 
         startBtn.addEventListener("click", () => {
-            startRoomContainer(nomeClasse, nomeLab, utente, csrfToken, csrfHeader, areaRisposta);
+            startRoomContainer(nomeClasse, nomeLab, utente, csrfToken, csrfHeader, areaRisposta, commandBox);
             flagField.hidden = false;
             flagSubmit.hidden = false;
+            commandBox.hidden = false;
             insFlag.hidden = false;
         });
 
@@ -567,7 +572,9 @@ document.addEventListener("DOMContentLoaded", function () {
             stopRoomContainer(utente, csrfToken, csrfHeader, areaRisposta);
             flagField.hidden = true;
             flagSubmit.hidden = true;
+            commandBox.hidden = true;
             insFlag.hidden = true;
+            commandBox.textContent = "";
         });
 
 
@@ -858,7 +865,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 logoutUser();
             } else if (key === "Risultati") {
                 descEl.innerHTML = content[key].desc;
-                caricaClassieRoomNelSelect("classSelect", "roomSelect");
+                caricaRisultati("classSelect", "roomSelect");
 
             }
         });

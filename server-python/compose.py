@@ -3,6 +3,7 @@ import os
 import shutil
 import sys
 import subprocess
+import utility
 
 def run_docker_compose(utente, classe, room, porta):
     """
@@ -12,6 +13,9 @@ def run_docker_compose(utente, classe, room, porta):
         classe (str): Il nome della classe (prima parte del percorso).
         room (str): Il nome della stanza (seconda parte del percorso).
     """
+
+    room = utility.sostituisci_spazi_con_hyphen(room)
+
     # Lavoro per ottenere i path
     base_path = os.getcwd()
     print(f"Directory di lavoro originale: {base_path}")

@@ -37,6 +37,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    async function getLabsPerClasse(nomeClasse) {
+        try {
+            const response = await fetch(`/room/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error("Errore nel recupero dei lab della classe");
+
+            return await response.json(); // supponiamo sia un array di nomi di lab
+        } catch (error) {
+            console.error("Errore durante il caricamento dei lab:", error);
+            return [];
+        }
+    }
 
 
     // Carica le classi nel select specificato
@@ -317,6 +334,483 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    // Funzione di visualizzazione dei risultati
+    // Carica le classi nel select specificato e popola dinamicamente le room al cambio classe
+    async function caricaRisultati(classSelectId, roomSelectId) {
+        const classSelect = document.getElementById(classSelectId);
+        const roomSelect = document.getElementById(roomSelectId);
+
+        if (!classSelect || !roomSelect) {
+            console.warn("Elementi select non trovati.");
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+        try {
+            const response = await fetch('/classe/getClassi', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
+                }
+            });
+
+            if (!response.ok) throw new Error("Errore nella risposta del server");
+
+            const classNames = await response.json();
+
+            classSelect.innerHTML = '';
+
+            // Opzione predefinita
+            const defaultOption = document.createElement('option');
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.value = "";
+            defaultOption.textContent = 'Seleziona una classe';
+            classSelect.appendChild(defaultOption);
+
+            classNames.forEach(nome => {
+                const option = document.createElement('option');
+                option.value = nome;
+                option.textContent = nome;
+                classSelect.appendChild(option);
+            });
+
+            // Aggiungi il listener per il cambio selezione
+            classSelect.addEventListener('change', async () => {
+                const classeSelezionata = classSelect.value;
+
+                // Pulisce il select delle room
+                roomSelect.innerHTML = '';
+
+                try {
+
+                    const roomNames = await getLabsPerClasse(classeSelezionata);
+
+                    if (!Array.isArray(roomNames) || roomNames.length === 0) {
+                        const option = document.createElement('option');
+                        option.disabled = true;
+                        option.selected = true;
+                        option.value = "";
+                        option.textContent = 'Nessuna room disponibile';
+                        roomSelect.appendChild(option);
+                        renderRisultatiTabella(roomNames);
+                        return;
+                    }
+
+                    // Opzione predefinita per le room
+                    const roomDefault = document.createElement('option');
+                    roomDefault.disabled = true;
+                    roomDefault.selected = true;
+                    roomDefault.value = "";
+                    roomDefault.textContent = 'Seleziona una room';
+                    roomSelect.appendChild(roomDefault);
+
+                    roomNames.forEach(room => {
+                        const option = document.createElement('option');
+                        option.value = room;
+                        option.textContent = room;
+                        roomSelect.appendChild(option);
+                    });
+
+                } catch (error) {
+                    console.error("Errore durante il caricamento delle room:", error);
+                    const option = document.createElement('option');
+                    option.disabled = true;
+                    option.selected = true;
+                    option.value = "";
+                    option.textContent = 'Errore nel caricamento delle room';
+                    roomSelect.appendChild(option);
+                }
+            });
+
+        } catch (error) {
+            console.error("Errore durante il caricamento delle classi:", error);
+            classSelect.innerHTML = '';
+            const option = document.createElement('option');
+            option.disabled = true;
+            option.selected = true;
+            option.value = "";
+            option.textContent = 'Errore nel caricamento';
+            classSelect.appendChild(option);
+        }
+    }
+
+
+    document.addEventListener("submit", async (e) => {
+        const form = e.target;
+
+        if (form.id === "form-risultati") {
+            e.preventDefault();
+
+            const classeId = form.querySelector('[name="classeId"]').value;
+            const roomId = form.querySelector('[name="roomId"]').value;
+            const csrfToken = form.querySelector('[name="_csrf"]').value;
+
+            const formData = new URLSearchParams();
+            formData.append("classeId", classeId);
+            formData.append("roomId", roomId);
+
+            try {
+                const response = await fetch("/room/studente/risultati/visualizza", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: formData,
+                    credentials: "same-origin"
+                });
+
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    renderizzaTabellaRisultati(data); // chiama la tua funzione già definita
+                } else {
+                    console.error("Risposta non valida dal server", data);
+                }
+            } catch (err) {
+                console.error("Errore durante la fetch dei risultati:", err);
+            }
+        }
+    });
+
+
+    function renderizzaTabellaRisultati(dati) {
+        const container = document.getElementById('form-risultati');
+        if (!container) return;
+
+        const table = document.createElement('table');
+        table.classList.add('tabella-risultati');
+
+        const thead = `
+    <thead>
+      <tr>
+        <th>Studente</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+  `;
+        table.innerHTML = thead;
+
+        const tbody = document.createElement('tbody');
+        dati.forEach(el => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+      <td>${el.studente}</td>
+      <td>${el.score}</td>
+    `;
+            tbody.appendChild(row);
+        });
+
+        table.appendChild(tbody);
+
+        container.innerHTML = ''; // svuota il form
+        container.appendChild(table); // inserisce la tabella
+    }
+
+    function renderRisultatiTabella(data) {
+        const formContainer = document.getElementById('form-risultati');
+
+        if (!formContainer) {
+            console.error("Elemento #form-risultati non trovato");
+            return;
+        }
+
+        // Crea la tabella
+        const table = document.createElement('table');
+        table.classList.add('risultati-table');
+        table.style.width = "100%";
+        table.style.borderCollapse = "collapse";
+
+        // Crea l'intestazione
+        const headerRow = document.createElement('tr');
+        ['Studente', 'Classe', 'Room', 'Data', 'Score'].forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            th.style.border = "1px solid #ccc";
+            th.style.padding = "8px";
+            th.style.backgroundColor = "#f2f2f2";
+            headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+
+        // Crea le righe dei dati
+        data.forEach(riga => {
+            const tr = document.createElement('tr');
+
+            const dataFormat = new Date(riga.timestamp).toLocaleString();
+
+            [riga.studente, riga.classe, riga.room, dataFormat, riga.score].forEach(val => {
+                const td = document.createElement('td');
+                td.textContent = val;
+                td.style.border = "1px solid #ccc";
+                td.style.padding = "8px";
+                tr.appendChild(td);
+            });
+
+            table.appendChild(tr);
+        });
+
+        // Sostituisci il form con la tabella
+        formContainer.innerHTML = ""; // Svuota il contenuto
+        formContainer.appendChild(table);
+    }
+
+
+
+    // FUNZIONI DI VISUALIZZAZIONE DEGLI STUDENTI
+    // Carica le classi nel select specificato e popola dinamicamente le room al cambio classe
+    async function caricaStudenti(classSelectId, roomSelectId) {
+        const classSelect = document.getElementById(classSelectId);
+
+        if (!classSelect) {
+            console.warn("Elementi select non trovati.");
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+        try {
+            const response = await fetch('/classe/getClassi', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
+                }
+            });
+
+            if (!response.ok) throw new Error("Errore nella risposta del server");
+
+            const classNames = await response.json();
+
+            classSelect.innerHTML = '';
+
+            // Opzione predefinita
+            const defaultOption = document.createElement('option');
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.value = "";
+            defaultOption.textContent = 'Seleziona una classe';
+            classSelect.appendChild(defaultOption);
+
+            classNames.forEach(nome => {
+                const option = document.createElement('option');
+                option.value = nome;
+                option.textContent = nome;
+                classSelect.appendChild(option);
+            });
+
+            
+        } catch (error) {
+            console.error("Errore durante il caricamento delle classi:", error);
+            classSelect.innerHTML = '';
+            const option = document.createElement('option');
+            option.disabled = true;
+            option.selected = true;
+            option.value = "";
+            option.textContent = 'Errore nel caricamento';
+            classSelect.appendChild(option);
+        }
+    }
+
+
+    document.addEventListener("submit", async (e) => {
+        const form = e.target;
+
+        if (form.id === "form-studenti") {
+            e.preventDefault();
+
+            const classeId = form.querySelector('[name="classeId"]').value;
+            const csrfToken = form.querySelector('[name="_csrf"]').value;
+
+            const formData = new URLSearchParams();
+            formData.append("classeId", classeId);
+
+            try {
+                const response = await fetch("/classe/professore/lista-iscritti", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: formData,
+                    credentials: "same-origin"
+                });
+
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    renderizzaTabellaStudenti(data); // chiama la tua funzione già definita
+                } else {
+                    console.error("Risposta non valida dal server", data);
+                }
+            } catch (err) {
+                console.error("Errore durante la fetch dei risultati:", err);
+            }
+        }
+    });
+
+
+    function renderizzaTabellaStudenti(dati) {
+        const container = document.getElementById('form-studenti');
+        if (!container) return;
+
+        const table = document.createElement('table');
+        table.classList.add('tabella-studenti');
+
+        const thead = `
+    <thead>
+      <tr>
+        <th>Studente</th>
+      </tr>
+    </thead>
+  `;
+        table.innerHTML = thead;
+
+        const tbody = document.createElement('tbody');
+        dati.forEach(el => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+      <td>${el.studente}</td>
+    `;
+            tbody.appendChild(row);
+        });
+
+        table.appendChild(tbody);
+
+        container.innerHTML = ''; // svuota il form
+        container.appendChild(table); // inserisce la tabella
+    }
+
+
+    // FUNZIONI PER LA VISUALIZZAZIONE DEI LABORATORI
+    // Carica le classi nel select specificato e popola dinamicamente le room al cambio classe
+    async function caricaLaboratori(classSelectId) {
+        const classSelect = document.getElementById(classSelectId);
+
+        if (!classSelect) {
+            console.warn("Elementi select non trovati.");
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+        try {
+            const response = await fetch('/classe/getClassi', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
+                }
+            });
+
+            if (!response.ok) throw new Error("Errore nella risposta del server");
+
+            const classNames = await response.json();
+
+            classSelect.innerHTML = '';
+
+            // Opzione predefinita
+            const defaultOption = document.createElement('option');
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.value = "";
+            defaultOption.textContent = 'Seleziona una classe';
+            classSelect.appendChild(defaultOption);
+
+            classNames.forEach(nome => {
+                const option = document.createElement('option');
+                option.value = nome;
+                option.textContent = nome;
+                classSelect.appendChild(option);
+            });
+
+            
+        } catch (error) {
+            console.error("Errore durante il caricamento delle classi:", error);
+            classSelect.innerHTML = '';
+            const option = document.createElement('option');
+            option.disabled = true;
+            option.selected = true;
+            option.value = "";
+            option.textContent = 'Errore nel caricamento';
+            classSelect.appendChild(option);
+        }
+    }
+
+
+    document.addEventListener("submit", async (e) => {
+        const form = e.target;
+
+        if (form.id === "form-lab") {
+            e.preventDefault();
+
+            const classeId = form.querySelector('[name="classeId"]').value;
+            const csrfToken = form.querySelector('[name="_csrf"]').value;
+
+            const formData = new URLSearchParams();
+            formData.append("classeId", classeId);
+
+            try {
+                const response = await fetch("/room/professore/laboratori", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: formData,
+                    credentials: "same-origin"
+                });
+
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    renderizzaTabellaRoom(data); // chiama la tua funzione già definita
+                } else {
+                    console.error("Risposta non valida dal server", data);
+                }
+            } catch (err) {
+                console.error("Errore durante la fetch dei risultati:", err);
+            }
+        }
+    });
+
+
+    function renderizzaTabellaRoom(dati) {
+        const container = document.getElementById('form-lab');
+        if (!container) return;
+
+        const table = document.createElement('table');
+        table.classList.add('tabella-lab');
+
+        const thead = `
+    <thead>
+      <tr>
+        <th>Room</th>
+      </tr>
+    </thead>
+  `;
+        table.innerHTML = thead;
+
+        const tbody = document.createElement('tbody');
+        dati.forEach(el => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+      <td>${el.room}</td>
+    `;
+            tbody.appendChild(row);
+        });
+
+        table.appendChild(tbody);
+
+        container.innerHTML = ''; // svuota il form
+        container.appendChild(table); // inserisce la tabella
+    }
 
 
 
@@ -374,24 +868,57 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div id="form-lab-message" style="margin-top: 15px; font-weight: bold;"></div>
                 `
         },
-        "Aggiungi studente": {
-            title: "Aggiungi Studente",
+        "Visualizza Studenti": {
+            title: "Visualizza Studenti",
             desc: `
-                <p>Aggiungi uno studente ad una classe esistente, inserendo nome, matricola e classe di appartenenza.</p>
+                <p>Visualizza la lista di studenti per classe</p>
+                <form id="form-studenti">
+                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
+                    <div class="form-group">
+                        <label for="classSelect">Nome classe:</label>
+                        <select id="classSelect" name="classeId">
+                            <option value="">Caricamento classi...</option>
+                        </select>
+                    </div>
+                    <button type="submit">Visualizza</button>
+                </form>
                 `
         },
-        "Conferma Richieste": {
-            title: "Conferma Richieste",
+        "Visualizza Laboratori": {
+            title: "Visualizza Laboratori",
             desc: `
-                <p>Visualizza e approva/rifiuta le richieste di iscrizione o partecipazione agli esami/laboratori.</p>
+                <p>Visualizza la lista di laboratori per classe</p>
+                <form id="form-lab">
+                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
+                    <div class="form-group">
+                        <label for="classSelect">Nome classe:</label>
+                        <select id="classSelect" name="classeId">
+                            <option value="">Caricamento classi...</option>
+                        </select>
+                    </div>
+                    <button type="submit">Visualizza</button>
+                </form>
                 `
         },
-        "Pubblica risultati": {
-            title: "Pubblica Risultati",
+        "Visualizza Risultati": {
+            title: "Visualizza risultati",
             desc: `
-                <p>Inserisci e pubblica i risultati degli esami o laboratori per la visione degli studenti.</p>
+                <p>Visualizza risultati per classe e laboratorio</p>
+                <form id="form-risultati">
+                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
+                    <div class="form-group">
+                        <label for="classSelect">Nome classe:</label>
+                        <select id="classSelect" name="classeId">
+                            <option value="">Caricamento classi...</option>
+                        </select>
+                        <label for="roomSelect">Nome room:</label>
+                        <select id="roomSelect" name="roomId">
+                            <option value="">Caricamento room...</option>
+                        </select>
+                    </div>
+                    <button type="submit">Visualizza</button>
+                </form>
                 `
-
         },
         "Cambia Password": {
             title: "Cambia Password",
@@ -449,13 +976,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         controllaLab();
                         CreaLaboratorio();
                     }, 0);
-                } else if (key === "Aggiungi studente") {
+                } else if (key === "Visualizza Risultati") {
                     descEl.innerHTML = content[key].desc;
+                    caricaRisultati("classSelect", "roomSelect");
 
-                } else if (key === "Conferma Richieste") {
+                } else if (key === "Visualizza Studenti") {
                     descEl.innerHTML = content[key].desc;
-                } else if (key === "Pubblica risultati") {
+                    caricaStudenti("classSelect", "roomSelect")
+
+                } else if (key === "Visualizza Laboratori") {
                     descEl.innerHTML = content[key].desc;
+                    caricaLaboratori("classSelect", "roomSelect")
                 } else if (key === "Cambia Password") {
 
                     descEl.innerHTML = content[key].desc;

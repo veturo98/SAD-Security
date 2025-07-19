@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sad_security.sase.model.RoomAvviata;
+import com.sad_security.sase.model.RoomClasse;
 import com.sad_security.sase.service.RoomService;
 
 import lombok.AllArgsConstructor;
@@ -39,32 +45,46 @@ public class RoomController {
 
     // Mappo la chiamata per l'avvio delle room
     @PostMapping("/studente/start")
-    public CompletableFuture<String> startRoom(@RequestBody startRoomBody startRoom) {
+    public CompletableFuture<ResponseEntity<startRoomResponse>> startRoom(@RequestBody startRoomBody startRoom) {
 
         // Formatto i campi pre l'invio della richiesta
-        String Classe = startRoom.getNomeClass();
-        String Lab = startRoom.getNomeLab();
-        String Utente = startRoom.getUtente();
+        String classe = startRoom.getNomeClass();
+        String lab = startRoom.getNomeLab();
+        String utente = startRoom.getUtente();
 
         System.out.println("Sono il controller ed ho ricevuto questo" + startRoom);
 
         // controllo se la room è già stata avviata dall'utente
-        roomService.VerificaRoomAvviata(Classe, Lab, Utente);
+        roomService.VerificaRoomAvviata(classe, lab, utente);
 
-        return roomService.startContainerAsync(Classe, Lab, Utente);
+        return roomService.startContainerAsync(classe, lab, utente)
+                .thenApply(response -> ResponseEntity.ok(response));
     }
 
     // Mappo la chiamata per l'avvio delle room
     @PostMapping("/studente/stop")
-    public CompletableFuture<String> stopRoom(@RequestBody stopRoomBody stopRoom) {
+    public Map<String, String> stopRoom(@RequestBody stopRoomBody stopRoom)
+            throws InterruptedException, ExecutionException, JsonMappingException, JsonProcessingException {
 
-        // Formatto i campi pre l'invio della richiesta
+        String utente = stopRoom.getUtente();
+        System.out.println("Sono il controller ed ho ricevuto questo " + stopRoom);
 
-        String Utente = stopRoom.getUtente();
+        CompletableFuture<String> response = roomService.stopContainer(utente);
+        String result = response.get();
 
-        System.out.println("Sono il controller ed ho ricevuto questo" + stopRoom);
+        System.out.println("result" + result);
 
-        return roomService.stopContainer(Utente);
+        Map<String, String> res = new HashMap<>();
+
+        if (result == null || result.isEmpty()) {
+            res.put("msg", "Impossibile stoppare il container");
+            res.put("type", "error");
+        } else {
+            ObjectMapper mapper = new ObjectMapper();
+            res = mapper.readValue(result, new TypeReference<Map<String, String>>() {});
+        }
+
+        return res;
     }
 
     // Il professore crea un nuovo laboratorio
@@ -216,6 +236,21 @@ public class RoomController {
                 .collect(Collectors.toList());
     }
 
+    @PostMapping("/professore/laboratori")
+    @ResponseBody
+    public List<Map<String, Object>> getLaboratori(@RequestParam("classeId") String classe) {
+        List<RoomClasse> laboratori = roomService.trovaLaboratori(classe);
+
+        return laboratori.stream()
+                .map(r -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("room", r.getRoom());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+    }
+
     // Dichiaro la classe che contiene il corpo della richiesta di avvio room
     @Data
     @AllArgsConstructor
@@ -249,6 +284,13 @@ public class RoomController {
     public static class patternRisultato {
         private String studente;
         private String score;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class startRoomResponse {
+        private String msg;
+        private String command;
     }
 
 }

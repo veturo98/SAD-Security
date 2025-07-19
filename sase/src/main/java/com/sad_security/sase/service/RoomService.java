@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sad_security.sase.controller.RoomController.startRoomBody;
+import com.sad_security.sase.controller.RoomController.startRoomResponse;
 import com.sad_security.sase.controller.RoomController.stopRoomBody;
 import com.sad_security.sase.model.Room;
 import com.sad_security.sase.model.RoomAvviata;
@@ -45,24 +46,22 @@ public class RoomService {
 
     // Effettuo una richiesta asincrona al gestore delle risorse
     @Async
-    public CompletableFuture<String> startContainerAsync(String classe, String room, String user) {
+    public CompletableFuture<startRoomResponse> startContainerAsync(String classe, String room, String user) {
 
         try {
-
-            // Costruisco l'URL da contattare
             String url = dockerApiBaseUrl + "/start-container/";
 
-            // Creo il corpo della POST ed effettuo la richiesta
             startRoomBody request_body = new startRoomBody(classe, room, user);
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request_body, String.class);
+            ResponseEntity<startRoomResponse> response = restTemplate.postForEntity(
+                    url, request_body, startRoomResponse.class);
 
-            // Restituisco la risposta della POST
-            return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
+            return CompletableFuture.completedFuture(response.getBody());
 
         } catch (Exception e) {
-
-            // Restituisco l'errore
-            return CompletableFuture.completedFuture("Errore: " + e.getMessage());
+            startRoomResponse errorResponse = new startRoomResponse(null, null);
+            errorResponse.setMsg("Errore: " + e.getMessage());
+            errorResponse.setCommand("");
+            return CompletableFuture.completedFuture(errorResponse);
         }
     }
 
@@ -80,7 +79,7 @@ public class RoomService {
             ResponseEntity<String> response = restTemplate.postForEntity(url, request_body, String.class);
 
             // Restituisco la risposta della POST
-            return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
+            return CompletableFuture.completedFuture(response.getBody());
 
         } catch (Exception e) {
 
@@ -203,7 +202,7 @@ public class RoomService {
 
             ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
-            return CompletableFuture.completedFuture("Risposta server Python: " + response.getBody());
+            return CompletableFuture.completedFuture(response.getBody());
         } catch (Exception e) {
             return CompletableFuture.completedFuture("Errore: " + e.getMessage());
         }
@@ -309,6 +308,12 @@ public class RoomService {
         roomAvv.setScore(score);
         roomAvviataRepository.save(roomAvv);
         return true;
+    }
+
+    // Restituisce gli studenti iscritti alla classe
+    public List<RoomClasse> trovaLaboratori(String classe) {
+        List<RoomClasse> laboratori = roomClasseRepository.findByClasse(classe);
+        return laboratori;
     }
 
 }
