@@ -147,23 +147,22 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-    
     // public boolean getRoomList(String classe) {
-    //     // Cerco se la room è stata già creata
-    //     List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
+    // // Cerco se la room è stata già creata
+    // List<RoomClasse> roomList = roomClasseRepository.findByClasse(classe);
 
-    //     List<String> roomNames = roomList.stream()
-    //             .map(RoomClasse::getRoom)
-    //             .collect(Collectors.toList());
+    // List<String> roomNames = roomList.stream()
+    // .map(RoomClasse::getRoom)
+    // .collect(Collectors.toList());
 
-    //     // Se esistono room, restituisco true
-    //     if (!roomNames.isEmpty()) {
-    //         System.out.println("La room esiste già");
-    //         return true;
-    //     } else {
-    //         System.out.println("La room non esiste");
-    //         return false;
-    //     }
+    // // Se esistono room, restituisco true
+    // if (!roomNames.isEmpty()) {
+    // System.out.println("La room esiste già");
+    // return true;
+    // } else {
+    // System.out.println("La room non esiste");
+    // return false;
+    // }
     // }
 
     public String getDescrizione(String nomeRoom) {
@@ -234,17 +233,16 @@ public class RoomService {
         }
     }
 
-
     @Autowired
     private RoomAvviataRepository roomAvviataRepository;
-    
 
-    //Verifica se l'utente ha avviato una room, e nel caso viene creata l'associazione nel database
-    public boolean VerificaRoomAvviata(String room, String studente) {
-        
+    // Verifica se l'utente ha avviato una room, e nel caso viene creata
+    // l'associazione nel database
+    public boolean VerificaRoomAvviata(String classe, String room, String studente) {
+
         // Cerco se l'utnete ha già avviato la room
-        Optional<RoomAvviata> roomAvviata = roomAvviataRepository.findByRoomAndStudente( room, studente);
-        
+        Optional<RoomAvviata> roomAvviata = roomAvviataRepository.findByRoomAndStudente(room, studente);
+
         // Se la room è stata già avviata dallo studente ritorno
         if (roomAvviata.isPresent()) {
             System.out.println("l'utente ha già avviato la room");
@@ -255,6 +253,7 @@ public class RoomService {
             RoomAvviata roomAvv = new RoomAvviata();
             roomAvv.setRoom(room);
             roomAvv.setStudente(studente);
+            roomAvv.setClasse(classe);
             roomAvv.setTimestamp(LocalDateTime.now());
 
             roomAvviataRepository.save(roomAvv);
@@ -264,40 +263,52 @@ public class RoomService {
         }
     }
 
-
     // Verifica se la flag inserita è corretta
-    public LocalDateTime flagCorretta(String studente, String room ,String flag ){
+    public LocalDateTime flagCorretta(String studente, String room, String flag) {
 
         // Ottengo la flag corrispondente alla room nel database
-       String flagDatabase = roomRepository.findBynome(flag).get().getFlag();
+        String flagDatabase = roomRepository.findBynome(room).get().getFlag();
 
-       if(flagDatabase.equals(flag)){
+        if (flagDatabase.equals(flag)) {
 
-        LocalDateTime startTimestamp = roomAvviataRepository.findTimeByRoomAndStudente(room,studente);
-        return startTimestamp;
-       }
-       return null;
-       
+            LocalDateTime startTimestamp = roomAvviataRepository.findTimeByRoomAndStudente(room, studente).get()
+                    .getTimestamp();
+            System.out.println("Timestamp di start: " + startTimestamp);
+            return startTimestamp;
+        }
+        return null;
+
     }
 
-     // Calcola score 
-    public boolean calcoloScore (String room, String studente, LocalDateTime tempoAvvio, LocalDateTime tempoCompletamento){
+    public List<RoomAvviata> visualizzaRisultati(String classe, String room) {
 
-       RoomAvviata roomAvv = roomAvviataRepository.findByRoomAndStudente(room, studente).get();
+        Optional<List<RoomAvviata>> Risultati = roomAvviataRepository.findByClasseAndRoom(classe, room);
 
-        long tempoImpiegato = Duration.between(tempoAvvio, tempoCompletamento).toMinutes();
-        long score = 100-((tempoImpiegato/120)*100);
-        
-        // RoomAvviata roomAvv = new RoomAvviata();
-
-
-        if(score<0){
-            score =0;
+        if (Risultati.isEmpty()) {
+            return null;
         }
-        
+
+        return Risultati.get();
+
+    }
+
+    // Calcola score
+    public boolean calcoloScore(String room, String studente, LocalDateTime tempoAvvio,
+            LocalDateTime tempoCompletamento) {
+
+        RoomAvviata roomAvv = roomAvviataRepository.findByRoomAndStudente(room, studente).get();
+
+        long tempoImpiegato = Duration.between(tempoCompletamento, tempoAvvio).toMinutes();
+        System.out.println("tempo impiegato" + tempoImpiegato);
+        long score = 100 - ((tempoImpiegato * 100) / 120);
+
+        if (score < 0) {
+            score = 0;
+        }
+
         roomAvv.setScore(score);
         roomAvviataRepository.save(roomAvv);
         return true;
-    } 
+    }
 
 }

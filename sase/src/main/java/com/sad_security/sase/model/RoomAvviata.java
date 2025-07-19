@@ -20,6 +20,9 @@ public class RoomAvviata {
     @JoinColumn(name = "Room") // identifiativo della room
     private String room;
 
+    @JoinColumn(name = "classe")
+    private String classe;
+
     @Column(name = "tempoAvvio")
     private LocalDateTime timestamp;
 

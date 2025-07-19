@@ -113,9 +113,9 @@
 
     <main layout:fragment="content" class="home-layout">
 
-        
+
         <div class="sidebar">
-            <h2>Operazioni Disponibili</h2>
+            <h2>Classi a cui sei iscritto</h2>
             <ul id="student-sidebar-options">
 
 
@@ -123,6 +123,11 @@
                 <li th:each="classe : ${classiUtente}" th:if="${classiUtente != null}">
                     <a href="#" class="sidebar-item" th:data-option="${classe.nome}" th:text="${classe.nome}"></a>
                 </li>
+            </ul>
+
+            <h2>Operazioni</h2>
+            <ul>
+                <li><a href="#" class="sidebar-item" data-option="Risultati">Risultati Room</a></li>
             </ul>
 
             <div class="sidebar-settings">

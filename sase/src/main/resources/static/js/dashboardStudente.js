@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nel recupero della descrizione della room");
 
-            return await response.text(); // supponiamo sia un array di nomi di lab
+            return await response.json(); // supponiamo sia un array di nomi di lab
         } catch (error) {
             console.error("Errore durante il caricamento della descrizione:", error);
             return [];
@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
             iscriviStudente(nomeClasse, messageEl);
         });
     }
-
 
 
 
@@ -188,6 +187,111 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    // Carica le classi nel select specificato e popola dinamicamente le room al cambio classe
+    async function caricaClassieRoomNelSelect(classSelectId, roomSelectId) {
+        const classSelect = document.getElementById(classSelectId);
+        const roomSelect = document.getElementById(roomSelectId);
+
+        if (!classSelect || !roomSelect) {
+            console.warn("Elementi select non trovati.");
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+        try {
+            const response = await fetch('/classe/getClassi', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
+                }
+            });
+
+            if (!response.ok) throw new Error("Errore nella risposta del server");
+
+            const classNames = await response.json();
+
+            classSelect.innerHTML = '';
+
+            // Opzione predefinita
+            const defaultOption = document.createElement('option');
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.value = "";
+            defaultOption.textContent = 'Seleziona una classe';
+            classSelect.appendChild(defaultOption);
+
+            classNames.forEach(nome => {
+                const option = document.createElement('option');
+                option.value = nome;
+                option.textContent = nome;
+                classSelect.appendChild(option);
+            });
+
+            // Aggiungi il listener per il cambio selezione
+            classSelect.addEventListener('change', async () => {
+                const classeSelezionata = classSelect.value;
+
+                // Pulisce il select delle room
+                roomSelect.innerHTML = '';
+
+                try {
+
+                    const roomNames = await getLabsPerClasse(classeSelezionata);
+
+                    if (!Array.isArray(roomNames) || roomNames.length === 0) {
+                        const option = document.createElement('option');
+                        option.disabled = true;
+                        option.selected = true;
+                        option.value = "";
+                        option.textContent = 'Nessuna room disponibile';
+                        roomSelect.appendChild(option);
+                        renderRisultatiTabella(roomNames);
+                        return;
+                    }
+
+                    // Opzione predefinita per le room
+                    const roomDefault = document.createElement('option');
+                    roomDefault.disabled = true;
+                    roomDefault.selected = true;
+                    roomDefault.value = "";
+                    roomDefault.textContent = 'Seleziona una room';
+                    roomSelect.appendChild(roomDefault);
+
+                    roomNames.forEach(room => {
+                        const option = document.createElement('option');
+                        option.value = room;
+                        option.textContent = room;
+                        roomSelect.appendChild(option);
+                    });
+
+                } catch (error) {
+                    console.error("Errore durante il caricamento delle room:", error);
+                    const option = document.createElement('option');
+                    option.disabled = true;
+                    option.selected = true;
+                    option.value = "";
+                    option.textContent = 'Errore nel caricamento delle room';
+                    roomSelect.appendChild(option);
+                }
+            });
+
+        } catch (error) {
+            console.error("Errore durante il caricamento delle classi:", error);
+            classSelect.innerHTML = '';
+            const option = document.createElement('option');
+            option.disabled = true;
+            option.selected = true;
+            option.value = "";
+            option.textContent = 'Errore nel caricamento';
+            classSelect.appendChild(option);
+        }
+    }
+
+
+
     // Iscrive lo studente a una classe tramite il form
     function iscriviStudente(nomeClasse, messageEl) {
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
@@ -221,7 +325,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 messageEl.style.color = "red";
             });
     }
-
 
 
     // Carica le classi iscritte e popola la sidebar
@@ -301,6 +404,128 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    document.addEventListener("submit", async (e) => {
+        const form = e.target;
+
+        if (form.id === "form-risultati") {
+            e.preventDefault();
+
+            const classeId = form.querySelector('[name="classeId"]').value;
+            const roomId = form.querySelector('[name="roomId"]').value;
+            const csrfToken = form.querySelector('[name="_csrf"]').value;
+
+            const formData = new URLSearchParams();
+            formData.append("classeId", classeId);
+            formData.append("roomId", roomId);
+
+            try {
+                const response = await fetch("/room/studente/risultati/visualizza", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: formData,
+                    credentials: "same-origin"
+                });
+
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    renderizzaTabellaRisultati(data); // chiama la tua funzione già definita
+                } else {
+                    console.error("Risposta non valida dal server", data);
+                }
+            } catch (err) {
+                console.error("Errore durante la fetch dei risultati:", err);
+            }
+        }
+    });
+
+
+    function renderizzaTabellaRisultati(dati) {
+        const container = document.getElementById('form-risultati');
+        if (!container) return;
+
+        const table = document.createElement('table');
+        table.classList.add('tabella-risultati');
+
+        const thead = `
+    <thead>
+      <tr>
+        <th>Studente</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+  `;
+        table.innerHTML = thead;
+
+        const tbody = document.createElement('tbody');
+        dati.forEach(el => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+      <td>${el.studente}</td>
+      <td>${el.score}</td>
+    `;
+            tbody.appendChild(row);
+        });
+
+        table.appendChild(tbody);
+
+        container.innerHTML = ''; // svuota il form
+        container.appendChild(table); // inserisce la tabella
+    }
+
+    function renderRisultatiTabella(data) {
+        const formContainer = document.getElementById('form-risultati');
+
+        if (!formContainer) {
+            console.error("Elemento #form-risultati non trovato");
+            return;
+        }
+
+        // Crea la tabella
+        const table = document.createElement('table');
+        table.classList.add('risultati-table');
+        table.style.width = "100%";
+        table.style.borderCollapse = "collapse";
+
+        // Crea l'intestazione
+        const headerRow = document.createElement('tr');
+        ['Studente', 'Classe', 'Room', 'Data', 'Score'].forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            th.style.border = "1px solid #ccc";
+            th.style.padding = "8px";
+            th.style.backgroundColor = "#f2f2f2";
+            headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+
+        // Crea le righe dei dati
+        data.forEach(riga => {
+            const tr = document.createElement('tr');
+
+            const dataFormat = new Date(riga.timestamp).toLocaleString();
+
+            [riga.studente, riga.classe, riga.room, dataFormat, riga.score].forEach(val => {
+                const td = document.createElement('td');
+                td.textContent = val;
+                td.style.border = "1px solid #ccc";
+                td.style.padding = "8px";
+                tr.appendChild(td);
+            });
+
+            table.appendChild(tr);
+        });
+
+        // Sostituisci il form con la tabella
+        formContainer.innerHTML = ""; // Svuota il contenuto
+        formContainer.appendChild(table);
+    }
+
+
+
 
     async function renderRoomDetail(nomeClasse, nomeLab, utente, csrfToken, csrfHeader) {
 
@@ -308,11 +533,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         descEl.innerHTML = `
         <h3>Room: ${nomeLab}</h3>
-        <p>Descrizione<br>${descrizione}.</p>
+        <p>Descrizione<br>${descrizione.descrizione}.</p>
         <div style="margin-top: 10px;">
             <button class="btn start-room-btn">Avvia Room</button>
             <button class="btn stop-room-btn" style="margin-left: 10px;">Ferma Room</button>
         </div>
+        <div>
+        <p id="insFlag" hidden>Inserisci la flag</p>
+        <form id="submit-flag" action="/room/studente/flag" method="post">
+            <input type="hidden" name="room" value="${nomeLab}" />
+            <input type="hidden" name="studente" value="${utente}" />
+            <input type="text" name="flag" id="flagField" hidden>
+            <input type="submit" id="flagSubmit" hidden></input>
+        </div>
+        <p id="flag-result-msg" style="display: none;"></p>
         <div class="room-status" style="margin-top: 10px; font-weight: bold;"></div>
         <button class="btn" style="margin-top: 20px;" id="back-to-list">⬅ Torna alle Room</button>
     `;
@@ -324,11 +558,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
         startBtn.addEventListener("click", () => {
             startRoomContainer(nomeClasse, nomeLab, utente, csrfToken, csrfHeader, areaRisposta);
+            flagField.hidden = false;
+            flagSubmit.hidden = false;
+            insFlag.hidden = false;
         });
 
         stopBtn.addEventListener("click", () => {
             stopRoomContainer(utente, csrfToken, csrfHeader, areaRisposta);
+            flagField.hidden = true;
+            flagSubmit.hidden = true;
+            insFlag.hidden = true;
         });
+
+
+        const form = document.getElementById("submit-flag");
+        const resultMsg = document.getElementById("flag-result-msg");
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            const res = await fetch("/room/studente/flag", {
+                method: "POST",
+                body: formData,
+            });
+
+            const json = await res.json();
+
+            resultMsg.style.display = "block";
+            resultMsg.innerText = json.esito;
+
+            if (json.type === "success") {
+                resultMsg.style.color = "green";
+            } else if (json.type === "error") {
+                resultMsg.style.color = "red";
+            }
+        });
+
+
 
         backBtn.addEventListener("click", async () => {
             // Ricarica la lista delle room per la classe
@@ -543,6 +811,28 @@ document.addEventListener("DOMContentLoaded", function () {
         Logout: {
             title: "Logout",
             desc: "<p>Effettua il logout dall'account</p>"
+        },
+        Risultati: {
+            title: "Risultati Room",
+            desc: `
+                <p>Visualizza i risultati delle room completate!.</p>
+                <form id="form-risultati">
+                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
+                    <div class="form-group">
+                        <label for="classSelect">Nome classe:</label>
+                        <select id="classSelect" name="classeId">
+                            <option value="">Caricamento classi...</option>
+                        </select>
+                        <label for="roomSelect">Nome room:</label>
+                        <select id="roomSelect" name="roomId">
+                            <option value="">Caricamento room...</option>
+                        </select>
+                    </div>
+                    <button type="submit">Visualizza</button>
+                </form>
+
+
+            `
         }
     };
 
@@ -566,6 +856,10 @@ document.addEventListener("DOMContentLoaded", function () {
             } else if (key === "Logout") {
                 descEl.innerHTML = content[key].desc;
                 logoutUser();
+            } else if (key === "Risultati") {
+                descEl.innerHTML = content[key].desc;
+                caricaClassieRoomNelSelect("classSelect", "roomSelect");
+
             }
         });
     });
