@@ -74,8 +74,9 @@ def run_docker_compose(utente, classe, room, porta):
     finally:
         os.chdir(base_path)
         print(f"Tornato alla directory originale: {os.getcwd()}")
+        return command_exit_code # Restituisce il codice di uscita
 
-    return command_exit_code # Restituisce il codice di uscita
+    
 
 if __name__ == "__main__":
     # Questa parte viene eseguita SOLO quando lo script è lanciato direttamente

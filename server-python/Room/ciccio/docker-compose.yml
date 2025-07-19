@@ -3,7 +3,7 @@ services:
   SAD-Exam:
     image: veturo98/server-ssh:latest
     restart: always
-    command: /usr/sbin/sshd -D # Questo comando non termina mai
+    command: /usr/sbin/sshd -D # Start server ssh
     healthcheck:
       test: ["CMD", "echo", "test"]
       interval: 10s

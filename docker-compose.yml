@@ -27,6 +27,17 @@ services:
     networks:
       sase_db_network:
         ipv4_address: 194.20.1.41
+        
+  gestore-risorse:
+    image: veturo98/server-python:1.1
+    command: "apt update && apt upgrade -y && python3 server.py"
+    working_dir: /home/ubuntu
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 1234:1234
+
 
   
 networks:

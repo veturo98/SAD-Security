@@ -11,7 +11,7 @@
     <h3 th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></h3>
     <div layout:fragment="content">
         <div th:if="${param.error}" class="alert alert-danger" style="color: red;">
-            Credenziali non valide.
+            Credenziali non valide. In caso di necessità contattare il reparto IT.
         </div>
         <h2 class="mb-4">Login professore</h2>
         <form th:action="@{/professore/login}" method="post">

@@ -37,9 +37,15 @@ def start_container():
 
     #Esecuzione dello script di avvio dei container
     try:
+
+        # Faccio un compose down nella cartella running per evitare sovrascritture
+        print(compose.stop_docker_compose(utente))
+
         # Lancio il compose
         result = compose.run_docker_compose(utente, classe, room, porta)
         print(result)
+        if (result != 0):
+            return jsonify({"msg" : "Errore durante l'avvio del laboratorio, riprovare più tardi"}), 200
     except FileNotFoundError as e:
          print(f"Errore: {e}")
     except subprocess.CalledProcessError as e:

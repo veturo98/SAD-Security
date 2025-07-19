@@ -13,7 +13,7 @@ public class Room {
 
     // Dati della room
     @Id
-    @Column(name = "nome")
+    @Column(name = "room")
     private String nome;
 
     @Column(name = "flag")

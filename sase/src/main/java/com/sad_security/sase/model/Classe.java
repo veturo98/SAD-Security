@@ -17,10 +17,5 @@ public class Classe {
     @Column(name = "nome")
     private String nome;
 
-    @Column(name = "room")
-    private String room;
-
-    @Column(name = "studente")
-    private String studente;
     
 }
