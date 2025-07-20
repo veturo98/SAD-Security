@@ -14,7 +14,7 @@ import lombok.Data;
 @Entity
 // Controllo del database che evita che un utente si iscriva ad una stessa classe
 @Table(name = "Iscrizione", uniqueConstraints = {
-    @UniqueConstraint(columnNames = { "studente_id", "classe_nome" })
+    @UniqueConstraint(columnNames = { "studente", "classe" })
 })
 public class Iscrizione {
 

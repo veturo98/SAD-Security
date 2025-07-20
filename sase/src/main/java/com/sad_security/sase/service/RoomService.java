@@ -208,6 +208,22 @@ public class RoomService {
         }
     }
 
+    public boolean isPresent(String roomName){
+
+        boolean esito;
+
+        Optional<Room> room = roomRepository.findBynome(roomName);
+
+        if (room.isEmpty()){
+            esito = false;
+        }
+        else{
+            esito = true;
+        }
+
+        return esito;
+    }
+
     @Autowired
     private RoomClasseRepository roomClasseRepository;
 

@@ -143,6 +143,14 @@ public class RoomController {
             String yamlContent = new String(yamlFile.getBytes(), StandardCharsets.UTF_8);
             System.out.println("Contenuto YAML:\n" + yamlContent);
 
+            // Controllo se la room esiste già
+            if (roomService.isPresent(roomName) == true){
+                response.put("message", "Nome room già esistente.");
+                response.put("type", "error");
+                return response;
+            }
+
+
             // Salva la room nel database
             roomService.salvaNuovaRoom(roomName, descrizione, flag);
 
