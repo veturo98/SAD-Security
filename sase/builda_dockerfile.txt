@@ -1,0 +1,1 @@
+sudo docker build -t veturo98/sase:1.0 .
