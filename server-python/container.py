@@ -26,7 +26,7 @@ def start_container():
     print(f"Ricevuta richiesta per avviare la classe: {utente}")
 
     #Seleziono la porta
-    porta = str(utility.trova_prima_porta_libera(1024, 49151))
+    porta = str(utility.scelta_random_porta(1024, 49151, utente))
     if porta:
         print(f"Uso della porta {porta}")
     else:
