@@ -8,19 +8,14 @@
 </head>
 
 <body>
+    <!-- navbar lasciata vuota: sarà inclusa dal layout -->
 
-    <div layout:fragment="navbar">
-        <a href="/home">Home</a>
-        <a href="/login">Login</a>
+    <div layout:fragment="content" class="min-vh-100 d-flex justify-content-center align-items-center">
+        <div class="text-center p-4">
+            <h1 class="text-danger mb-3">Accesso Negato</h1>
+            <p class="mb-4">Non hai i permessi necessari per accedere a questa pagina.</p>
+            <a href="/home" class="btn btn-outline-primary">Torna alla Home</a>
+        </div>
     </div>
-
-    <div layout:fragment="content">
-        <section style="text-align: center; margin-top: 50px;">
-            <h1 style="font-size: 2em; color: #b30000;">Accesso Negato</h1>
-            <p>Non hai i permessi necessari per accedere a questa pagina.</p>
-            <a href="/home" style="margin-top: 20px; display: inline-block; color: #0056b3;">Torna alla Home</a>
-        </section>
-    </div>
-
 </body>
 </html>

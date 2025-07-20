@@ -42,7 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await fetch(`/room/professore/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').getAttribute('content'),
                 }
             });
 
@@ -140,7 +141,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            fetch(`/room/professore/checkroom?roomName=${encodeURIComponent(roomName)}`)
+            fetch(`/room/professore/checkroom?roomName=${encodeURIComponent(roomName)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     msg.textContent = data.message;
@@ -420,7 +427,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("roomId", roomId);
 
             try {
-                const response = await fetch("/room/studente/risultati/visualizza", {
+                const response = await fetch("/room/professore/risultati/visualizza", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",

@@ -80,7 +80,7 @@ public class SecurityConfig {
         public SecurityFilterChain studenteFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .securityMatcher("/account/studente/**", "/login", "/studente/dashboard",
-                                                "/classe/studente/**", "room/studente/**")
+                                                "/classe/studente/**", "/room/studente/**")
                                 .authorizeHttpRequests(auth -> auth
                                                 .anyRequest()
                                                 .hasRole("STUDENTE")

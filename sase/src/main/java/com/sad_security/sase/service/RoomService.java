@@ -119,6 +119,8 @@ public class RoomService {
         newRoom.setDescrizione(descrizione);
         newRoom.setFlag(flag);
 
+        roomRepository.save(newRoom);
+
         System.out.println("Room salvata nel database");
 
     }

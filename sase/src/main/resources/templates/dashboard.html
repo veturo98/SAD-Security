@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layoutDashboard}">
+      layout:decorate="~{layoutDashboard}">
 
 <head>
     <title>Sad Security - Studente</title>
@@ -12,42 +12,44 @@
 
     <main layout:fragment="content" class="home-layout">
 
+        <aside class="sidebar" role="navigation" aria-label="Menu studente">
+            <section>
+                <h2>Classi a cui sei iscritto</h2>
+                <ul id="student-sidebar-options">
+                    <li th:each="classe : ${classiUtente}" th:if="${classiUtente != null}">
+                        <a href="#" class="sidebar-item" th:data-option="${classe.nome}" th:text="${classe.nome}"></a>
+                    </li>
+                </ul>
+            </section>
 
-        <div class="sidebar">
-            <h2>Classi a cui sei iscritto</h2>
-            <ul id="student-sidebar-options">
+            <section>
+                <h2>Operazioni</h2>
+                <ul>
+                    <li><a href="#" class="sidebar-item" data-option="Risultati">Risultati Room</a></li>
+                </ul>
+            </section>
 
-
-                <!-- Qui verranno aggiunte dinamicamente nuove voci -->
-                <li th:each="classe : ${classiUtente}" th:if="${classiUtente != null}">
-                    <a href="#" class="sidebar-item" th:data-option="${classe.nome}" th:text="${classe.nome}"></a>
-                </li>
-            </ul>
-
-            <h2>Operazioni</h2>
-            <ul>
-                <li><a href="#" class="sidebar-item" data-option="Risultati">Risultati Room</a></li>
-            </ul>
-
-            <div class="sidebar-settings">
+            <section class="sidebar-settings">
                 <h3>Impostazioni</h3>
-                <button class="sidebar-item" data-option="IscrivitiClasse">Iscriviti a una Classe</button>
-                <button class="sidebar-item" data-option="Cambia Password">Cambia Password</button>
-                <button class="sidebar-item" data-option="Logout">Logout</button>
-            </div>
-        </div>
+                <button class="sidebar-item" data-option="IscrivitiClasse" type="button">Iscriviti a una Classe</button>
+                <button class="sidebar-item" data-option="Cambia Password" type="button">Cambia Password</button>
+                <button class="sidebar-item" data-option="Logout" type="button">Logout</button>
+            </section>
+        </aside>
 
-        <div class="content-display">
+        <section class="content-display" role="main" aria-labelledby="Section-title">
             <h1 id="Section-title">Benvenuto Studente</h1>
             <div id="section-description">
                 <p>Seleziona un'opzione dalla barra laterale per iniziare.</p>
             </div>
-        </div>
+        </section>
+
     </main>
 
     <th:block layout:fragment="scripts">
         <script th:src="@{/js/dashboardStudente.js}"></script>
     </th:block>
+
 </body>
 
 </html>

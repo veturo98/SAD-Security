@@ -1,40 +1,45 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layoutDashboard}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layoutDashboard}">
 
 <head>
     <title>Sad Security - Home</title>
 
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    </head>
+</head>
 
 <body>
 
     <main layout:fragment="content" class="home-layout">
-        <div class="sidebar">
-            <h2>Operazioni Disponibili</h2>
-            <ul>
-                <li><a href="#" class="sidebar-item" data-option="CreaClasse">Crea Nuova Classe</a></li>
-                <li><a href="#" class="sidebar-item" data-option="CreaLaboratorio">Crea Laboratorio</a></li>
-                <li><a href="#" class="sidebar-item" data-option="Visualizza Risultati">Visualizza Risultati</a></li>
-                <li><a href="#" class="sidebar-item" data-option="Visualizza Studenti">Visualizza Studenti</a></li>
-                <li><a href="#" class="sidebar-item" data-option="Visualizza Laboratori">Visualizza Laboratori</a></li>
-            </ul>
 
-            <div class="sidebar-settings">
+        <aside class="sidebar" role="navigation" aria-label="Menu operazioni">
+            <section>
+                <h2>Operazioni Disponibili</h2>
+                <ul>
+                    <li><a href="#" class="sidebar-item" data-option="CreaClasse">Crea Nuova Classe</a></li>
+                    <li><a href="#" class="sidebar-item" data-option="CreaLaboratorio">Crea Laboratorio</a></li>
+                    <li><a href="#" class="sidebar-item" data-option="Visualizza Risultati">Visualizza Risultati</a></li>
+                    <li><a href="#" class="sidebar-item" data-option="Visualizza Studenti">Visualizza Studenti</a></li>
+                    <li><a href="#" class="sidebar-item" data-option="Visualizza Laboratori">Visualizza Laboratori</a></li>
+                </ul>
+            </section>
+
+            <section class="sidebar-settings">
                 <h3>Impostazioni</h3>
-                <button class="sidebar-item" data-option="Cambia Password">cambio password</button>
-                <button class="sidebar-item" data-option="Logout">logout</button>
-            </div>
-        </div>
+                <button class="sidebar-item" data-option="Cambia Password" type="button">Cambio Password</button>
+                <button class="sidebar-item" data-option="Logout" type="button">Logout</button>
+            </section>
+        </aside>
 
-        <div class="content-display">
+        <section class="content-display" role="main" aria-labelledby="Section-title">
             <h1 id="Section-title">Seleziona una Operazione</h1>
             <div id="section-description">
                 <p>Benvenuto nella piattaforma Sad Security. Seleziona una delle operazioni disponibili dalla barra laterale sinistra per visualizzarne i dettagli e le istruzioni.</p>
                 <p>Qui potrai trovare descrizioni dettagliate e informazioni relative all'operazione selezionata.</p>
             </div>
-        </div>
+        </section>
+
     </main>
 
     <th:block layout:fragment="scripts">

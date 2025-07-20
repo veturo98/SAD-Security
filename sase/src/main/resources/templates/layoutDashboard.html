@@ -3,33 +3,35 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sad Security</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" th:href="@{/css/layout.css}" />
-
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="stylesheet" th:href="@{/css/home.css}" />
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 </head>
 
 <body>
 
     <header>
-        <div>
-            <a href="/home"><img src="/images/logosito.png" alt="Sad Security Logo"></a>
+        <div class="logo-container">
+            <a href="/home" aria-label="Vai alla home">
+                <img src="/images/logosito.png" alt="Sad Security Logo" />
+            </a>
         </div>
 
-        <div>
+        <div class="user-welcome">
             <p th:if="${username}">
                 Benvenuto, <span id="user" th:text="${username}"></span>!
             </p>
         </div>
-
     </header>
 
     <main layout:fragment="content">
+        <!-- Contenuto dinamico inserito qui -->
     </main>
 
     <footer>
@@ -37,6 +39,7 @@
     </footer>
 
     <th:block layout:fragment="scripts">
+        <!-- Eventuali script inseriti qui -->
     </th:block>
 
 </body>

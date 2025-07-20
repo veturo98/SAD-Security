@@ -8,11 +8,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // stampa descrizione
     async function getDescrizione(nomeLab) {
+
         try {
             const response = await fetch(`/room/studente/getDescrizioneRoom?nomeRoom=${encodeURIComponent(nomeLab)}`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+
                 }
             });
 
@@ -31,7 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await fetch(`/room/studente/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').getAttribute('content'),
                 }
             });
 
@@ -80,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    //[header]: token
+                    [header]: token
                 },
                 body: JSON.stringify({
                     'nomeClass': nomeClasse,
@@ -590,6 +594,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const formData = new FormData(form);
 
             const res = await fetch("/room/studente/flag", {
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+                },
                 method: "POST",
                 body: formData,
             });

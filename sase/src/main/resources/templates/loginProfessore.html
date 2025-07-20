@@ -1,30 +1,39 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout}">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 
 <head>
-    <title>Sad Security</title>
+    <title>Sad Security - Login Professore</title>
 </head>
 
 <body>
-    <h3 th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></h3>
-    <h3 th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></h3>
-    <div layout:fragment="content">
-        <div th:if="${param.error}" class="alert alert-danger" style="color: red;">
-            Credenziali non valide. In caso di necessità contattare il reparto IT.
-        </div>
-        <h2 class="mb-4">Login professore</h2>
-        <form th:action="@{/professore/login}" method="post">
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required />
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required />
-            </div>
+    <div layout:fragment="content" class="min-vh-100 d-flex justify-content-center align-items-center">
+        <div class="card p-4 shadow" style="max-width: 500px; width: 100%;">
+            <h2 class="mb-4 text-center">Login Professore</h2>
 
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+            <!-- Messaggi -->
+            <div th:if="${param.error}" class="alert alert-danger text-center mb-3">
+                Credenziali non valide. In caso di necessità contattare il reparto IT.
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger text-center mb-3" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert alert-success text-center mb-3" th:text="${successMessage}"></div>
+
+            <!-- Form -->
+            <form th:action="@{/professore/login}" method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required />
+                </div>
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
+</html>
