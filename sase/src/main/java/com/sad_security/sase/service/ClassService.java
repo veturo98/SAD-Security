@@ -15,6 +15,7 @@ public class ClassService {
     @Autowired
     private ClasseRepository ClasseRepository;
 
+    // Permette di creare una classe
     public boolean aggiungiClasse(String classe) {
 
         // La classe esiste già
@@ -28,25 +29,19 @@ public class ClassService {
 
             // Creazione classe
             Classe newcClasse = new Classe();
-
             newcClasse.setNome(classe);
-
             ClasseRepository.save(newcClasse);
+            
             System.out.println("Classe creata");
 
             return false;
         }
     }
 
+    // get di tutte le classi
     public List<Classe> trovaTutteLeClassi() {
 
         return ClasseRepository.findAll();
-
-    }
-
-    public Optional<Classe> cercaClasse(String classe) {
-
-        return ClasseRepository.findBynome(classe);
 
     }
 

@@ -28,6 +28,7 @@ public class StudenteService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Funzioni di Spring Security
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Studente> optionalStudente = studenteRepository.findByUsername(username);
@@ -43,12 +44,13 @@ public class StudenteService implements UserDetailsService {
                 .build();
     }
 
-    // Metodo per ritornare un oggetto utile all'iscrizione dello studente alla
-    // classe
+
+    // Restituisce lo studente dato lo username
     public Optional<Studente> findByUsername(String username) {
         return studenteRepository.findByUsername(username);
     }
 
+    // Funzione di Spring Security
     public boolean autenticaStudente(String username, String password) {
 
         Studente studente = studenteRepository.findByUsername(username)
@@ -61,6 +63,7 @@ public class StudenteService implements UserDetailsService {
         return true;
     }
 
+    // Registrazione di un nuovo studente
     public boolean aggiungiStudente(String username, String password, String mail) {
 
         // Cerco se l'studente esiste già (mail o username già utilizzato)
@@ -191,15 +194,23 @@ public class StudenteService implements UserDetailsService {
         return true;
     }
 
+    // Cambia la password per lo studente
     public boolean cambiaPasswordStudente(String username, String oldpassword, String newpassword) {
 
         Optional<Studente> optional = studenteRepository.findByUsername(username);
+
+        // Controllo se la vecchia password è già usata
         Boolean controllocredenziali = checkpassowrd(oldpassword, username);
+
+        // Se l'utente esiste e la vecchia password è corretta
         if (optional.isPresent() && controllocredenziali) {
 
+            // Costruisce studente e password e le salva
             Studente studente = optional.get();
             studente.setPassword(passwordEncoder.encode(newpassword));
+            
             studenteRepository.save(studente);
+
             return true;
         }
         return false;

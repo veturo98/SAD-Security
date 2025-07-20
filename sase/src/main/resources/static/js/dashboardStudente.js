@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const descEl = document.getElementById("section-description");
 
 
+    // stampa descrizione
     async function getDescrizione(nomeLab) {
         try {
             const response = await fetch(`/room/studente/getDescrizioneRoom?nomeRoom=${encodeURIComponent(nomeLab)}`, {
@@ -17,13 +18,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nel recupero della descrizione della room");
 
-            return await response.json(); // supponiamo sia un array di nomi di lab
+            return await response.json();
         } catch (error) {
             console.error("Errore durante il caricamento della descrizione:", error);
             return [];
         }
     }
 
+    // stampa laboratori per classe
     async function getLabsPerClasse(nomeClasse) {
         try {
             const response = await fetch(`/room/studente/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
@@ -55,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             const nomeClasse = select.value;
-            messageEl.textContent = ""; // pulizia precedente
+            messageEl.textContent = "";
             messageEl.style.color = "black";
 
             if (!nomeClasse) {
@@ -67,8 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
             iscriviStudente(nomeClasse, messageEl);
         });
     }
-
-
 
 
     // Funzione per avviare il container di una room
@@ -406,6 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // submit form per ottenere i risultati
     document.addEventListener("submit", async (e) => {
         const form = e.target;
 
@@ -445,6 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
+    // rendering della tabella dei risultati
     function renderizzaTabellaRisultati(dati) {
         const container = document.getElementById('form-risultati');
         if (!container) return;
@@ -453,13 +455,13 @@ document.addEventListener("DOMContentLoaded", function () {
         table.classList.add('tabella-risultati');
 
         const thead = `
-    <thead>
-      <tr>
-        <th>Studente</th>
-        <th>Score</th>
-      </tr>
-    </thead>
-  `;
+        <thead>
+            <tr>
+                <th>Studente</th>
+                <th>Score</th>
+            </tr>
+            </thead>
+        `;
         table.innerHTML = thead;
 
         const tbody = document.createElement('tbody');
@@ -478,6 +480,7 @@ document.addEventListener("DOMContentLoaded", function () {
         container.appendChild(table); // inserisce la tabella
     }
 
+    // rendering dei ri
     function renderRisultatiTabella(data) {
         const formContainer = document.getElementById('form-risultati');
 
@@ -638,35 +641,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-
-    // // Verifica vecchia password
-    // function oldPasswordCheck() {
-    //     const oldpasswordInput = document.getElementById("oldPassword");
-    //     const msgOldPassword = document.getElementById("old-password-message");
-    //     if (!oldpasswordInput || !msgOldPassword) return;
-
-    //     oldpasswordInput.addEventListener("blur", async () => {
-    //         const oldPassword = oldpasswordInput.value.trim();
-
-    //         if (!oldPassword) {
-    //             msgOldPassword.textContent = "Il campo password non può essere vuoto.";
-    //             msgOldPassword.style.color = "red";
-    //             return;
-    //         }
-
-    //         try {
-    //             const res = await fetch(`/account/studente/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, { credentials: 'same-origin' });
-    //             const data = await res.json();
-
-    //             msgOldPassword.textContent = data.message;
-    //             msgOldPassword.style.color = data.type === "error" ? "red" : "green";
-    //         } catch (error) {
-    //             console.error("Errore nella verifica della vecchia password:", error);
-    //             msgOldPassword.textContent = "Errore durante la verifica.";
-    //             msgOldPassword.style.color = "red";
-    //         }
-    //     });
-    // }
 
     // Conferma nuova password in tempo reale
     function confermaPasswordRealtime() {
@@ -857,7 +831,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     setupIscrizioneClasse();
                 });
             } else if (key === "Cambia Password") {
-                // oldPasswordCheck();
                 confermaPasswordRealtime();
                 cambiaPassword();
             } else if (key === "Logout") {

@@ -1,6 +1,4 @@
 import os
-import shutil
-import socket
 import subprocess
 import time
 import compose
@@ -27,11 +25,6 @@ def start_container():
 
     #Seleziono la porta
     porta = utility.scelta_random_porta(1024, 49151, utente)
-    if porta:
-        print(f"Uso della porta {porta}")
-    else:
-        print("Nessuna porta libera trovata.")
-
 
     time.sleep(1)
 
@@ -69,7 +62,6 @@ def stop_container():
     utente = data.get('utente')
     
 
-    
     print(f"Ricevuta richiesta per distruggere il container dell'utente: {utente}")
 
     time.sleep(1)

@@ -191,43 +191,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
-    // // verifica che la password vecchia sia corretta
-    // function oldPasswordCheck() {
-    //     const oldpasswordInput = document.getElementById("oldPassword");
-    //     const msgOldPassword = document.getElementById("old-password-message");
-
-    //     if (!oldpasswordInput) return;
-
-    //     oldpasswordInput.addEventListener("blur", function () {
-
-    //         const oldPassword = oldpasswordInput.value.trim();
-
-    //         if (!oldPassword) {
-    //             msgOldPassword.textContent = "Il campo password non può essere vuoto.";
-    //             msgOldPassword.style.color = "red";
-    //             return;
-    //         }
-
-    //         fetch(`/account/professore/checkOldPassword?oldPassword=${encodeURIComponent(oldPassword)}`, {
-    //             credentials: 'same-origin'
-    //         })
-    //             .then(res => res.json())
-    //             .then(data => {
-    //                 msgOldPassword.textContent = data.message;
-    //                 msgOldPassword.style.color = data.type === "error" ? "red" : "green";
-    //             })
-    //             .catch(err => {
-    //                 console.error("Errore nella verifica della vecchia password:", err);
-    //                 msgOldPassword.textContent = "Errore durante la verifica.";
-    //                 msgOldPassword.style.color = "red";
-    //             });
-    //     });
-    // }
-
     //verifica che la nuova passord e quella di conferma sono uguali 
     function confermaPasswordRealtime() {
-        // const oldPasswordInput = document.getElementById("oldPassword");
         const newPasswordInput = document.getElementById("newPassword");
         const confirmPasswordInput = document.getElementById("confirmPassword");
         const msgConfirmPassword = document.getElementById("confirm-password-message");
@@ -439,6 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    // submit form dei risultati
     document.addEventListener("submit", async (e) => {
         const form = e.target;
 
@@ -486,22 +452,22 @@ document.addEventListener("DOMContentLoaded", function () {
         table.classList.add('tabella-risultati');
 
         const thead = `
-    <thead>
-      <tr>
-        <th>Studente</th>
-        <th>Score</th>
-      </tr>
-    </thead>
-  `;
+            <thead>
+                <tr>
+                    <th>Studente</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+        `;
         table.innerHTML = thead;
 
         const tbody = document.createElement('tbody');
         dati.forEach(el => {
             const row = document.createElement('tr');
             row.innerHTML = `
-      <td>${el.studente}</td>
-      <td>${el.score}</td>
-    `;
+                    <td>${el.studente}</td>
+                <td>${el.score}</td>
+            `;
             tbody.appendChild(row);
         });
 
@@ -991,7 +957,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     descEl.innerHTML = content[key].desc;
                     setTimeout(() => {
-                        // oldPasswordCheck();// controlla old passwrod
                         cambiaPassword();//crea nuova password
                         confermaPasswordRealtime(); //controlla le nuove password
                     }, 0);

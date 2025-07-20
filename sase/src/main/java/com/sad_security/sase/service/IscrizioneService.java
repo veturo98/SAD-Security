@@ -16,14 +16,18 @@ public class IscrizioneService {
     @Autowired
     private IscrizioneRepository iscrizioneRepository;
 
-    public void aggiungiIscrizione(String studente, String classe) {
+    // Salva l'iscrizione di uno studente ad una classe
+    public boolean aggiungiIscrizione(String studente, String classe) {
 
         Optional<Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);
 
+        // Se già iscritto non fare nulla
         if (iscrizione.isPresent()) {
             System.out.println("l'utente è già iscritto");
-
+            return false;
         }
+
+        // Altrimenti costruisco l'oggetto iscrizione
         Iscrizione iscriviti = new Iscrizione();
         iscriviti.setStudente(studente);
         iscriviti.setClasse(classe);
@@ -31,8 +35,11 @@ public class IscrizioneService {
         iscrizioneRepository.save(iscriviti);
         System.out.println("l'utente si è iscritto alla classe");
 
+        return true;
+
     }
 
+    // Controlla se l'iscrizione è stata già effettuata
     public boolean controllaIscrizione(String studente, String classe) {
 
         Optional<Iscrizione> iscrizione = iscrizioneRepository.findByStudenteAndClasse(studente, classe);

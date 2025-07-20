@@ -1,5 +1,5 @@
 {"properties": [{
-  "name": "docker.api.base-url",
+  "name": "gestore-risorse-url",
   "type": "java.lang.String",
-  "description": "A description for 'docker.api.base-url'"
+  "description": "A description for 'gestore-risorse-url'"
 }]}

@@ -144,26 +144,25 @@ public class RoomController {
             System.out.println("Contenuto YAML:\n" + yamlContent);
 
             // Controllo se la room esiste già
-            if (roomService.isPresent(roomName) == true){
+            if (roomService.isPresent(roomName)) {
                 response.put("message", "Nome room già esistente.");
                 response.put("type", "error");
                 return response;
             }
 
-
             // Salva la room nel database
             roomService.salvaNuovaRoom(roomName, descrizione, flag);
 
+            // Invoca il service per inviare dati al gestore delle risorse
+            roomService.aggiungiRisorsaServer(roomName, yamlFile);
+            
             // Salva l'associazione
             boolean associazione = roomService.aggiungiassociazione(classeNome, roomName);
             if (associazione) {
-                response.put("message", "L'associazione tra questa classe e room è già stata fatta ");
+                response.put("message", "L'associazione tra questa classe e room è già stata fatta");
                 response.put("type", "error");
                 return response;
             }
-
-            // Invoca il service per inviare dati al backend
-            roomService.aggiungiRisorsaServer(roomName, yamlFile);
 
             response.put("message", "Laboratorio creato con successo.");
             response.put("type", "success");
@@ -220,7 +219,7 @@ public class RoomController {
     }
 
     // Gestione della richiesta delle room associate ad una classe
-    @GetMapping({"studente/getRoomsPerClasse", "professore/getRoomsPerClasse"})
+    @GetMapping({ "studente/getRoomsPerClasse", "professore/getRoomsPerClasse" })
     public ResponseEntity<List<String>> getRoomsPerClasse(@RequestParam String nomeClasse) {
         List<String> rooms = roomService.getRoomListbyClasse(nomeClasse);
         return ResponseEntity.ok(rooms);
@@ -264,8 +263,9 @@ public class RoomController {
             @RequestParam("classeId") String classe,
             @RequestParam("roomId") String room) {
 
-        // Invoca il service per la visualizzazione dei risultati
-        List<RoomAvviata> risultati = roomService.visualizzaRisultati(classe, room);
+        // Invoca il service per ottenere le classi di cui voglio la visualizzare i
+        // risultati
+        List<RoomAvviata> risultati = roomService.getRoombyClasseAndRoom(classe, room);
 
         // Se non ci sono risultati restituisce una lista vuota
         if (risultati == null || risultati.isEmpty()) {

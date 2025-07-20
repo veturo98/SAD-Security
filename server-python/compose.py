@@ -58,9 +58,9 @@ def run_docker_compose(utente, classe, room, porta):
 
     # Lancio il docker compose up
     try:
-        subprocess.run(["docker", "compose", "up", "-d", "--wait"], check=True, capture_output=False)
+        esito = subprocess.run(["docker", "compose", "up", "-d", "--wait"], check=True, capture_output=False)
         print("Comando Docker Compose eseguito con successo.")
-        command_exit_code = 0
+        command_exit_code = esito.returncode
     except subprocess.CalledProcessError as e:
         print("Errore durante l'esecuzione del comando Docker Compose.")
         print(f"Codice di uscita: {e.returncode}")
@@ -79,7 +79,6 @@ def run_docker_compose(utente, classe, room, porta):
     
 
 if __name__ == "__main__":
-    # Questa parte viene eseguita SOLO quando lo script è lanciato direttamente
     if len(sys.argv) != 3:
         print("Uso: python script.py <CLASSE> <ROOM>")
         print("Esempio: python script.py MyProject WebApp")
@@ -124,9 +123,9 @@ def stop_docker_compose(utente):
 
     # Eseguo il compose down
     try:
-        subprocess.run(["docker", "compose", "down"], check=True, capture_output=False)
+        esito = subprocess.run(["docker", "compose", "down"], check=True, capture_output=False)
         print("Comando Docker Compose down eseguito con successo.")
-        command_exit_code = 0
+        command_exit_code = esito.returncode
     except subprocess.CalledProcessError as e:
         print("Errore durante l'esecuzione del comando Docker Compose down.")
         print(f"Codice di uscita: {e.returncode}")

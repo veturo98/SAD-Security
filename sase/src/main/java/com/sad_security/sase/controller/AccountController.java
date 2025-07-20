@@ -61,7 +61,7 @@ public class AccountController {
             res.put("msg", "Registrazione avvenuta con successo");
             res.put("type", "success");
         } else {
-            res.put("msg", "Errore nella registrazione (utente già esistente?)");
+            res.put("msg", "Errore nella registrazione. Username o mail già utilizzate.");
             res.put("type", "error");
         }
 

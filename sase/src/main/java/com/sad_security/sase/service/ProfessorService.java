@@ -48,24 +48,30 @@ public class ProfessorService implements UserDetailsService {
             return false; // password errata
 
         }
-        // Aggiorna la nuova password
-        // professore.setPassword(passwordEncoder.encode(password));
-        // professoreRepository.save(professore);
 
         return true;
     }
 
+    // Funzione di cambio password per il professore
     public boolean cambiaPasswordProfessore(String username, String oldpassword, String newpassword) {
 
-        Optional<Professore> optional = professoreRepository.findByUsername(username);
-        Boolean controllocredenziali = checkpassowrd(oldpassword, username);
-        if (optional.isPresent() && controllocredenziali) {
+        Optional<Professore> account_professore = professoreRepository.findByUsername(username);
 
-            Professore professore = optional.get();
+        // Controlla che le credenziali vecchie siano corrette
+        Boolean controllocredenziali = checkpassowrd(oldpassword, username);
+
+        // Se l'account esiste e le credenziali sono corrette allora confermo il cambio
+        if (account_professore.isPresent() && controllocredenziali) {
+
+            // Costruisco l'oggetto professore
+            Professore professore = account_professore.get();
             professore.setPassword(passwordEncoder.encode(newpassword));
+
             professoreRepository.save(professore);
+
             return true;
         }
+        
         return false;
     }
 
