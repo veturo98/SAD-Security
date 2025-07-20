@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function getLabsPerClasse(nomeClasse) {
         try {
-            const response = await fetch(`/room/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
+            const response = await fetch(`/room/professore/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
         try {
-            const response = await fetch('/classe/getClassi', {
+            const response = await fetch('/classe/professore/getClassi', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
         try {
-            const response = await fetch('/classe/getClassi', {
+            const response = await fetch('/classe/professore/getClassi', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -575,7 +575,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
         try {
-            const response = await fetch('/classe/getClassi', {
+            const response = await fetch('/classe/professore/getClassi', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -631,7 +631,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("classeId", classeId);
 
             try {
-                const response = await fetch("/classe/listaIscritti", {
+                const response = await fetch("/classe/professore/listaIscritti", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
@@ -701,7 +701,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
         try {
-            const response = await fetch('/classe/getClassi', {
+            const response = await fetch('/classe/professore/getClassi', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -820,7 +820,7 @@ document.addEventListener("DOMContentLoaded", function () {
             title: "Crea Nuova Classe",
             desc: `
                 <p>Utilizza il modulo sottostante per creare una nuova classe per l'organizzazione dei tuoi studenti.</p>
-                <form id="create-class-form" action="/classe/crea" method="post">
+                <form id="create-class-form" action="/classe/professore/crea" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
                     <div class="form-group">
                         <label for="className">Nome Classe:</label>

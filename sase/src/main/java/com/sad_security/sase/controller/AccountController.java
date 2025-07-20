@@ -32,7 +32,7 @@ public class AccountController {
     private ProfessorService professorService;
 
     // Gestisce la richiesta di registrazione di nuovi utenti
-    @PostMapping("/add/user")
+    @PostMapping("/registrati")
     @ResponseBody
     public Map<String, String> registraStudente(@RequestParam("username") String username,
             @RequestParam("mail") String mail,
@@ -178,55 +178,6 @@ public class AccountController {
         return res;
     }
 
-    // Gestione delle richieste di controllo della password a tempo di cambio
-    // @GetMapping({ "/professore/checkOldPassword", "/studente/checkOldPassword" })
-    // @ResponseBody
-    // public Map<String, String> liveCheck(@RequestParam String oldPassword,
-    // HttpServletRequest request) {
-    // Authentication authentication =
-    // SecurityContextHolder.getContext().getAuthentication();
-
-    // Map<String, String> res = new HashMap<>();
-
-    // // Se la richiesta viene da un utente autenticato risponde con errore
-    // if (authentication == null || !authentication.isAuthenticated() ||
-    // authentication instanceof AnonymousAuthenticationToken) {
-    // res.put("msg", "Utente non autenticato");
-    // res.put("type", "error");
-
-    // return res;
-    // }
-
-    // // Controlla se la richiesta viene da studente o professore
-    // String requestPath = request.getRequestURI();
-    // System.out.println(requestPath);
-
-    // boolean exists;
-    // String username = authentication.getName();
-
-    // // In base al mittente decide se chiamare il service dei professori o degli
-    // // studenti
-    // if (requestPath.equals("/account/studente/changePassword")) {
-    // exists = studenteServices.checkpassowrd(oldPassword, username);
-
-    // } else {
-    // exists = professorService.checkpassowrd(oldPassword, username);
-    // }
-
-    // // Restituisce il messaggio corretto
-    // if (exists) {
-    // res.put("msg", "credenziali vecchie valide");
-    // res.put("type", "success");
-
-    // } else {
-    // res.put("msg", "password errata");
-    // res.put("type", "error");
-
-    // }
-
-    // return res;
-
-    // }
 
     // Gestione della richiesta di logout
     @PostMapping("/logout")

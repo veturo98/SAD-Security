@@ -60,7 +60,8 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain professoreFilterChain(HttpSecurity http) throws Exception {
                 http
-                                .securityMatcher("/professore/**", "/classe/crea", "/account/professore/**")
+                                .securityMatcher("/professore/**", "/classe/professore/**", "/account/professore/**",
+                                                "/room/professore/**")
                                 .authorizeHttpRequests(auth -> auth
                                                 .anyRequest().hasRole("PROFESSORE"))
                                 .formLogin(form -> form
@@ -79,8 +80,7 @@ public class SecurityConfig {
         public SecurityFilterChain studenteFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .securityMatcher("/account/studente/**", "/login", "/studente/dashboard",
-                                                "/classe/getClassiIscritte",
-                                                "/classe/iscriviti")
+                                                "/classe/studente/**", "room/studente/**")
                                 .authorizeHttpRequests(auth -> auth
                                                 .anyRequest()
                                                 .hasRole("STUDENTE")

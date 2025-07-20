@@ -212,7 +212,7 @@ public class RoomController {
     }
 
     // Gestione della richiesta delle room associate ad una classe
-    @GetMapping("/getRoomsPerClasse")
+    @GetMapping({"studente/getRoomsPerClasse", "professore/getRoomsPerClasse"})
     public ResponseEntity<List<String>> getRoomsPerClasse(@RequestParam String nomeClasse) {
         List<String> rooms = roomService.getRoomListbyClasse(nomeClasse);
         return ResponseEntity.ok(rooms);

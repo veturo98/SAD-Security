@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function getLabsPerClasse(nomeClasse) {
         try {
-            const response = await fetch(`/room/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
+            const response = await fetch(`/room/studente/getRoomsPerClasse?nomeClasse=${encodeURIComponent(nomeClasse)}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
         try {
-            const response = await fetch('/classe/getClassi', {
+            const response = await fetch('/classe/studente/getClassi', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
         try {
-            const response = await fetch('/classe/getClassi', {
+            const response = await fetch('/classe/studente/getClassi', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function iscriviStudente(nomeClasse, messageEl) {
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
 
-        fetch('/classe/iscriviti', {
+        fetch('/classe/studente/iscriviti', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
         sidebar.innerHTML = ''; // pulisce prima di aggiungere
 
         try {
-            const response = await fetch('/classe/getClassiIscritte', { credentials: 'same-origin' });
+            const response = await fetch('/classe/studente/getClassiIscritte', { credentials: 'same-origin' });
             if (!response.ok) throw new Error('Errore nel recupero classi iscritte');
 
             const classiIscritte = await response.json();
@@ -776,7 +776,7 @@ document.addEventListener("DOMContentLoaded", function () {
             title: "Iscriviti ad una classe",
             desc: `
                 <p>Seleziona una classe a cui iscriverti</p>
-                <form id="create-lab-form" action="/classe/iscriviti" method="post">
+                <form id="create-lab-form" action="/classe/studente/iscriviti" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''}" />
                     <div class="form-group">
                         <label for="classSelect">Nome classe:</label>

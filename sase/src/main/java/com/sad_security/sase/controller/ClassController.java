@@ -39,7 +39,7 @@ public class ClassController {
     private IscrizioneService iscrizioneService;
 
     // Gestione della richiesta della lista delle classi
-    @GetMapping("/getClassi")
+    @GetMapping({"/professore/getClassi", "/studente/getClassi"})
     @ResponseBody
     public List<String> getClassi() {
 
@@ -53,7 +53,7 @@ public class ClassController {
     }
 
     // Gestione della richiesta degli studenti iscritti ad una classe
-    @PostMapping("/listaIscritti")
+    @PostMapping("/professore/listaIscritti")
     @ResponseBody
     public List<Map<String, Object>> getStudenti(@RequestParam("classeId") String classe) {
 
@@ -72,7 +72,7 @@ public class ClassController {
     }
 
     // Gestione della richiesta di creazione di una classe
-    @PostMapping("/crea")
+    @PostMapping("/professore/crea")
     @ResponseBody
     public Map<String, String> creaClasse(@RequestParam String classe) {
 
@@ -94,7 +94,7 @@ public class ClassController {
     }
 
     // Gestione della richiesta di iscrizione ad una classe
-    @PostMapping("/iscriviti")
+    @PostMapping("/studente/iscriviti")
     @ResponseBody
     public Map<String, String> IscrizioneClasse(@RequestParam("nomeClasse") String nomeClasse) {
 
@@ -132,7 +132,7 @@ public class ClassController {
     }
 
     // Gestione della richiesta di conoscere le classi a cui è iscritto uno studente
-    @GetMapping("/getClassiIscritte")
+    @GetMapping("/studente/getClassiIscritte")
     @ResponseBody
     public List<String> getClassiIscrittePerStudente(Authentication authentication) {
         
