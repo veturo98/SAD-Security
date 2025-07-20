@@ -14,10 +14,10 @@ public class RoomAvviata {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "Utente") // identifiativo dell'utente
+    @JoinColumn(name = "Utente")
     private String studente;
 
-    @JoinColumn(name = "Room") // identifiativo della room
+    @JoinColumn(name = "Room")
     private String room;
 
     @JoinColumn(name = "classe")

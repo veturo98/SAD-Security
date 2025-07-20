@@ -696,7 +696,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cambia password
     function cambiaPassword() {
-        const form = document.getElementById("change-password-form");
+        const form = document.getElementById("changePassword-form");
         if (!form) return;
 
         form.addEventListener("submit", async (e) => {
@@ -793,7 +793,7 @@ document.addEventListener("DOMContentLoaded", function () {
             title: "Cambia Password",
             desc: `
                 <p>Cambia la password dell'utente</p>
-                <form id="change-password-form" action="/account/studente/change-password" method="post">
+                <form id="changePassword-form" action="/account/studente/changePassword" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''}" />
                     <div>
                         <label for="oldPassword">Vecchia Password:</label>

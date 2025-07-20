@@ -26,7 +26,7 @@ def start_container():
     print(f"Ricevuta richiesta per avviare la classe: {utente}")
 
     #Seleziono la porta
-    porta = str(utility.scelta_random_porta(1024, 49151, utente))
+    porta = utility.scelta_random_porta(1024, 49151, utente)
     if porta:
         print(f"Uso della porta {porta}")
     else:
@@ -45,7 +45,7 @@ def start_container():
         result = compose.run_docker_compose(utente, classe, room, porta)
         print(result)
         if (result != 0):
-            return jsonify({"msg" : "Errore durante l'avvio del laboratorio, riprovare più tardi"}), 200
+            return jsonify({"msg" : "Errore durante l'avvio del laboratorio, riprovare più tardi", "type" : "error"}), 200
     except FileNotFoundError as e:
          print(f"Errore: {e}")
     except subprocess.CalledProcessError as e:
@@ -55,7 +55,7 @@ def start_container():
     #########   #########   #########   #########   #########   #########   #########   #########
     # ATTENZIONE - il campo IP deve contenere l'indirizzo del nodo che esegue il server.py 
     ip = "localhost"
-    return jsonify({"msg" : f"Room {room} avviata con successo per l'utente {utente}! Per il collegamento usa il comando nella box.", "command" : f"ssh -p {porta} root@{ip}"}), 200
+    return jsonify({"msg" : f"Room {room} avviata con successo per l'utente {utente}! Per il collegamento usa il comando nella box.", "command" : f"ssh -p {porta} root@{ip}", "type" : "success"}), 200
     #########   #########   #########   #########   #########   #########   #########   #########
 
 
@@ -86,7 +86,7 @@ def stop_container():
         print(f"Errore standard: {e.stderr}")
 
     # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
-    return jsonify({"msg" : "Container distrutto con successo"}), 200
+    return jsonify({"msg" : "Container distrutto con successo", "type" : "success"}), 200
 
 
 # CREAZIONE ROOM

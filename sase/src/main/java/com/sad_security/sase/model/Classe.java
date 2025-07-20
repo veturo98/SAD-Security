@@ -12,7 +12,6 @@ import lombok.Data;
 @Table(name ="Classe")
 public class Classe {
 
-    // Dati della classe
     @Id
     @Column(name = "nome")
     private String nome;

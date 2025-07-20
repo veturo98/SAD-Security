@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 
 import org.springframework.security.core.Authentication;
 
+// CONTROLLER CHE SI OCCUPA DEL PRIMO INDIRIZZAMENTO
 @Controller
 public class HomeController {
 
@@ -38,8 +39,8 @@ public class HomeController {
     public String getDashboard(Model model, Authentication authentication) {
 
         if (authentication != null) {
-            String username = authentication.getName(); // Ottieni l'username dell'utente autenticato
-            model.addAttribute("username", username); // Aggiungi l'username al modello per Thymeleaf
+            String username = authentication.getName(); 
+            model.addAttribute("username", username); // Aggiunta dello username al modello per Thymeleaf
         }
 
         return "dashboard";
@@ -49,8 +50,8 @@ public class HomeController {
     public String getadminDashboard(Model model, Authentication authentication) {
 
         if (authentication != null) {
-            String username = authentication.getName(); // Ottieni l'username dell'utente autenticato
-            model.addAttribute("username", username); // Aggiungi l'username al modello per Thymeleaf
+            String username = authentication.getName(); 
+            model.addAttribute("username", username); 
         }
 
         return "profDashboard";

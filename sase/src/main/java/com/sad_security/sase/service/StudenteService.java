@@ -14,8 +14,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.repository.StudenteRepository;
+
 
 @Service("studenteDetailsService")
 public class StudenteService implements UserDetailsService {

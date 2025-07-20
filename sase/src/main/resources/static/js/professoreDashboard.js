@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cambia password
     function cambiaPassword() {
-        const form = document.getElementById("change-password-form");
+        const form = document.getElementById("changePassword-form");
         if (!form) return;
 
         form.addEventListener("submit", function (e) {
@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         messageElement.style.color = "green";
                         form.reset();
                         setTimeout(() => {
-                            window.location.href = "/professore/login";  // Metti qui l'URL della tua pagina di login
+                            window.location.href = "/professore/login";
                         }, 1000); // aspetta 2 secondi per far vedere il messaggio
                     } else {
                         messageElement.textContent = data.msg || "Errore nel cambio password";
@@ -631,7 +631,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("classeId", classeId);
 
             try {
-                const response = await fetch("/classe/professore/lista-iscritti", {
+                const response = await fetch("/classe/listaIscritti", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
@@ -924,7 +924,7 @@ document.addEventListener("DOMContentLoaded", function () {
             title: "Cambia Password",
             desc: `
                 <p>Cambia la password del professore</p>
-                <form id="change-password-form" action="/account/professore/change-password" method="post">
+                <form id="changePassword-form" action="/account/professore/changePassword" method="post">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
                     <div>
                         <label for="oldPassword">Vecchia Password:</label>

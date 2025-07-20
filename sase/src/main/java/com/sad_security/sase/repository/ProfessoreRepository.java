@@ -12,6 +12,7 @@ public interface ProfessoreRepository extends JpaRepository<Professore, Long> {
     // (save, findById, findAll, count, etc.)
     // Puoi aggiungere qui metodi personalizzati se necessario, ad esempio:
     Optional<Professore> findByUsername(String username);
+
     Optional<Professore> findByMail(String mail);
 
 }

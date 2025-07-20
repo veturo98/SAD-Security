@@ -35,11 +35,9 @@ public class Professore implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    // Rimuoviamo completamente il campo 'roles' e la relativa annotazione
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Restituisce un ruolo fisso per tutti i professori
         return List.of(new SimpleGrantedAuthority("ROLE_PROFESSORE"));
     }
 

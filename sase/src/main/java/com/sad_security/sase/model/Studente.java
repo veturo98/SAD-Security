@@ -23,7 +23,6 @@ import lombok.Data;
 @Table(name = "Studente")
 public class Studente implements UserDetails {
 
-    // Dati dell'account utente
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -40,7 +39,6 @@ public class Studente implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Restituisce un ruolo fisso per tutti gli studenti
         return List.of(new SimpleGrantedAuthority("ROLE_STUDENTE"));
     }
 

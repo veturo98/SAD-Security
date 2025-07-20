@@ -58,7 +58,7 @@ public class RoomService {
             return CompletableFuture.completedFuture(response.getBody());
 
         } catch (Exception e) {
-            startRoomResponse errorResponse = new startRoomResponse(null, null);
+            startRoomResponse errorResponse = new startRoomResponse(null, null, null);
             errorResponse.setMsg("Errore: " + e.getMessage());
             errorResponse.setCommand("");
             return CompletableFuture.completedFuture(errorResponse);
@@ -247,19 +247,30 @@ public class RoomService {
             System.out.println("l'utente ha già avviato la room");
             return true;
         } else {
-
-            // Creazione associazione
-            RoomAvviata roomAvv = new RoomAvviata();
-            roomAvv.setRoom(room);
-            roomAvv.setStudente(studente);
-            roomAvv.setClasse(classe);
-            roomAvv.setTimestamp(LocalDateTime.now());
-
-            roomAvviataRepository.save(roomAvv);
-            System.out.println("Associazione creata: room '" + room + "' avviata dallo studente '" + studente + "'.");
-
             return false;
         }
+    }
+
+    // Salva la rooom in maniera persistente
+    public boolean SalvaRoomAvviata(String classe, String room, String studente) {
+
+        // Creazione associazione
+        RoomAvviata roomAvv = new RoomAvviata();
+        roomAvv.setRoom(room);
+        roomAvv.setStudente(studente);
+        roomAvv.setClasse(classe);
+        roomAvv.setTimestamp(LocalDateTime.now());
+
+        // Se la room non viene salvata restituisce false
+        RoomAvviata newRoom = roomAvviataRepository.save(roomAvv);
+
+        if (newRoom.equals(null)) {
+            return false;
+        }
+
+        // Altrimenti true
+        System.out.println("Associazione creata: room '" + room + "' avviata dallo studente '" + studente + "'.");
+        return true;
     }
 
     // Verifica se la flag inserita è corretta

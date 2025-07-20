@@ -11,7 +11,6 @@ import lombok.Data;
 @Table(name = "Room")
 public class Room {
 
-    // Dati della room
     @Id
     @Column(name = "room")
     private String nome;
