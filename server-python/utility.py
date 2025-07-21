@@ -20,10 +20,12 @@ def sostituisci_spazi_con_hyphen(s):
     return s
 
 # Sceglie in maniera casuale la porta da utilizzare
-def scelta_random_porta (start_port, end_port, utente):
+def scelta_random_porta (start_port, end_port, utente, room, classe):
+
+    seed = utente + room + classe
 
     # Setto come seed il nome dell'utente
-    random.seed(utente)
+    random.seed(seed)
     
     # Scelgo in maniera casuale la porta in un intervallo 
     porta_selezionata = random.randint(start_port, end_port)

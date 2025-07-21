@@ -21,10 +21,10 @@ def start_container():
     
     print(f"Ricevuta richiesta per avviare il container: {room}")
     print(f"Ricevuta richiesta per avviare la classe: {classe}")
-    print(f"Ricevuta richiesta per avviare la classe: {utente}")
+    print(f"Ricevuta richiesta per avviare dall'utente: {utente}")
 
     #Seleziono la porta
-    porta = utility.scelta_random_porta(1024, 49151, utente)
+    porta = utility.scelta_random_porta(1024, 49151, utente, room, classe)
 
     time.sleep(1)
 
@@ -36,14 +36,16 @@ def start_container():
 
         # Lancio il compose
         result = compose.run_docker_compose(utente, classe, room, porta)
-        print(result)
+
         if (result != 0):
             return jsonify({"msg" : "Errore durante l'avvio del laboratorio, riprovare più tardi", "type" : "error"}), 200
     except FileNotFoundError as e:
          print(f"Errore: {e}")
+         return jsonify({"msg" : "File non trovato", "type" : "success"}), 200
     except subprocess.CalledProcessError as e:
         print(f"Errore durante l'esecuzione del comando: {e}")
         print(f"Errore standard: {e.stderr}")
+        return jsonify({"msg" : e.stderr, "type" : "success"}), 200
 
     #########   #########   #########   #########   #########   #########   #########   #########
     # ATTENZIONE - il campo IP deve contenere l'indirizzo del nodo che esegue il server.py 
@@ -73,9 +75,11 @@ def stop_container():
         print(result)
     except FileNotFoundError as e:
          print(f"Errore: {e}")
+         return jsonify({"msg" : "File non trovato", "type" : "success"}), 200
     except subprocess.CalledProcessError as e:
         print(f"Errore durante l'esecuzione del comando: {e}")
         print(f"Errore standard: {e.stderr}")
+        return jsonify({"msg" : "Errore nell'esecuzione del comando", "type" : "success"}), 200
 
     # Qui potresti aggiungere la logica per avviare il container Docker, ad esempio con docker-py
     return jsonify({"msg" : "Container distrutto con successo", "type" : "success"}), 200
