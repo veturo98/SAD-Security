@@ -419,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const classeId = form.querySelector('[name="classeId"]').value;
             const roomId = form.querySelector('[name="roomId"]').value;
-            const csrfToken = form.querySelector('[name="_csrf"]').value;
+            const csrfToken = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
 
             const formData = new URLSearchParams();
             formData.append("classeId", classeId);
@@ -758,7 +758,6 @@ document.addEventListener("DOMContentLoaded", function () {
             desc: `
                 <p>Seleziona una classe a cui iscriverti</p>
                 <form id="create-lab-form" action="/classe/studente/iscriviti" method="post">
-                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''}" />
                     <div class="form-group">
                         <label for="classSelect">Nome classe:</label>
                         <select id="classSelect" name="nomeClasse">
@@ -775,7 +774,6 @@ document.addEventListener("DOMContentLoaded", function () {
             desc: `
                 <p>Cambia la password dell'utente</p>
                 <form id="changePassword-form" action="/account/studente/changePassword" method="post">
-                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''}" />
                     <div>
                         <label for="oldPassword">Vecchia Password:</label>
                         <input type="password" id="oldPassword" name="oldPassword" required>
@@ -805,7 +803,6 @@ document.addEventListener("DOMContentLoaded", function () {
             desc: `
                 <p>Visualizza i risultati delle room completate!.</p>
                 <form id="form-risultati">
-                    <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').getAttribute('content')}" />
                     <div class="form-group">
                         <label for="classSelect">Nome classe:</label>
                         <select id="classSelect" name="classeId">
