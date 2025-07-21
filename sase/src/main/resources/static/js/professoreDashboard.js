@@ -598,7 +598,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             const classeId = form.querySelector('[name="classeId"]').value;
-            const csrfToken = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
 
             const formData = new URLSearchParams();
             formData.append("classeId", classeId);
@@ -724,7 +724,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             const classeId = form.querySelector('[name="classeId"]').value;
-            const csrfToken = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
 
             const formData = new URLSearchParams();
             formData.append("classeId", classeId);

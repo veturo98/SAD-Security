@@ -62,8 +62,9 @@ public class RoomController {
 
         Map<String, String> res = new HashMap<>();
 
+
         // In base all'esito dell'avvio costruisce la risposta
-        if (esito_avvio.get().type.equals("success")) {
+        if ("success".equals(esito_avvio.get().type)) {
 
             // Se la room non è mai stata avviata allora salva persistente
             if (isPresent == false) {

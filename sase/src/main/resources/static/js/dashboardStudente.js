@@ -419,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const classeId = form.querySelector('[name="classeId"]').value;
             const roomId = form.querySelector('[name="roomId"]').value;
-            const csrfToken = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
 
             const formData = new URLSearchParams();
             formData.append("classeId", classeId);
