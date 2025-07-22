@@ -22,11 +22,11 @@ public class Iscrizione {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long iscrizioneId;
 
-   
+   /**studente iscritto alla classe**/
     @JoinColumn(name = "studente", nullable = false)
     private String studente;
 
-    
+    /**classe a cui lo studente è iscritto**/
     @JoinColumn(name = "classe", nullable = false)
     private String classe;
 }

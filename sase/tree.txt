@@ -1,0 +1,154 @@
+.
+├── Dockerfile
+├── builda_dockerfile.txt
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── sad_security
+│   │   │           └── sase
+│   │   │               ├── DatabaseInitializer.java
+│   │   │               ├── SaseApplication.java
+│   │   │               ├── controller
+│   │   │               │   ├── AccountController.java
+│   │   │               │   ├── ClassController.java
+│   │   │               │   ├── HomeController.java
+│   │   │               │   └── RoomController.java
+│   │   │               ├── model
+│   │   │               │   ├── Classe.java
+│   │   │               │   ├── Iscrizione.java
+│   │   │               │   ├── Professore.java
+│   │   │               │   ├── Room.java
+│   │   │               │   ├── RoomAvviata.java
+│   │   │               │   ├── RoomClasse.java
+│   │   │               │   └── Studente.java
+│   │   │               ├── repository
+│   │   │               │   ├── ClasseRepository.java
+│   │   │               │   ├── IscrizioneRepository.java
+│   │   │               │   ├── ProfessoreRepository.java
+│   │   │               │   ├── RoomAvviataRepository.java
+│   │   │               │   ├── RoomClasseRepository.java
+│   │   │               │   ├── RoomRepository.java
+│   │   │               │   └── StudenteRepository.java
+│   │   │               ├── security
+│   │   │               │   └── SecurityConfig.java
+│   │   │               └── service
+│   │   │                   ├── ClassService.java
+│   │   │                   ├── IscrizioneService.java
+│   │   │                   ├── ProfessorService.java
+│   │   │                   ├── RoomService.java
+│   │   │                   └── StudenteService.java
+│   │   └── resources
+│   │       ├── META-INF
+│   │       │   └── additional-spring-configuration-metadata.json
+│   │       ├── application.properties
+│   │       ├── static
+│   │       │   ├── css
+│   │       │   │   ├── home.css
+│   │       │   │   └── layout.css
+│   │       │   ├── images
+│   │       │   │   ├── favicon.ico
+│   │       │   │   └── logosito.png
+│   │       │   └── js
+│   │       │       ├── dashboardStudente.js
+│   │       │       ├── professoreDashboard.js
+│   │       │       └── registration.js
+│   │       └── templates
+│   │           ├── accessDenied.html
+│   │           ├── dashboard.html
+│   │           ├── home.html
+│   │           ├── layout.html
+│   │           ├── layoutDashboard.html
+│   │           ├── login.html
+│   │           ├── loginProfessore.html
+│   │           ├── profDashboard.html
+│   │           └── registration.html
+│   └── test
+│       └── java
+│           └── com
+│               └── sad_security
+│                   └── sase
+│                       └── SaseApplicationTests.java
+├── target
+│   ├── classes
+│   │   ├── META-INF
+│   │   │   └── additional-spring-configuration-metadata.json
+│   │   ├── application.properties
+│   │   ├── com
+│   │   │   └── sad_security
+│   │   │       └── sase
+│   │   │           ├── DatabaseInitializer.class
+│   │   │           ├── SaseApplication.class
+│   │   │           ├── controller
+│   │   │           │   ├── AccountController.class
+│   │   │           │   ├── ClassController$creaClasseBody.class
+│   │   │           │   ├── ClassController.class
+│   │   │           │   ├── HomeController.class
+│   │   │           │   ├── RoomController$1.class
+│   │   │           │   ├── RoomController$createRoomBody.class
+│   │   │           │   ├── RoomController$patternRisultato.class
+│   │   │           │   ├── RoomController$startRoomBody.class
+│   │   │           │   ├── RoomController$startRoomResponse.class
+│   │   │           │   ├── RoomController$stopRoomBody.class
+│   │   │           │   └── RoomController.class
+│   │   │           ├── model
+│   │   │           │   ├── Classe.class
+│   │   │           │   ├── Iscrizione.class
+│   │   │           │   ├── Professore.class
+│   │   │           │   ├── Room.class
+│   │   │           │   ├── RoomAvviata.class
+│   │   │           │   ├── RoomClasse.class
+│   │   │           │   └── Studente.class
+│   │   │           ├── repository
+│   │   │           │   ├── ClasseRepository.class
+│   │   │           │   ├── IscrizioneRepository.class
+│   │   │           │   ├── ProfessoreRepository.class
+│   │   │           │   ├── RoomAvviataRepository.class
+│   │   │           │   ├── RoomClasseRepository.class
+│   │   │           │   ├── RoomRepository.class
+│   │   │           │   └── StudenteRepository.class
+│   │   │           ├── security
+│   │   │           │   └── SecurityConfig.class
+│   │   │           └── service
+│   │   │               ├── ClassService.class
+│   │   │               ├── IscrizioneService.class
+│   │   │               ├── ProfessorService.class
+│   │   │               ├── RoomService$1.class
+│   │   │               ├── RoomService.class
+│   │   │               └── StudenteService.class
+│   │   ├── static
+│   │   │   ├── css
+│   │   │   │   ├── home.css
+│   │   │   │   └── layout.css
+│   │   │   ├── images
+│   │   │   │   ├── favicon.ico
+│   │   │   │   └── logosito.png
+│   │   │   └── js
+│   │   │       ├── dashboardStudente.js
+│   │   │       ├── professoreDashboard.js
+│   │   │       └── registration.js
+│   │   └── templates
+│   │       ├── accessDenied.html
+│   │       ├── dashboard.html
+│   │       ├── home.html
+│   │       ├── layout.html
+│   │       ├── layoutDashboard.html
+│   │       ├── login.html
+│   │       ├── loginProfessore.html
+│   │       ├── profDashboard.html
+│   │       └── registration.html
+│   ├── generated-sources
+│   │   └── annotations
+│   ├── generated-test-sources
+│   │   └── test-annotations
+│   └── test-classes
+│       └── com
+│           └── sad_security
+│               └── sase
+│                   └── SaseApplicationTests.class
+└── tree.txt
+
+47 directories, 104 files

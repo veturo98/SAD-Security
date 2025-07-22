@@ -3,6 +3,7 @@ package com.sad_security.sase.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+/** Relazione tra classi e room appartenenti ad esse**/
 @Data
 @Entity
 @Table(name = "RoomClasse")

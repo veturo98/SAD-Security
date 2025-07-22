@@ -21,7 +21,13 @@ public class ProfessorService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Funzione chiamata da springSecurity durante il login del professore
+    /**
+     * Funzione chiamata da Spring Security durante il login del professore.
+     *
+     * @param username username del professore
+     * @return UserDetails contenente username, password e ruoli dell'utente
+     * @throws UsernameNotFoundException se il professore non è trovato nel database
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Professore> optionalprofessore = professoreRepository.findByUsername(username);
@@ -37,7 +43,14 @@ public class ProfessorService implements UserDetailsService {
                 .build();
     }
 
-    // Controlla che esiste la password nel database
+    /**
+     * Controlla che la password fornita corrisponda a quella salvata per l'utente.
+     *
+     * @param password password da verificare (in chiaro)
+     * @param username username dell'utente
+     * @return true se la password corrisponde, false altrimenti
+     * @throws UsernameNotFoundException se il professore non è trovato nel database
+     */
     public boolean checkpassowrd(String password, String username) {
 
         Professore professore = professoreRepository.findByUsername(username)
@@ -46,13 +59,19 @@ public class ProfessorService implements UserDetailsService {
         // Verifica la vecchia password
         if (!passwordEncoder.matches(password, professore.getPassword())) {
             return false; // password errata
-
         }
 
         return true;
     }
 
-    // Funzione di cambio password per il professore
+    /**
+     * Cambia la password del professore se le credenziali attuali sono corrette.
+     *
+     * @param username username del professore
+     * @param oldpassword vecchia password da verificare
+     * @param newpassword nuova password da impostare
+     * @return true se il cambio password è avvenuto con successo, false altrimenti
+     */
     public boolean cambiaPasswordProfessore(String username, String oldpassword, String newpassword) {
 
         Optional<Professore> account_professore = professoreRepository.findByUsername(username);

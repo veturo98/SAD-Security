@@ -26,8 +26,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
-// REST CONTROLLER PER LE RICHIESTE DI MANAGEMENT DELLA CLASSE
+/**
+ * REST controller per la gestione delle richieste relative alle classi.
+ */
 @RestController
 @RequestMapping("/classe")
 public class ClassController {
@@ -38,29 +39,46 @@ public class ClassController {
     @Autowired
     private IscrizioneService iscrizioneService;
 
-    // Gestione della richiesta della lista delle classi
+    /**
+     * Gestione della richiesta della lista delle classi.
+     *
+     * @return una lista con i nomi delle classi
+     */
     @GetMapping({"/professore/getClassi", "/studente/getClassi"})
     @ResponseBody
     public List<String> getClassi() {
 
-        // Chiama il servizio che si occupa di restituire la classi
+        /**
+         * Chiama il servizio che si occupa di restituire la classi.
+         */
         List<Classe> classi = classService.trovaTutteLeClassi();
 
-        // Costruisce la risposta come json
+        /**
+         * Costruisce la risposta come JSON.
+         */
         return classi.stream()
                 .map(Classe::getNome)
                 .collect(Collectors.toList());
     }
 
-    // Gestione della richiesta degli studenti iscritti ad una classe
+    /**
+     * Gestione della richiesta degli studenti iscritti ad una classe.
+     *
+     * @param classe ID della classe
+     * @return lista di studenti iscritti 
+     */
     @PostMapping("/professore/listaIscritti")
     @ResponseBody
     public List<Map<String, Object>> getStudenti(@RequestParam("classeId") String classe) {
 
-        // Chiama il servizio che si occupa di restituire la lista degli studenti iscritti
+        /**
+         * Chiama il servizio che si occupa di restituire la lista degli studenti iscritti.
+         */
         List<Iscrizione> iscrizioni = iscrizioneService.trovaStudenti(classe);
 
-        // Costruisce la risposta come json
+        /**
+         * Costruisce la risposta come JSON.
+         */
         return iscrizioni.stream()
                 .map(r -> {
                     Map<String, Object> map = new HashMap<>();
@@ -68,18 +86,27 @@ public class ClassController {
                     return map;
                 })
                 .collect(Collectors.toList());
-
     }
 
-    // Gestione della richiesta di creazione di una classe
+    /**
+     * Gestione della richiesta di creazione di una classe.
+     *
+     * @param classe nome della classe da creare
+     * @return mappa con messaggio e tipo (success/error)
+     */
     @PostMapping("/professore/crea")
     @ResponseBody
     public Map<String, String> creaClasse(@RequestParam String classe) {
 
-        // Chiama il service che si occupa di aggiungere la classe (risponde true se la crea)
+        /**
+         * Chiama il service che si occupa di aggiungere la classe
+         * (risponde true se la crea).
+         */
         boolean exists = classService.aggiungiClasse(classe);
 
-        // Costruisce il messaggio di risposta in base all'esito del service
+        /**
+         * Costruisce il messaggio di risposta in base all'esito del service.
+         */
         Map<String, String> response = new HashMap<>();
 
         if (exists) {
@@ -93,17 +120,26 @@ public class ClassController {
         return response;
     }
 
-    // Gestione della richiesta di iscrizione ad una classe
+    /**
+     * Gestione della richiesta di iscrizione ad una classe.
+     *
+     * @param nomeClasse nome della classe a cui iscriversi
+     * @return mappa con messaggio e tipo (success/error)
+     */
     @PostMapping("/studente/iscriviti")
     @ResponseBody
     public Map<String, String> IscrizioneClasse(@RequestParam("nomeClasse") String nomeClasse) {
 
-        // Controlla se l'utente è autenticato
+        /**
+         * Controlla se l'utente è autenticato.
+         */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Map<String, String> response = new HashMap<>();
 
-        // Se l'utente non è autenticato restituisce errore
+        /**
+         * Se l'utente non è autenticato restituisce errore.
+         */
         if (authentication == null || !authentication.isAuthenticated() ||
                 authentication instanceof AnonymousAuthenticationToken) {
             response.put("message", "Professore non autenticato");
@@ -111,50 +147,62 @@ public class ClassController {
             return response;
         }
 
-
-        // Verifica se l'utente è gia iscritto a quella classe
+        /**
+         * Verifica se l'utente è già iscritto a quella classe.
+         */
         String studentName = authentication.getName();
         boolean iscritto = iscrizioneService.controllaIscrizione(studentName, nomeClasse);
 
-        // Se già è iscritto restituisce errore
+        /**
+         * Se già iscritto, restituisce errore.
+         */
         if (iscritto) {
             response.put("message", "L'utente è già iscritto alla classe ");
             response.put("type", "error");
             return response;
         }
 
-        // Altrimenti risponde con un messaggio di conferma
+        /**
+         * Altrimenti risponde con un messaggio di conferma.
+         */
         iscrizioneService.aggiungiIscrizione(studentName, nomeClasse);
         response.put("message", "L'utente si è iscritto alla classe ");
         response.put("type", "success");
         return response;
-
     }
 
-    // Gestione della richiesta di conoscere le classi a cui è iscritto uno studente
+    /**
+     * Gestione della richiesta per ottenere le classi a cui è iscritto uno studente.
+     *
+     * @param authentication oggetto di autenticazione
+     * @return lista dei nomi delle classi a cui lo studente è iscritto
+     */
     @GetMapping("/studente/getClassiIscritte")
     @ResponseBody
     public List<String> getClassiIscrittePerStudente(Authentication authentication) {
-        
 
-        // Se lo studente non è autenticato allora restituisce vuoto
+        /**
+         * Se lo studente non è autenticato allora restituisce lista vuota.
+         */
         String username = authentication.getName();
 
         if (username.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Altrimenti invoca il service che cerca le classi 
+        /**
+         * Altrimenti invoca il service che cerca le classi.
+         */
         return iscrizioneService.getNomiClassiIscritte(username);
     }
 
-
-    // Dichiarazione del tipo di body della richiesta di creazione classe
+    /**
+     * Classe interna per definire il body della richiesta di creazione classe.
+     */
     @Data
     @AllArgsConstructor
     public static class creaClasseBody {
         private String nomeClasse;
-
     }
 
 }

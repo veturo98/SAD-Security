@@ -14,10 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import com.sad_security.sase.model.Studente;
 import com.sad_security.sase.repository.StudenteRepository;
-
 
 @Service("studenteDetailsService")
 public class StudenteService implements UserDetailsService {
@@ -28,7 +26,13 @@ public class StudenteService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Funzioni di Spring Security
+    /**
+     * Carica un utente in base allo username per Spring Security.
+     * 
+     * @param username lo username dello studente
+     * @return UserDetails contenente username, password e ruoli
+     * @throws UsernameNotFoundException se lo studente non è presente nel database
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Studente> optionalStudente = studenteRepository.findByUsername(username);
@@ -44,176 +48,169 @@ public class StudenteService implements UserDetailsService {
                 .build();
     }
 
-
-    // Restituisce lo studente dato lo username
+    /**
+     * Cerca uno studente tramite username.
+     * 
+     * @param username lo username dello studente
+     * @return Optional contenente lo studente se trovato
+     */
     public Optional<Studente> findByUsername(String username) {
         return studenteRepository.findByUsername(username);
     }
 
-    // Funzione di Spring Security
+    /**
+     * Autentica uno studente verificando username e password.
+     * 
+     * @param username lo username dello studente
+     * @param password la password in chiaro da verificare
+     * @return true se le credenziali sono corrette, false altrimenti
+     * @throws UsernameNotFoundException se lo studente non esiste
+     */
     public boolean autenticaStudente(String username, String password) {
-
         Studente studente = studenteRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Nome studente non trovato"));
 
-        // Verifica la vecchia password
-        if (!passwordEncoder.matches(password, studente.getPassword())) {
-            return false; // password errata
-        }
-        return true;
+        return passwordEncoder.matches(password, studente.getPassword());
     }
 
-    // Registrazione di un nuovo studente
+    /**
+     * Registra un nuovo studente con username, password e mail.
+     * 
+     * @param username lo username desiderato
+     * @param password la password in chiaro
+     * @param mail l'indirizzo email dello studente
+     * @return true se lo studente esiste già, false se la registrazione è andata a buon fine
+     */
     public boolean aggiungiStudente(String username, String password, String mail) {
-
-        // Cerco se l'studente esiste già (mail o username già utilizzato)
         Optional<Studente> userName = studenteRepository.findByUsername(username);
         Optional<Studente> userMail = studenteRepository.findByMail(mail);
 
-        // Se l'studente esiste allora dico che già esiste
         if (userName.isPresent() || userMail.isPresent()) {
             System.out.println("lo studente esiste già");
             return true;
         } else {
-
-            // Creazione studente con credenziali inserite
             Studente newStudente = new Studente();
-
-            // creo l'hash della password prima di salvare nel database
             String encodedPassword = passwordEncoder.encode(password);
 
             newStudente.setUsername(username);
             newStudente.setMail(mail);
             newStudente.setPassword(encodedPassword);
-            // newStudente.setRoles(List.of("STUDENTE"));
 
             studenteRepository.save(newStudente);
             System.out.println("studente creato");
 
             return false;
         }
-
     }
 
-    // FUNZIONI DI VALIDAZIONE
+    /**
+     * Valida i parametri di registrazione: password e mail.
+     * 
+     * @param password la password da validare
+     * @param mail l'indirizzo email da validare
+     * @return mappa con messaggi di errore, o vuota se nessun errore
+     */
     public Map<String, String> validaRegistrazione(String password, String mail) {
-
-        // Esito della validazione
         Map<String, String> result = new HashMap<>();
 
-        // Controllo la password e nel caso esco
         Map<String, String> validazione = validaPassword(password);
         if (!validazione.isEmpty()) {
             result = validazione;
             return result;
         }
 
-        // Controllo la mail - Pattern: qualcosa@qualcosa.dominio
         String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
 
         if (!mail.matches(regex)) {
             result.put("msg", "L'email non è valida.");
             result.put("type", "error");
-
             return result;
         }
 
-        // Nessun errore
         return Collections.emptyMap();
-
     }
 
-    // Validazione della password
+    /**
+     * Valida la password secondo criteri di sicurezza.
+     * 
+     * @param password la password da validare
+     * @return mappa con messaggi di errore, o vuota se nessun errore
+     */
     public Map<String, String> validaPassword(String password) {
-
         Map<String, String> result = new HashMap<>();
 
-        // Vuota
         if (password == null || password.isEmpty()) {
             result.put("msg", "La password non può essere vuota.");
             result.put("type", "error");
-
             return result;
         }
 
-        // Troppo corta
         if (password.length() < 8) {
             result.put("msg", "La password deve contenere almeno 8 caratteri.");
             result.put("type", "error");
-
             return result;
         }
 
-        // Senza maiuscole
         if (!password.matches(".*[A-Z].*")) {
             result.put("msg", "La password deve contenere almeno una lettera maiuscola.");
             result.put("type", "error");
-
             return result;
         }
 
-        // Senza numeri
         if (!password.matches(".*\\d.*")) {
             result.put("msg", "La password deve contenere almeno un numero.");
             result.put("type", "error");
-
             return result;
         }
 
-        // Senza caratteri speciali
         if (!password.matches(".*[!@#$%^&*()\\-+=\\[\\]{};:,.<>/?].*")) {
             result.put("msg", "La password deve contenere almeno un carattere speciale.");
             result.put("type", "error");
-
             return result;
         }
 
-        // Contiene spazi
         if (password.matches(".*\\s.*")) {
             result.put("msg", "La password non può contenere spazi.");
             result.put("type", "error");
-
             return result;
         }
 
-        // Nessun errore
         return Collections.emptyMap();
-
     }
 
-    // Controlla che esiste la password nel database
+    /**
+     * Verifica che la password corrisponda a quella salvata per lo username dato.
+     * 
+     * @param password la password da controllare (in chiaro)
+     * @param username lo username dello studente
+     * @return true se la password è corretta, false altrimenti
+     * @throws UsernameNotFoundException se lo studente non esiste
+     */
     public boolean checkpassowrd(String password, String username) {
-
         Studente studente = studenteRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Nome Studente non trovato"));
 
-        // Verifica la vecchia password
-        if (!passwordEncoder.matches(password, studente.getPassword())) {
-            return false; // password errata
-        }
-        return true;
+        return passwordEncoder.matches(password, studente.getPassword());
     }
 
-    // Cambia la password per lo studente
+    /**
+     * Cambia la password dello studente se la vecchia password è corretta.
+     * 
+     * @param username lo username dello studente
+     * @param oldpassword la vecchia password (in chiaro)
+     * @param newpassword la nuova password da impostare (in chiaro)
+     * @return true se il cambio password è andato a buon fine, false altrimenti
+     */
     public boolean cambiaPasswordStudente(String username, String oldpassword, String newpassword) {
-
         Optional<Studente> optional = studenteRepository.findByUsername(username);
-
-        // Controllo se la vecchia password è già usata
         Boolean controllocredenziali = checkpassowrd(oldpassword, username);
 
-        // Se l'utente esiste e la vecchia password è corretta
         if (optional.isPresent() && controllocredenziali) {
-
-            // Costruisce studente e password e le salva
             Studente studente = optional.get();
             studente.setPassword(passwordEncoder.encode(newpassword));
-            
             studenteRepository.save(studente);
-
             return true;
         }
         return false;
     }
-
 }

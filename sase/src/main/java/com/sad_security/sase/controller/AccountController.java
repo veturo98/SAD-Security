@@ -20,7 +20,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-// CONTROLLER PER LE RICHIESTE DI ACCOUNT MANAGEMENT
+/**
+ * Controller per le richieste di account management.
+ */
 @Controller
 @RequestMapping("/account")
 public class AccountController {
@@ -31,31 +33,48 @@ public class AccountController {
     @Autowired
     private ProfessorService professorService;
 
-    // Gestisce la richiesta di registrazione di nuovi utenti
+    /**
+     * Gestisce la richiesta di registrazione di nuovi utenti.
+     *
+     * @param username nome utente da registrare
+     * @param mail     email dell'utente
+     * @param password password scelta dall'utente
+     * @return una mappa con il messaggio di esito
+     */
     @PostMapping("/registrati")
     @ResponseBody
     public Map<String, String> registraStudente(@RequestParam("username") String username,
-            @RequestParam("mail") String mail,
-            @RequestParam("password") String password) {
+                                                @RequestParam("mail") String mail,
+                                                @RequestParam("password") String password) {
 
-        // Controlla se le proposta di credenziali è valida
+        /**
+         * Controlla se la proposta di credenziali è valida.
+         */
         Map<String, String> msg = studenteServices.validaRegistrazione(password, mail);
         System.out.println("Risultato di validaRegistrazione " + msg);
 
-        // Se è nullo il check restituisce il messaggio di errore
+        /**
+         * Se è nullo il check restituisce il messaggio di errore.
+         */
         if (!msg.isEmpty()) {
             if (msg != null) {
                 return msg;
             }
         }
 
-        // Controlla se lo studente è già registrato
+        /**
+         * Controlla se lo studente è già registrato.
+         */
         boolean exists = studenteServices.aggiungiStudente(username, password, mail);
 
-        // Risponde con il messaggio appropriato
+        /**
+         * Risponde con il messaggio appropriato.
+         */
         Map<String, String> res = new HashMap<>();
 
-        // Se lo studente esiste allora procede verso la pagina di login
+        /**
+         * Se lo studente esiste allora procede verso la pagina di login.
+         */
         if (!exists) {
             res.put("redirect", "/login");
             res.put("msg", "Registrazione avvenuta con successo");
@@ -66,46 +85,62 @@ public class AccountController {
         }
 
         return res;
-
     }
 
-    // Gestione delle richieste di cambio della password
+    /**
+     * Gestione delle richieste di cambio della password.
+     *
+     * @param newPassword nuova password scelta
+     * @param oldPassword password attuale
+     * @param request     oggetto HTTP request
+     * @param response    oggetto HTTP response
+     * @return una mappa con il risultato del cambio password
+     */
     @PostMapping({ "/studente/changePassword", "/professore/changePassword" })
     @ResponseBody
     public Map<String, String> cambioPassword(@RequestParam String newPassword, @RequestParam String oldPassword,
-            HttpServletRequest request, HttpServletResponse response) {
+                                              HttpServletRequest request, HttpServletResponse response) {
 
-        // Controlla se l'utente è autenticato
+        /**
+         * Controlla se l'utente è autenticato.
+         */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Map<String, String> res = new HashMap<>();
 
         if (authentication == null || !authentication.isAuthenticated() ||
-                authentication instanceof AnonymousAuthenticationToken) {
+            authentication instanceof AnonymousAuthenticationToken) {
             res.put("msg", "Professore non autenticato");
             res.put("type", "error");
             System.out.println("auth" + res);
             return res;
         }
 
-        // Decide come cambiare la password in base a chi ha fatto la richiesta
+        /**
+         * Decide come cambiare la password in base a chi ha fatto la richiesta.
+         */
         String requestPath = request.getRequestURI();
 
-        // Nome dello studente/professore che ha fatto la richiesta
+        /**
+         * Nome dello studente/professore che ha fatto la richiesta.
+         */
         String username = authentication.getName();
 
-        // Validazione della proposta di cambio della password
+        /**
+         * Validazione della proposta di cambio della password.
+         */
         Map<String, String> validazione = studenteServices.validaPassword(newPassword);
         System.out.println("ho validato la password" + res);
 
         if (validazione != null && !validazione.isEmpty()) {
             res.putAll(validazione);
             System.out.println("validazione " + res);
-
             return res;
         }
 
-        // Se ci sono errori allora restituisce l'errore
+        /**
+         * Se ci sono errori allora restituisce l'errore.
+         */
         if (!res.isEmpty()) {
             if (res != null) {
                 System.out.println("empty" + res);
@@ -116,51 +151,59 @@ public class AccountController {
         }
 
         boolean changePassowrd;
-        // If dello studente
+
+        /**
+         * If dello studente.
+         */
         if (requestPath.equals("/account/studente/changePassword")) {
 
-            // Controlla se la password vecchia è corretta
+            /**
+             * Controlla se la password vecchia è corretta.
+             */
             boolean isOldCorrect = studenteServices.checkpassowrd(oldPassword, username);
             if (!isOldCorrect) {
-
                 System.out.println("password vecchia rotta " + res);
-
                 res.put("msg", "La vecchia password è sbagliata");
                 res.put("type", "error");
-
                 return res;
-
             }
 
-            // Altrimenti effettua il cambio persistente
+            /**
+             * Altrimenti effettua il cambio persistente.
+             */
             changePassowrd = studenteServices.cambiaPasswordStudente(username, oldPassword, newPassword);
 
         } else { // Else del professore
 
-            // Controlla se la password vecchia è corretta
+            /**
+             * Controlla se la password vecchia è corretta.
+             */
             boolean isOldCorrect = professorService.checkpassowrd(oldPassword, username);
             if (!isOldCorrect) {
-
                 System.out.println("password vecchia rotta " + res);
-
                 res.put("msg", "La vecchia password è sbagliata");
                 res.put("type", "error");
-
                 return res;
-
             }
 
-            // Altrimenti effettua il cambio persistente
+            /**
+             * Altrimenti effettua il cambio persistente.
+             */
             changePassowrd = professorService.cambiaPasswordProfessore(username, oldPassword, newPassword);
         }
 
-        // Restituisce il messaggio in funzione delll'esito dell'operazione di cambio
-        // password
+        /**
+         * Restituisce il messaggio in funzione dell'esito dell'operazione di cambio password.
+         */
         if (changePassowrd) {
-            // Effettua il logout manuale dopo il cambio password
+            /**
+             * Effettua il logout manuale dopo il cambio password.
+             */
             SecurityContextHolder.clearContext();
 
-            // Invalida la sessione per rimuovere i dati di autenticazione
+            /**
+             * Invalida la sessione per rimuovere i dati di autenticazione.
+             */
             HttpSession session = request.getSession(false);
             System.out.println("sessione" + session);
             if (session != null) {
@@ -178,14 +221,23 @@ public class AccountController {
         return res;
     }
 
-
-    // Gestione della richiesta di logout
+    /**
+     * Gestione della richiesta di logout.
+     *
+     * @param request  la richiesta HTTP
+     * @param response la risposta HTTP
+     * @return redirect alla pagina di login
+     */
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        // Effettua il logout manuale dopo il cambio password
+        /**
+         * Effettua il logout manuale dopo il cambio password.
+         */
         SecurityContextHolder.clearContext();
 
-        // Invalida la sessione per rimuovere i dati di autenticazione
+        /**
+         * Invalida la sessione per rimuovere i dati di autenticazione.
+         */
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
@@ -193,5 +245,4 @@ public class AccountController {
 
         return "redirect:/login";
     }
-
 }

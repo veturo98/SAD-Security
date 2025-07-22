@@ -15,7 +15,12 @@ public class ClassService {
     @Autowired
     private ClasseRepository ClasseRepository;
 
-    // Permette di creare una classe
+    /**
+     * Permette di creare una nuova classe.
+     *
+     * @param classe nome della classe da creare
+     * @return true se la classe esiste già, false se la classe è stata creata con successo
+     */
     public boolean aggiungiClasse(String classe) {
 
         // La classe esiste già
@@ -38,11 +43,13 @@ public class ClassService {
         }
     }
 
-    // get di tutte le classi
+    /**
+     * Recupera tutte le classi presenti nel database.
+     *
+     * @return lista di tutte le classi
+     */
     public List<Classe> trovaTutteLeClassi() {
-
         return ClasseRepository.findAll();
-
     }
 
 }

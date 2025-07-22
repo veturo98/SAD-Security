@@ -34,7 +34,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-// CONTROLLER PER LE RICHIESTE DI ROOM MANAGEMENT
+/**
+ * 
+ * Controller per le richieste di room management
+ */
 @RestController
 @RequestMapping("/room")
 public class RoomController {
@@ -42,36 +45,36 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    // Gestione della richiesta di avvio della room
+    /**
+     * Gestione della richiesta di avvio della room.
+     *
+     * @param startRoom corpo della richiesta con nome classe, nome laboratorio e utente
+     * @return mappa contenente messaggio, comando e tipo di esito (success/error)
+     * @throws InterruptedException in caso di interruzione dell'esecuzione asincrona
+     * @throws ExecutionException in caso di errore durante l'esecuzione asincrona
+     */
     @PostMapping("/studente/start")
     public Map<String, String> startRoom(@RequestBody startRoomBody startRoom)
             throws InterruptedException, ExecutionException {
 
-        // Formatta i campi pre l'invio della richiesta
         String classe = startRoom.getNomeClass();
         String lab = startRoom.getNomeLab();
         String utente = startRoom.getUtente();
 
         System.out.println("Sono il controller ed ho ricevuto questo" + startRoom);
 
-        // Controlla se la room è già stata avviata dall'utente
         boolean isPresent = roomService.VerificaRoomAvviata(classe, lab, utente);
 
-        // Avvia il container
         CompletableFuture<startRoomResponse> esito_avvio = roomService.startContainerAsync(classe, lab, utente);
 
         Map<String, String> res = new HashMap<>();
 
-
-        // In base all'esito dell'avvio costruisce la risposta
         if ("success".equals(esito_avvio.get().type)) {
 
-            // Se la room non è mai stata avviata allora salva persistente
-            if (isPresent == false) {
+            if (!isPresent) {
                 boolean esito_salvataggio = roomService.SalvaRoomAvviata(classe, lab, utente);
 
-                // Se fallisce il salvataggio lo comunico solo al backend
-                if (esito_salvataggio == false) {
+                if (!esito_salvataggio) {
                     System.out.println("Errore nel salvataggio della room");
                 }
             }
@@ -87,12 +90,20 @@ public class RoomController {
         return res;
     }
 
-    // Gestione della richiesta di stop della room
+    /**
+     * Gestione della richiesta di stop della room.
+     *
+     * @param stopRoom corpo della richiesta con utente
+     * @return mappa contenente messaggio e tipo di esito (success/error)
+     * @throws InterruptedException in caso di interruzione dell'esecuzione asincrona
+     * @throws ExecutionException in caso di errore durante l'esecuzione asincrona
+     * @throws JsonMappingException in caso di errore nella mappatura JSON
+     * @throws JsonProcessingException in caso di errore di processing JSON
+     */
     @PostMapping("/studente/stop")
     public Map<String, String> stopRoom(@RequestBody stopRoomBody stopRoom)
             throws InterruptedException, ExecutionException, JsonMappingException, JsonProcessingException {
 
-        // Invoca il service che si occupa di stoppare il container
         String utente = stopRoom.getUtente();
         System.out.println("Sono il controller ed ho ricevuto questo " + stopRoom);
 
@@ -100,7 +111,6 @@ public class RoomController {
         String result = response.get();
         System.out.println("result" + result);
 
-        // Restituisce il messaggio adeguato
         Map<String, String> res = new HashMap<>();
 
         if (result == null || result.isEmpty()) {
@@ -115,7 +125,16 @@ public class RoomController {
         return res;
     }
 
-    // Gestione della richiesta di creazione della room
+    /**
+     * Gestione della richiesta di creazione della room.
+     *
+     * @param classeNome nome della classe da associare
+     * @param roomName nome della room da creare
+     * @param descrizione descrizione del laboratorio
+     * @param flag flag di configurazione
+     * @param yamlFile file YAML di configurazione
+     * @return mappa contenente messaggio e tipo di esito (success/error)
+     */
     @PostMapping("/professore/creaRoom")
     @ResponseBody
     public Map<String, String> creaRoom(
@@ -128,7 +147,6 @@ public class RoomController {
         Map<String, String> response = new HashMap<>();
 
         try {
-            // Verifica che il file non sia vuoto e sia YAML
             String originalFilename = yamlFile.getOriginalFilename();
 
             if (yamlFile.isEmpty() ||
@@ -140,24 +158,19 @@ public class RoomController {
                 return response;
             }
 
-            // Legge il contenuto YAML (opzionale, a seconda di cosa ti serve)
             String yamlContent = new String(yamlFile.getBytes(), StandardCharsets.UTF_8);
             System.out.println("Contenuto YAML:\n" + yamlContent);
 
-            // Controllo se la room esiste già
             if (roomService.isPresent(roomName)) {
                 response.put("message", "Nome room già esistente.");
                 response.put("type", "error");
                 return response;
             }
 
-            // Salva la room nel database
             roomService.salvaNuovaRoom(roomName, descrizione, flag);
 
-            // Invoca il service per inviare dati al gestore delle risorse
             roomService.aggiungiRisorsaServer(roomName, yamlFile);
             
-            // Salva l'associazione
             boolean associazione = roomService.aggiungiassociazione(classeNome, roomName);
             if (associazione) {
                 response.put("message", "L'associazione tra questa classe e room è già stata fatta");
@@ -180,12 +193,16 @@ public class RoomController {
         return response;
     }
 
-    // Gestione della richiesta di controllo dell'esistenza della room
+    /**
+     * Gestione della richiesta di controllo dell'esistenza della room.
+     *
+     * @param roomName nome della room da verificare
+     * @return mappa contenente messaggio e tipo di esito (success/error)
+     */
     @GetMapping({ "/professore/checkroom", "/studente/checkroom" })
     @ResponseBody
     public Map<String, String> checkroomRoomName(@RequestParam String roomName) {
 
-        // Invoca il service per controllare se la room esiste
         boolean exists = roomService.checkRoom(roomName);
         Map<String, String> response = new HashMap<>();
         if (exists) {
@@ -199,11 +216,15 @@ public class RoomController {
         return response;
     }
 
-    // Gestione della richiesta della descrizione della room
+    /**
+     * Gestione della richiesta della descrizione della room.
+     *
+     * @param nomeRoom nome della room
+     * @return mappa contenente descrizione e tipo di esito (success/error)
+     */
     @GetMapping("/studente/getDescrizioneRoom")
     public Map<String, String> getDescrizioneRoom(@RequestParam String nomeRoom) {
 
-        // Invoca il service per ottenere la descrizione
         String descrizione = roomService.getDescrizione(nomeRoom);
 
         Map<String, String> res = new HashMap<>();
@@ -219,31 +240,38 @@ public class RoomController {
         return res;
     }
 
-    // Gestione della richiesta delle room associate ad una classe
+    /**
+     * Gestione della richiesta delle room associate ad una classe.
+     *
+     * @param nomeClasse nome della classe
+     * @return lista di nomi delle room associate
+     */
     @GetMapping({ "studente/getRoomsPerClasse", "professore/getRoomsPerClasse" })
     public ResponseEntity<List<String>> getRoomsPerClasse(@RequestParam String nomeClasse) {
         List<String> rooms = roomService.getRoomListbyClasse(nomeClasse);
         return ResponseEntity.ok(rooms);
     }
 
-    // Gestione della richiesta di inserimento della flag
+    /**
+     * Gestione della richiesta di inserimento della flag.
+     *
+     * @param room nome della room
+     * @param studente nome dello studente
+     * @param flag flag inserita dallo studente
+     * @return mappa contenente esito e tipo di esito (success/error)
+     */
     @PostMapping("/studente/flag")
     public Map<String, String> InserimentoFlag(@RequestParam String room, @RequestParam String studente,
             @RequestParam String flag) {
 
-        // Salva il timestamp di arrivo della richiesta
         LocalDateTime submitTime = LocalDateTime.now();
 
-        // Controlla se la falg è corretta con il service adeguato
         LocalDateTime startTime = roomService.flagCorretta(studente, room, flag);
 
         Map<String, String> response = new HashMap<>();
 
-        // Se la flag è corretta restituisce il tempo, se non è nullo allora calcolo lo
-        // score
         if (startTime != null) {
 
-            // Invoca il service di calcolo dello score
             roomService.calcoloScore(room, studente, submitTime, startTime);
 
             response.put("esito", "Flag corretta!");
@@ -257,23 +285,25 @@ public class RoomController {
         return response;
     }
 
-    // Gestione della richiesta di visualizzazione dei risultati
+    /**
+     * Gestione della richiesta di visualizzazione dei risultati.
+     *
+     * @param classe nome della classe
+     * @param room nome della room
+     * @return lista di mappe con studente e score
+     */
     @PostMapping({ "/professore/risultati/visualizza", "/studente/risultati/visualizza" })
     @ResponseBody
     public List<Map<String, Object>> visualizzazioneRisultati(
             @RequestParam("classeId") String classe,
             @RequestParam("roomId") String room) {
 
-        // Invoca il service per ottenere le classi di cui voglio la visualizzare i
-        // risultati
         List<RoomAvviata> risultati = roomService.getRoombyClasseAndRoom(classe, room);
 
-        // Se non ci sono risultati restituisce una lista vuota
         if (risultati == null || risultati.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Costruisce il json con i risultati
         return risultati.stream()
                 .map(r -> {
                     Map<String, Object> map = new HashMap<>();
@@ -284,12 +314,16 @@ public class RoomController {
                 .collect(Collectors.toList());
     }
 
-    // Gestione della richiesta dei laboratori di una classe
+    /**
+     * Gestione della richiesta dei laboratori di una classe.
+     *
+     * @param classe nome della classe
+     * @return lista di mappe con i nomi delle room
+     */
     @PostMapping("/professore/laboratori")
     @ResponseBody
     public List<Map<String, Object>> getLaboratori(@RequestParam("classeId") String classe) {
 
-        // Invoca il service per trovare i laboratori di una classe
         List<RoomClasse> laboratori = roomService.trovaLaboratori(classe);
 
         return laboratori.stream()
