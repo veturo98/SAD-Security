@@ -1,0 +1,15 @@
+server-python/
+├── compose.py
+├── container.py
+├── functions
+│   └── __pycache__
+│       └── container.cpython-313.pyc
+├── __pycache__
+│   ├── compose.cpython-313.pyc
+│   ├── container.cpython-313.pyc
+│   ├── serviceCompose.cpython-313.pyc
+│   └── utility.cpython-313.pyc
+├── server.py
+└── utility.py
+
+4 directories, 9 files
