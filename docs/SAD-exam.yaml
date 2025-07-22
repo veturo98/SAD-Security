@@ -1,0 +1,27 @@
+services:
+
+  contact-me:
+    image: veturo98/server-ssh:esame
+    restart: always
+    command: /usr/sbin/sshd -D # Start server ssh
+    working_dir: /home/ubuntu/
+    healthcheck:
+      test: ["CMD", "echo", "test"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+    ports:
+      - ${PORTA}:22
+
+
+  spring-mvc:
+    image: veturo98/server-ssh:flag
+    restart: always
+    command: /usr/sbin/sshd -D # Start server ssh
+    working_dir: /home/ubuntu/
+    healthcheck:
+      test: ["CMD", "echo", "test"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
