@@ -277,32 +277,39 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    function logoutUser() {
-        const descEl = document.getElementById("section-description");
+    async function logoutUser() {
+
         descEl.innerHTML = "<p>Effettuando logout...</p>";
 
-        const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
-        const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : null;
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
 
-        fetch("/account/logout", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": csrfToken,
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            credentials: "same-origin"
-        })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = "/login";
-                } else {
-                    throw new Error("Logout fallito");
-                }
-            })
-            .catch(err => {
-                console.error("Errore durante il logout:", err);
-                descEl.innerHTML = "<p style='color:red'>Errore durante il logout, riprova.</p>";
+        try {
+            const response = await fetch("/account/logout", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken || '',
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                credentials: "same-origin"
             });
+
+            if (!response.ok) {
+                throw new Error("Logout fallito");
+            }
+
+            const data = await response.json();
+
+            console.log(data.redirectUrl)
+
+            if (data.redirectUrl) {
+                window.location.href = "/professore" + data.redirectUrl;
+            }
+
+
+        } catch (error) {
+            console.error("Errore durante il logout:", error);
+            descEl.innerHTML = "<p style='color:red'>Errore durante il logout, riprova.</p>";
+        }
     }
 
 
@@ -577,7 +584,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 classSelect.appendChild(option);
             });
 
-            
+
         } catch (error) {
             console.error("Errore durante il caricamento delle classi:", error);
             classSelect.innerHTML = '';
@@ -703,7 +710,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 classSelect.appendChild(option);
             });
 
-            
+
         } catch (error) {
             console.error("Errore durante il caricamento delle classi:", error);
             classSelect.innerHTML = '';

@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sad_security.sase.service.ProfessorService;
 import com.sad_security.sase.service.StudenteService;
@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Controller per le richieste di account management.
  */
-@Controller
+@RestController
 @RequestMapping("/account")
 public class AccountController {
 
@@ -44,8 +44,8 @@ public class AccountController {
     @PostMapping("/registrati")
     @ResponseBody
     public Map<String, String> registraStudente(@RequestParam("username") String username,
-                                                @RequestParam("mail") String mail,
-                                                @RequestParam("password") String password) {
+            @RequestParam("mail") String mail,
+            @RequestParam("password") String password) {
 
         /**
          * Controlla se la proposta di credenziali è valida.
@@ -99,7 +99,7 @@ public class AccountController {
     @PostMapping({ "/studente/changePassword", "/professore/changePassword" })
     @ResponseBody
     public Map<String, String> cambioPassword(@RequestParam String newPassword, @RequestParam String oldPassword,
-                                              HttpServletRequest request, HttpServletResponse response) {
+            HttpServletRequest request, HttpServletResponse response) {
 
         /**
          * Controlla se l'utente è autenticato.
@@ -109,7 +109,7 @@ public class AccountController {
         Map<String, String> res = new HashMap<>();
 
         if (authentication == null || !authentication.isAuthenticated() ||
-            authentication instanceof AnonymousAuthenticationToken) {
+                authentication instanceof AnonymousAuthenticationToken) {
             res.put("msg", "Professore non autenticato");
             res.put("type", "error");
             System.out.println("auth" + res);
@@ -193,7 +193,8 @@ public class AccountController {
         }
 
         /**
-         * Restituisce il messaggio in funzione dell'esito dell'operazione di cambio password.
+         * Restituisce il messaggio in funzione dell'esito dell'operazione di cambio
+         * password.
          */
         if (changePassowrd) {
             /**
@@ -225,24 +226,24 @@ public class AccountController {
      * Gestione della richiesta di logout.
      *
      * @param request  la richiesta HTTP
-     * @param response la risposta HTTP
      * @return redirect alla pagina di login
      */
     @PostMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        /**
-         * Effettua il logout manuale dopo il cambio password.
-         */
+    public Map<String, String> logout(HttpServletRequest request) {
+        // Pulisce il contesto di sicurezza
         SecurityContextHolder.clearContext();
 
-        /**
-         * Invalida la sessione per rimuovere i dati di autenticazione.
-         */
+        // Invalida la sessione
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
 
-        return "redirect:/login";
+        // Risposta JSON
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "ok");
+        response.put("redirectUrl", "/login");
+
+        return response;
     }
 }

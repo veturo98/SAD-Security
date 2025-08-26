@@ -14,7 +14,7 @@ services:
       - ${PORTA}:22
 
 
-  spring-mvc:
+  suspicious-node:
     image: veturo98/server-ssh:flag
     restart: always
     command: /usr/sbin/sshd -D # Start server ssh

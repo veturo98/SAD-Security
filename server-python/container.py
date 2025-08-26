@@ -13,7 +13,7 @@ def start_container():
 
     data = request.get_json()
     if not data:
-        return jsonify({"error": "Dati JSON mancanti o non validi nel corpo della richiesta"}), 400
+        return jsonify({"msg": "Dati JSON mancanti o non validi nel corpo della richiesta", "type" : "success"}), 400
 
     classe = data.get('nomeClass')
     room = data.get('nomeLab')
@@ -93,7 +93,7 @@ def crea_room():
     yaml_file = request.files.get('yamlFile')
 
     if not nomeRoom or not yaml_file:
-        return jsonify({"error": "Parametri mancanti"}), 400
+        return jsonify({"error": "Parametri mancanti", "type" : "error"}), 400
 
     print(f"Ricevuto nome room: {nomeRoom}")
     print(f"Nome file: {yaml_file.filename}")
@@ -107,6 +107,6 @@ def crea_room():
     yaml_file.save(file_path)
 
     print(f"File YAML salvato in: {file_path}")
-    return jsonify({"message": "Room creata con successo!"}), 200
+    return jsonify({"message": "Room creata con successo!", "type" : "success"}), 200
 
 

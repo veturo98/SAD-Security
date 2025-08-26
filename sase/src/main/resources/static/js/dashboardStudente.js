@@ -740,11 +740,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 credentials: "same-origin"
             });
 
-            if (response.ok) {
-                window.location.href = "/login";
-            } else {
+            if (!response.ok) {
                 throw new Error("Logout fallito");
             }
+
+            const data = await response.json();
+
+            console.log(data.redirectUrl)
+
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            }
+
+
         } catch (error) {
             console.error("Errore durante il logout:", error);
             descEl.innerHTML = "<p style='color:red'>Errore durante il logout, riprova.</p>";
