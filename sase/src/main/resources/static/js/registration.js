@@ -19,20 +19,20 @@ window.addEventListener('DOMContentLoaded', () => {
                 body: params,
             });
 
-            const data = await response.json();
-            console.log("Risposta JSON:", data);
+            const res = await response.json();
+            console.log("Risposta JSON:", res);
 
-            if (data.type === "error") {
+            if (res.type === "error") {
                 if (errorDiv) {
-                    errorDiv.textContent = data.msg || "Errore generico";
+                    errorDiv.textContent = res.message || "Errore generico";
                 } else {
-                    alert(data.msg || "Errore generico");
+                    alert(res.message || "Errore generico");
                 }
-            } else if (data.type === "success" && data.redirect) {
-                alert(data.msg);
-                window.location.href = data.redirect;
+            } else if (res.type === "success" && res.data) {
+                alert(res.message);
+                window.location.href = res.data;
             } else {
-                console.log("Risposta inattesa:", data);
+                console.log("Risposta inattesa:", res.message);
             }
 
         } catch (err) {

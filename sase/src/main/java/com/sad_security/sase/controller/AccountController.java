@@ -43,23 +43,23 @@ public class AccountController {
      */
     @PostMapping("/registrati")
     @ResponseBody
-    public Map<String, String> registraStudente(@RequestParam("username") String username,
+    public Map<String, Object> registraStudente(@RequestParam("username") String username,
             @RequestParam("mail") String mail,
             @RequestParam("password") String password) {
 
         /**
          * Controlla se la proposta di credenziali è valida.
          */
-        Map<String, String> msg = studenteServices.validaRegistrazione(password, mail);
-        System.out.println("Risultato di validaRegistrazione " + msg);
+        Map<String, Object> validazione = studenteServices.validaRegistrazione(password, mail);
+        System.out.println("Risultato di validaRegistrazione " + validazione);
+
+        String esito_validazione = (String) validazione.get("type");
 
         /**
          * Se è nullo il check restituisce il messaggio di errore.
          */
-        if (!msg.isEmpty()) {
-            if (msg != null) {
-                return msg;
-            }
+        if (esito_validazione.equals("error")) {
+            return validazione;
         }
 
         /**
@@ -70,18 +70,21 @@ public class AccountController {
         /**
          * Risponde con il messaggio appropriato.
          */
-        Map<String, String> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
 
         /**
          * Se lo studente esiste allora procede verso la pagina di login.
          */
         if (!exists) {
-            res.put("redirect", "/login");
-            res.put("msg", "Registrazione avvenuta con successo");
+            res.put("message", "Registrazione avvenuta con successo");
             res.put("type", "success");
+            res.put("data", "/login");
+
         } else {
-            res.put("msg", "Errore nella registrazione. Username o mail già utilizzate.");
+            res.put("message", "Errore nella registrazione. Username o mail già utilizzate.");
             res.put("type", "error");
+            res.put("data", "");
+
         }
 
         return res;
@@ -98,7 +101,7 @@ public class AccountController {
      */
     @PostMapping({ "/studente/changePassword", "/professore/changePassword" })
     @ResponseBody
-    public Map<String, String> cambioPassword(@RequestParam String newPassword, @RequestParam String oldPassword,
+    public Map<String, Object> cambioPassword(@RequestParam String newPassword, @RequestParam String oldPassword,
             HttpServletRequest request, HttpServletResponse response) {
 
         /**
@@ -106,12 +109,13 @@ public class AccountController {
          */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Map<String, String> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
 
         if (authentication == null || !authentication.isAuthenticated() ||
                 authentication instanceof AnonymousAuthenticationToken) {
-            res.put("msg", "Professore non autenticato");
+            res.put("message", "Non autenticato");
             res.put("type", "error");
+            res.put("data", "");
             System.out.println("auth" + res);
             return res;
         }
@@ -129,26 +133,17 @@ public class AccountController {
         /**
          * Validazione della proposta di cambio della password.
          */
-        Map<String, String> validazione = studenteServices.validaPassword(newPassword);
-        System.out.println("ho validato la password" + res);
+        Map<String, Object> validazione = studenteServices.validaPassword(newPassword);
+        System.out.println("ho validato la password" + validazione);
 
-        if (validazione != null && !validazione.isEmpty()) {
-            res.putAll(validazione);
+        String esito_validazione = (String) validazione.get("type");
+
+        // Se la validazione ha dato esito negativo restituisci errore
+        if (esito_validazione.equals("error")) {
             System.out.println("validazione " + res);
-            return res;
+            return validazione;
         }
 
-        /**
-         * Se ci sono errori allora restituisce l'errore.
-         */
-        if (!res.isEmpty()) {
-            if (res != null) {
-                System.out.println("empty" + res);
-                res.put("msg", "Errore di autenticazione");
-                res.put("type", "error");
-                return res;
-            }
-        }
 
         boolean changePassowrd;
 
@@ -163,8 +158,10 @@ public class AccountController {
             boolean isOldCorrect = studenteServices.checkpassowrd(oldPassword, username);
             if (!isOldCorrect) {
                 System.out.println("password vecchia rotta " + res);
-                res.put("msg", "La vecchia password è sbagliata");
+                res.put("message", "La vecchia password è sbagliata");
                 res.put("type", "error");
+                res.put("data", "");
+
                 return res;
             }
 
@@ -181,8 +178,10 @@ public class AccountController {
             boolean isOldCorrect = professorService.checkpassowrd(oldPassword, username);
             if (!isOldCorrect) {
                 System.out.println("password vecchia rotta " + res);
-                res.put("msg", "La vecchia password è sbagliata");
+                res.put("message", "La vecchia password è sbagliata");
                 res.put("type", "error");
+                res.put("data", "");
+
                 return res;
             }
 
@@ -210,11 +209,15 @@ public class AccountController {
             if (session != null) {
                 session.invalidate();
             }
-            res.put("msg", "credenziali cambiate con successo");
+            res.put("message", "credenziali cambiate con successo");
             res.put("type", "success");
+            res.put("data", "");
+
         } else {
-            res.put("msg", "errore nel cambio delle credenziali");
+            res.put("message", "errore nel cambio delle credenziali");
             res.put("type", "error");
+            res.put("data", "");
+
         }
 
         System.out.println("final" + res);
@@ -225,11 +228,11 @@ public class AccountController {
     /**
      * Gestione della richiesta di logout.
      *
-     * @param request  la richiesta HTTP
+     * @param request la richiesta HTTP
      * @return redirect alla pagina di login
      */
     @PostMapping("/logout")
-    public Map<String, String> logout(HttpServletRequest request) {
+    public Map<String, Object> logout(HttpServletRequest request) {
         // Pulisce il contesto di sicurezza
         SecurityContextHolder.clearContext();
 
@@ -240,9 +243,10 @@ public class AccountController {
         }
 
         // Risposta JSON
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "ok");
-        response.put("redirectUrl", "/login");
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "");
+        response.put("type", "success");
+        response.put("data", "/login");
 
         return response;
     }

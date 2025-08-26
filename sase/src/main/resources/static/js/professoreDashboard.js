@@ -79,7 +79,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nella risposta del server");
 
-            const classNames = await response.json();
+            const res = await response.json();
+
+            const classNames = res.data;
 
             select.innerHTML = '';
 
@@ -262,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             window.location.href = "/professore/login";
                         }, 1000); // aspetta 2 secondi per far vedere il messaggio
                     } else {
-                        messageElement.textContent = data.msg || "Errore nel cambio password";
+                        messageElement.textContent = data.message || "Errore nel cambio password";
                         messageElement.style.color = "red";
                     }
                 })
@@ -297,17 +299,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error("Logout fallito");
             }
 
-            const data = await response.json();
+            const res = await response.json();
 
-            console.log(data.redirectUrl)
+            console.log(res.data)
 
-            if (data.redirectUrl) {
-                window.location.href = "/professore" + data.redirectUrl;
+            if (res.type === "success") {
+                window.location.href = "/professore" + res.data;
             }
 
 
         } catch (error) {
-            console.error("Errore durante il logout:", error);
+            console.error("Errore durante il logout:", res.message);
             descEl.innerHTML = "<p style='color:red'>Errore durante il logout, riprova.</p>";
         }
     }
@@ -338,7 +340,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nella risposta del server");
 
-            const classNames = await response.json();
+            const res = await response.json();
+
+            const classNames = res.data;
 
             classSelect.innerHTML = '';
 
@@ -444,7 +448,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     credentials: "same-origin"
                 });
 
-                const data = await response.json();
+                const res = await response.json();
+                const data = res.data;
 
                 if (Array.isArray(data)) {
                     renderizzaTabellaRisultati(data); // chiama la tua funzione già definita
@@ -565,7 +570,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nella risposta del server");
 
-            const classNames = await response.json();
+            const res = await response.json();
+
+            const classNames = res.data;
 
             classSelect.innerHTML = '';
 
@@ -621,7 +628,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     credentials: "same-origin"
                 });
 
-                const data = await response.json();
+                const res = await response.json();
+
+                const data = res.data;
 
                 if (Array.isArray(data)) {
                     renderizzaTabellaStudenti(data); // chiama la tua funzione già definita
@@ -691,8 +700,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nella risposta del server");
 
-            const classNames = await response.json();
+            const res = await response.json();
 
+            const classNames = res.data;
+            
             classSelect.innerHTML = '';
 
             // Opzione predefinita

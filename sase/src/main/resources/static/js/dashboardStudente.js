@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
 
-            areaRisposta.textContent = 'Risposta: ' + data.msg;
+            areaRisposta.textContent = 'Risposta: ' + data.message;
             commandBox.textContent = data.command;
 
         } catch (error) {
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await response.json();
-            areaRisposta.textContent = 'Risposta: ' + data.msg;
+            areaRisposta.textContent = 'Risposta: ' + data.message;
 
         } catch (error) {
             console.error('Errore durante la richiesta:', error);
@@ -149,7 +149,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nella risposta del server");
 
-            const classNames = await response.json();
+            const res = await response.json();
+
+            const classNames = res.data;
 
             select.innerHTML = '';
 
@@ -217,8 +219,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!response.ok) throw new Error("Errore nella risposta del server");
 
-            const classNames = await response.json();
+            const res = await response.json();
 
+            const classNames = res.data;
+            
             classSelect.innerHTML = '';
 
             // Opzione predefinita
@@ -343,7 +347,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await fetch('/classe/studente/getClassiIscritte', { credentials: 'same-origin' });
             if (!response.ok) throw new Error('Errore nel recupero classi iscritte');
 
-            const classiIscritte = await response.json();
+            const res = await response.json();
+            const classiIscritte = res.data;
 
             if (Array.isArray(classiIscritte)) {
                 classiIscritte.forEach(nomeClasse => {
@@ -436,7 +441,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     credentials: "same-origin"
                 });
 
-                const data = await response.json();
+                const res = await response.json();
+                const data = res.data;
 
                 if (Array.isArray(data)) {
                     renderizzaTabellaRisultati(data); // chiama la tua funzione già definita
@@ -702,7 +708,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     credentials: "same-origin"
                 });
 
-                const data = await response.json();
+                const res = await response.json();
+                const data = res.data;
 
                 if (data.type === "success") {
                     messageElement.textContent = "Password cambiata con successo!";
@@ -712,7 +719,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.location.href = "/login";
                     }, 1000);
                 } else {
-                    messageElement.textContent = data.msg || "Errore nel cambio password";
+                    messageElement.textContent = data.message || "Errore nel cambio password";
                     messageElement.style.color = "red";
                 }
             } catch (error) {
@@ -744,12 +751,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error("Logout fallito");
             }
 
-            const data = await response.json();
+            const res = await response.json();
 
-            console.log(data.redirectUrl)
+            console.log(res.data)
 
-            if (data.redirectUrl) {
-                window.location.href = data.redirectUrl;
+            if (res.data) {
+                window.location.href = res.data;
             }
 
 

@@ -78,8 +78,9 @@ public class StudenteService implements UserDetailsService {
      * 
      * @param username lo username desiderato
      * @param password la password in chiaro
-     * @param mail l'indirizzo email dello studente
-     * @return true se lo studente esiste già, false se la registrazione è andata a buon fine
+     * @param mail     l'indirizzo email dello studente
+     * @return true se lo studente esiste già, false se la registrazione è andata a
+     *         buon fine
      */
     public boolean aggiungiStudente(String username, String password, String mail) {
         Optional<Studente> userName = studenteRepository.findByUsername(username);
@@ -107,13 +108,13 @@ public class StudenteService implements UserDetailsService {
      * Valida i parametri di registrazione: password e mail.
      * 
      * @param password la password da validare
-     * @param mail l'indirizzo email da validare
+     * @param mail     l'indirizzo email da validare
      * @return mappa con messaggi di errore, o vuota se nessun errore
      */
-    public Map<String, String> validaRegistrazione(String password, String mail) {
-        Map<String, String> result = new HashMap<>();
+    public Map<String, Object> validaRegistrazione(String password, String mail) {
+        Map<String, Object> result = new HashMap<>();
 
-        Map<String, String> validazione = validaPassword(password);
+        Map<String, Object> validazione = validaPassword(password);
         if (!validazione.isEmpty()) {
             result = validazione;
             return result;
@@ -122,8 +123,9 @@ public class StudenteService implements UserDetailsService {
         String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
 
         if (!mail.matches(regex)) {
-            result.put("msg", "L'email non è valida.");
+            result.put("message", "L'email non è valida.");
             result.put("type", "error");
+            result.put("data", "");
             return result;
         }
 
@@ -136,46 +138,62 @@ public class StudenteService implements UserDetailsService {
      * @param password la password da validare
      * @return mappa con messaggi di errore, o vuota se nessun errore
      */
-    public Map<String, String> validaPassword(String password) {
-        Map<String, String> result = new HashMap<>();
+    public Map<String, Object> validaPassword(String password) {
+        Map<String, Object> result = new HashMap<>();
 
         if (password == null || password.isEmpty()) {
-            result.put("msg", "La password non può essere vuota.");
+            result.put("message", "La password non può essere vuota.");
             result.put("type", "error");
+            result.put("data", "");
+
             return result;
         }
 
         if (password.length() < 8) {
-            result.put("msg", "La password deve contenere almeno 8 caratteri.");
+            result.put("message", "La password deve contenere almeno 8 caratteri.");
             result.put("type", "error");
+            result.put("data", "");
+
             return result;
         }
 
         if (!password.matches(".*[A-Z].*")) {
-            result.put("msg", "La password deve contenere almeno una lettera maiuscola.");
+            result.put("message", "La password deve contenere almeno una lettera maiuscola.");
             result.put("type", "error");
+            result.put("data", "");
+
             return result;
         }
 
         if (!password.matches(".*\\d.*")) {
-            result.put("msg", "La password deve contenere almeno un numero.");
+            result.put("message", "La password deve contenere almeno un numero.");
             result.put("type", "error");
+            result.put("data", "");
+
             return result;
         }
 
         if (!password.matches(".*[!@#$%^&*()\\-+=\\[\\]{};:,.<>/?].*")) {
-            result.put("msg", "La password deve contenere almeno un carattere speciale.");
+            result.put("message", "La password deve contenere almeno un carattere speciale.");
             result.put("type", "error");
+            result.put("data", "");
+
             return result;
         }
 
         if (password.matches(".*\\s.*")) {
-            result.put("msg", "La password non può contenere spazi.");
+            result.put("message", "La password non può contenere spazi.");
             result.put("type", "error");
+            result.put("data", "");
+
             return result;
         }
 
-        return Collections.emptyMap();
+        result.put("message", "La password proposta è valida");
+        result.put("type", "success");
+        result.put("data", "");
+
+        return result;
     }
 
     /**
@@ -196,7 +214,7 @@ public class StudenteService implements UserDetailsService {
     /**
      * Cambia la password dello studente se la vecchia password è corretta.
      * 
-     * @param username lo username dello studente
+     * @param username    lo username dello studente
      * @param oldpassword la vecchia password (in chiaro)
      * @param newpassword la nuova password da impostare (in chiaro)
      * @return true se il cambio password è andato a buon fine, false altrimenti

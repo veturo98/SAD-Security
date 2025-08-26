@@ -7,9 +7,6 @@ import com.sad_security.sase.model.Iscrizione;
 import com.sad_security.sase.service.ClassService;
 import com.sad_security.sase.service.IscrizioneService;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,48 +41,58 @@ public class ClassController {
      *
      * @return una lista con i nomi delle classi
      */
-    @GetMapping({"/professore/getClassi", "/studente/getClassi"})
+    @GetMapping({ "/professore/getClassi", "/studente/getClassi" })
     @ResponseBody
-    public List<String> getClassi() {
+    public Map<String, Object> getClassi() {
 
-        /**
-         * Chiama il servizio che si occupa di restituire la classi.
-         */
+        // Ottiene tutte le classi disponibili
         List<Classe> classi = classService.trovaTutteLeClassi();
 
-        /**
-         * Costruisce la risposta come JSON.
-         */
-        return classi.stream()
-                .map(Classe::getNome)
-                .collect(Collectors.toList());
+        // Recupera la lista dei nomi
+        List<String> nomiClassi = classi.stream().map(Classe::getNome).collect(Collectors.toList());
+
+        // Costruisce la risposta in JSON
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "");
+        response.put("type", "success");
+        response.put("data", nomiClassi);
+
+        return response;
     }
 
     /**
      * Gestione della richiesta degli studenti iscritti ad una classe.
      *
      * @param classe ID della classe
-     * @return lista di studenti iscritti 
+     * @return lista di studenti iscritti
      */
     @PostMapping("/professore/listaIscritti")
     @ResponseBody
-    public List<Map<String, Object>> getStudenti(@RequestParam("classeId") String classe) {
+    public Map<String, Object> getStudenti(@RequestParam("classeId") String classe) {
 
         /**
-         * Chiama il servizio che si occupa di restituire la lista degli studenti iscritti.
+         * Chiama il servizio che si occupa di restituire la lista degli studenti
+         * iscritti.
          */
         List<Iscrizione> iscrizioni = iscrizioneService.trovaStudenti(classe);
 
         /**
          * Costruisce la risposta come JSON.
          */
-        return iscrizioni.stream()
+        List<Map<String, Object>> studenti_iscritti = iscrizioni.stream()
                 .map(r -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("studente", r.getStudente());
                     return map;
                 })
                 .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "");
+        response.put("type", "success");
+        response.put("data", studenti_iscritti);
+
+        return response;
     }
 
     /**
@@ -96,7 +103,7 @@ public class ClassController {
      */
     @PostMapping("/professore/crea")
     @ResponseBody
-    public Map<String, String> creaClasse(@RequestParam String classe) {
+    public Map<String, Object> creaClasse(@RequestParam String classe) {
 
         /**
          * Chiama il service che si occupa di aggiungere la classe
@@ -107,7 +114,7 @@ public class ClassController {
         /**
          * Costruisce il messaggio di risposta in base all'esito del service.
          */
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
         if (exists) {
             response.put("message", "La classe esiste già");
@@ -128,14 +135,14 @@ public class ClassController {
      */
     @PostMapping("/studente/iscriviti")
     @ResponseBody
-    public Map<String, String> IscrizioneClasse(@RequestParam("nomeClasse") String nomeClasse) {
+    public Map<String, Object> IscrizioneClasse(@RequestParam("nomeClasse") String nomeClasse) {
 
         /**
          * Controlla se l'utente è autenticato.
          */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
         /**
          * Se l'utente non è autenticato restituisce errore.
@@ -172,37 +179,40 @@ public class ClassController {
     }
 
     /**
-     * Gestione della richiesta per ottenere le classi a cui è iscritto uno studente.
+     * Gestione della richiesta per ottenere le classi a cui è iscritto uno
+     * studente.
      *
      * @param authentication oggetto di autenticazione
      * @return lista dei nomi delle classi a cui lo studente è iscritto
      */
     @GetMapping("/studente/getClassiIscritte")
     @ResponseBody
-    public List<String> getClassiIscrittePerStudente(Authentication authentication) {
+    public Map<String, Object> getClassiIscrittePerStudente(Authentication authentication) {
 
         /**
          * Se lo studente non è autenticato allora restituisce lista vuota.
          */
         String username = authentication.getName();
 
+        Map<String, Object> response = new HashMap<>();
+
         if (username.isEmpty()) {
-            return Collections.emptyList();
+            response.put("message", "Utente non autenticato");
+            response.put("type", "error");
+            response.put("data", Collections.emptyList());
+            return response;
         }
 
         /**
          * Altrimenti invoca il service che cerca le classi.
          */
-        return iscrizioneService.getNomiClassiIscritte(username);
-    }
+        List<String> iscrizioni_utente = iscrizioneService.getNomiClassiIscritte(username);
 
-    /**
-     * Classe interna per definire il body della richiesta di creazione classe.
-     */
-    @Data
-    @AllArgsConstructor
-    public static class creaClasseBody {
-        private String nomeClasse;
+        response.put("message", "");
+        response.put("type", "success");
+        response.put("data", iscrizioni_utente);
+        
+        return response;
     }
 
 }

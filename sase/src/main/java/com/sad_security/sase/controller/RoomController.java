@@ -79,11 +79,11 @@ public class RoomController {
                 }
             }
 
-            res.put("msg", esito_avvio.get().msg);
+            res.put("message", esito_avvio.get().msg);
             res.put("command", esito_avvio.get().command);
             res.put("type", "success");
         } else {
-            res.put("msg", esito_avvio.get().msg);
+            res.put("message", esito_avvio.get().msg);
             res.put("type", "error");
         }
 
@@ -114,7 +114,7 @@ public class RoomController {
         Map<String, String> res = new HashMap<>();
 
         if (result == null || result.isEmpty()) {
-            res.put("msg", "Impossibile stoppare il container");
+            res.put("message", "Impossibile stoppare il container");
             res.put("type", "error");
         } else {
             ObjectMapper mapper = new ObjectMapper();
@@ -230,7 +230,7 @@ public class RoomController {
         Map<String, String> res = new HashMap<>();
 
         if (descrizione == null || descrizione.isEmpty()) {
-            res.put("msg", "Impossibile stoppare il container");
+            res.put("message", "Impossibile stoppare il container");
             res.put("type", "error");
         } else {
             res.put("descrizione", descrizione);
